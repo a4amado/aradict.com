@@ -7,7 +7,7 @@ import { useAlert } from "react-alert";
 import Header from "../components/Header";
 import styles from "../styles/style.module.scss";
 
-const Login = () => {
+const Login = ({ userType }) => {
   const alert = useAlert();
   const router = useRouter();
   const [username, setUsername] = React.useState("");
