@@ -1,0 +1,10 @@
+{
+    "name": "Español",
+    "dir": "ltr",
+    "search": "buscar",
+    "dashboard": "Salpicadero",
+    "reviewSound": "Revisar sonido",
+    "contributeSound": "Aporta sonido",
+    "login": "Iniciar sesión",
+    "home": "Hogar"
+  }

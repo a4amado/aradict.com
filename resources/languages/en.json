@@ -1,0 +1,10 @@
+{
+    "name": "English",
+    "dir": "ltr",
+    "search": "search",
+    "dashboard": "Dashboard",
+    "reviewSound":"Review Sound",
+    "contributeSound": "Contribute Sound",
+    "login": "Login",
+    "home": "Home"
+}

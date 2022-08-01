@@ -1,0 +1,47 @@
+@import url("https://www.fontstatic.com/f=bahij");
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    
+    height: 100%;
+    background: url('/829s-min.png');
+    background-size:10% auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  cursor: pointer;
+}
+* {
+  box-sizing: border-box;
+  font-family: 'bahij';
+  direction: rtl;
+  user-select: none;
+  scroll-behavior: smooth;
+
+}
+
+
+#__next {
+
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  
+}
+
+#__react-alert__ div div div {
+  width: fit-content !important;
+}
+

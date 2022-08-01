@@ -1,0 +1,71 @@
+.addSoundWrapper {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  // overflow: hidden;
+  margin-top: 55px;
+}
+
+@keyframes fadeErrorMessage {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.hint {
+  margin: 5px 10px;
+  padding: 5px 10px;
+  border: 1px solid rgba(#000, 0.6);
+  border-radius: 5px;
+  direction: ltr;
+  white-space: nowrap;
+  position: relative;
+  direction: ltr !important;
+}
+.centerd {
+  position: absolute;
+  max-width: 600px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%);
+  font-size: xxx-large;
+}
+
+.recording {
+  width: 5px;
+  height: 5px;
+  position: absolute;
+
+  background-color: red;
+  border-radius: 50%;
+  animation: togole_recording 0.5s linear infinite;
+}
+
+@keyframes togole_recording {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.1;
+  }
+}
+
+.buttons {
+  position: fixed;
+  bottom: 15px;
+  direction: ltr;
+  width: fit-content;
+  display: flex;
+  flex-wrap: nowrap;
+  left: 50%;
+  transform: translateX(-50%);
+
+  & > button {
+    margin: 2px 5px;
+    padding: 2px 5px;
+    font-size: 3vw;
+    white-space: nowrap;
+  }
+}
