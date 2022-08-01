@@ -1,3 +1,4 @@
+import Image from "next/image";
 import styles from "./Footer.module.scss";
 
 const Footer = () => {
@@ -14,16 +15,16 @@ const Footer = () => {
       <div className={Classes.appsWrapper}>
         <div className={Classes.apps}>
           <div className={Classes.app}>
-            <img src="prodandroid.jpg" />
+            <Image src="prodandroid.jpg" alt="dd" width={200} height={200} />
           </div>
           <div className={Classes.app}>
-            <img src="prodchrome.jpg" />
+            <Image src="prodchrome.jpg" alt="dd" width={200} height={200} />
           </div>
           <div className={Classes.app}>
-            <img src="prodfirefox.jpg" />
+            <Image src="prodfirefox.jpg" alt="dd" width={200} height={200} />
           </div>
           <div className={Classes.app}>
-            <img src="prodtelegram.jpg" />
+            <Image src="prodtelegram.jpg" alt="dd" width={200} height={200} />
           </div>
         </div>
       </div>

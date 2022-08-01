@@ -27,7 +27,7 @@ const Header = ({ userType }) => {
         <div className={Classes.header}>
           <Link href="/">
             <a className={Classes.logo}>
-              <Image src={Logo} width={150} height={40} />
+              <Image src={Logo} width={150} height={40} alt="dd" />
             </a>
           </Link>
           <div className={Classes.list}>
