@@ -15,16 +15,16 @@ const Footer = () => {
       <div className={Classes.appsWrapper}>
         <div className={Classes.apps}>
           <div className={Classes.app}>
-            <Image src="prodandroid.jpg" alt="dd" width={200} height={200} />
+            <img src="prodandroid.jpg" alt="dd" />
           </div>
           <div className={Classes.app}>
-            <Image src="prodchrome.jpg" alt="dd" width={200} height={200} />
+            <img src="prodchrome.jpg" alt="dd" />
           </div>
           <div className={Classes.app}>
-            <Image src="prodfirefox.jpg" alt="dd" width={200} height={200} />
+            <img src="prodfirefox.jpg" alt="dd" />
           </div>
           <div className={Classes.app}>
-            <Image src="prodtelegram.jpg" alt="dd" width={200} height={200} />
+            <img src="prodtelegram.jpg" alt="dd" />
           </div>
         </div>
       </div>
