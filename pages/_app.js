@@ -3,14 +3,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { transitions, positions, Provider as AlertProvider } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
 import "nprogress/nprogress.css";
+import { appWithTranslation } from "next-i18next";
 
-import React from "react";
-import Header from "../components/Header";
+import React, { Suspense } from "react";
 
 import nProgress from "nprogress";
 import { Router } from "next/router";
-import { MultiLanguage } from "../state/language.context";
-import Head from "next/head";
+import Locales from "../components/Locales";
 
 nProgress.configure();
 Router.events.on("routeChangeStart", () => {
@@ -22,28 +21,26 @@ Router.events.on("routeChangeComplete", () => {
 
 // optional configuration
 const options = {
-  // you can also just use 'bottom center'
   position: positions.BOTTOM_LEFT,
   timeout: 5000,
   offset: "5px",
-
-  // you can also just use 'scale'
   transition: transitions.SCALE,
 };
 
 const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }) {
-  const userType = pageProps.userType;
+  // const userType = pageProps.userType;
   return (
-    <QueryClientProvider client={queryClient}>
-      <MultiLanguage defaultLang={pageProps.defaultLang || "ar"}>
+    <Suspense fallback={<h1>Loading</h1>}>
+      <QueryClientProvider client={queryClient}>
         <AlertProvider template={AlertTemplate} {...options}>
           <Component {...pageProps} />
+          <Locales />
         </AlertProvider>
-      </MultiLanguage>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </Suspense>
   );
 }
 
-export default MyApp;
+export default appWithTranslation(MyApp);

@@ -1,20 +1,22 @@
 import { verify } from "jsonwebtoken";
 import Head from "next/head";
 import Image from "next/image";
-import React, { useContext } from "react";
+import React from "react";
 import { useAlert } from "react-alert";
 import Content from "../components/Content";
 import Footer from "../components/Footer";
-import { MultiLanguageContext } from "../state/language.context";
 import styles from "../styles/Home.module.scss";
 const isArabic =
   /^([\u0600-\u06ff]|[\u0750-\u077f]|[\ufb50-\ufbc1]|[\ufbd3-\ufd3f]|[\ufd50-\ufd8f]|[\ufd92-\ufdc7]|[\ufe70-\ufefc]|[\ufdf0-\ufdfd])*$/g;
-
 import Logo from "../resources/abadis.svg";
+import { useRouter } from "next/router";
 import Header from "../components/Header";
+import { useTranslation } from "next-i18next";
 
-export default function Home({ userType }) {
-  const Text = useContext(MultiLanguageContext);
+function Home(props, { userType }) {
+  const router = useRouter();
+  const { t } = useTranslation("common");
+
   const [q, setQ] = React.useState("");
   const alert = useAlert();
   const search = React.useRef();
@@ -37,7 +39,7 @@ export default function Home({ userType }) {
 
   return (
     <>
-      <Header userType={userType} />
+      {/* <Header userType={userType} /> */}
       <Head>
         <title>Aradict.com | أرادكت</title>
       </Head>
@@ -48,9 +50,7 @@ export default function Home({ userType }) {
               <Image src={Logo} width={400} height={150} />
             </div>
             <div className={Classes.searchWrapper}>
-              <span className={Classes.searchIcon}>
-                {Text.activeLanguage.search}
-              </span>
+              <span className={Classes.searchIcon}>{t("search")}</span>
               <input
                 className={Classes.searchFeild}
                 value={q}
@@ -94,17 +94,20 @@ export default function Home({ userType }) {
   function Submit() {}
 }
 
-export const getServerSideProps = async (ctx) => {
+export default Home;
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+
+export const getServerSideProps = async ({ req, locale }) => {
+  console.log();
   return verify(
-    ctx.req.cookies.token || "",
+    req.cookies.token || "",
     process.env.JWT_SECRET,
-    (err, data) => {
-      const defaultLang = ctx.req.cookies.lang || "";
+    async (err, data) => {
       const userType = data?.role || "";
       return {
         props: {
           userType,
-          defaultLang,
+          ...(await serverSideTranslations(locale, ["common"])),
         },
       };
     }

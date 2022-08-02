@@ -6,10 +6,13 @@ import React from "react";
 import { useAlert } from "react-alert";
 import Header from "../components/Header";
 import styles from "../styles/style.module.scss";
+import TextF from "../text";
 
 const Login = ({ userType }) => {
-  const alert = useAlert();
   const router = useRouter();
+  const t = TextF(router.locale);
+  const alert = useAlert();
+
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const Classes = {

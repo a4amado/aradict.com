@@ -2,7 +2,8 @@ import { serialize } from "cookie";
 import { sign } from "jsonwebtoken";
 import { createRouter } from "next-connect";
 import * as Yup from "yup";
-import { isAdmin } from "../../utils/Auth";
+import { isAdmin } from "../../../utils/Auth";
+import pool from "../../../DB";
 
 const Router = createRouter();
 
@@ -18,7 +19,11 @@ Router.use(async (req, res, next) => {
 
 Router.post((req, res) => {
   const JWT_HASH = sign(
-    { sss: 5555555, role: "admin" },
+    {
+      sss: 5555555,
+      role: "admin",
+      user_id: "ea3f5633-59bf-43db-8465-d2cbbad5f093",
+    },
     process.env.JWT_SECRET,
     {
       expiresIn: "2h",

@@ -10,49 +10,30 @@ import Hints from "../../components/Hints";
 import FormData from "form-data";
 import Axios from "axios";
 import Header from "../../components/Header";
+import { MultiLanguageContext } from "../../state/language.context";
+import TextF from "../../text";
 
 let chunks = [];
-const MSGsArray = Object.freeze({
-  NOT_RECORDING_YET: {
-    type: "error",
-    des: "NOT_RECORDING_YET",
-    msg: "نحن لم نبدأ التسجيل حتي الان",
-  },
-  ALREADY_RECORDING: {
-    type: "error",
-    msg: "يجري التسجيل بالفعل.",
-    des: "ALREADY_RECORDING",
-  },
-  START_RECORDING: {
-    type: "msg",
-    msg: "جاري التسجيل.",
-    des: "START_RECORDING",
-  },
-  STOP_RECORDING: {
-    type: "msg",
-    msg: "تم ٌإيقاف التسجيل",
-    des: "STOP_RECORDING",
-  },
-});
+
 export default function AddSound({ userType }) {
+  const router = useRouter();
+  const t = TextF(router.locale);
   let mediaStream = React.useRef(null);
   const alert = useAlert();
 
   const [isRecordeing, setIsRecording] = React.useState(false);
   const { data, isLoading, isRefetching, error, refetch } = useQuery(
-    ["getRandomWord"],
-    () => {
-      return new Promise((res, rej) => {
-        return res({
-          ar: "انا",
-        });
-      });
-    }
-    // fetch(`/api/hello`).then(async (e) => {
-    // const data = await e.json();
-    // return data;
-    // })
+    ["get-word-with-no-sound"],
+    () =>
+      fetch(`/api/word/get-word-with-no-sound`).then(async (e) => {
+        const data = await e.json();
+        return data;
+      })
   );
+
+  const showData = !isLoading && !isRefetching && !error && !!data;
+  const Loading = isLoading || isRefetching;
+  const isError = !isLoading && !isRefetching && error && !data;
 
   const Classes = {
     addSoundWrapper: styles.addSoundWrapper,
@@ -68,9 +49,10 @@ export default function AddSound({ userType }) {
 
   function Recorde() {
     if (isRecordeing) {
-      return Stop();
+      alert.error(Text.activeLanguage.ALREADY_RECORDING);
+      return false;
     }
-    alert.show(MSGsArray.START_RECORDING.msg);
+    alert.show(Text.activeLanguage.RECORD);
     chunks = [];
     navigator.mediaDevices
       .getUserMedia({ audio: true })
@@ -101,17 +83,20 @@ export default function AddSound({ userType }) {
       });
     setIsRecording(true);
   }
+
   function Stop() {
     if (!isRecordeing) {
-      return alert.show(MSGsArray.NOT_RECORDING_YET.msg);
+      alert.show(Text.ativeLanguage.NOT_RECORDING_YET);
+      return false;
+    } else {
+      mediaStream.current.stop();
+      alert.show(Text?.ativeLanguage?.STOP_RECORDING);
     }
-
-    mediaStream.current.stop();
-    return alert.show(MSGsArray.STOP_RECORDING.msg);
   }
+
   function Play() {
     if (chunks.length < 1) {
-      return alert.show("No thing to play !");
+      return alert.show(Text.ativeLanguage.NO_THING_TO_PLAY);
     }
     const AudioBlob = new Blob(chunks, { type: "audio/ogg" });
     const AudioBlobURL = URL.createObjectURL(AudioBlob);
@@ -120,11 +105,12 @@ export default function AddSound({ userType }) {
   }
   function Submit() {
     if (chunks.length < 1) {
-      return alert.show("No thing to Submit !");
+      return alert.show(Text.activeLanguage.NO_THING_TO_SUBMIT);
     }
     const blob = new Blob(chunks, { type: "ogg/audio" });
     const Sound = new FormData();
     Sound.append("audio", blob);
+    Sound.append("word_id", data[0].word_id);
     Axios({
       method: "POST",
       url: "/api/sound/add-to-queue",
@@ -142,6 +128,9 @@ export default function AddSound({ userType }) {
       switch (e.code) {
         case "KeyR":
           Recorde();
+          break;
+        case "KeyW":
+          Stop();
           break;
         case "KeyS":
           Submit();
@@ -163,23 +152,29 @@ export default function AddSound({ userType }) {
     <>
       <Header userType={userType} />
       <div className={Classes.addSoundWrapper}>
+        {console.log(Text)}
         <Head>
-          <title>Contribute Sound</title>
+          <title>{Text.activeLanguage.CONTRIBUTE_WITH_YOUR_VOICE}</title>
         </Head>
         <Hints>
           <span className={Classes.hint} onClick={Recorde}>
-            \r\ {isRecordeing ? "Stop.." : "Record"}
+            \r\ {Text.activeLanguage.RECORD}
             <span className={Classes.recording}></span>
           </span>
-          <span className={Classes.hint} onClick={Play}>
-            \p\ Play
+          <span className={Classes.hint} onClick={Recorde}>
+            \w\ {Text.activeLanguage.STOP_RECORDING}
           </span>
-          <span className={Classes.hint}>\s\ Submit</span>
+
+          <span className={Classes.hint} onClick={Play}>
+            \p\ {Text.activeLanguage.PLAY}
+          </span>
+
+          <span className={Classes.hint}>\s\ {Text.activeLanguage.SUBMIT}</span>
         </Hints>
         <div className={Classes.centerd}>
-          {isLoading || isRefetching ? error : ""}
-          {data ? data?.ar : ""}
-          {error ? alert.show("خطأ أثناء جلب الكلمة :(") : ""}
+          {Loading && Text.activeLanguage.LOOGIN_FOR_WORD + " ...... "}
+          {isError && Text.avtiveLanguage.SOMETHING_WENT_WRONG}
+          {showData && data[0]?.ar}
         </div>
       </div>
     </>

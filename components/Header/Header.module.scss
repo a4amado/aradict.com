@@ -65,6 +65,8 @@
 
   & > a {
     position: relative;
+    margin: 2px 4px;
+    padding: 0px 4px;
     @media (max-width: 600px) {
       display: block;
       width: fit-content;

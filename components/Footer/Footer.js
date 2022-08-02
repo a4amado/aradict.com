@@ -1,7 +1,9 @@
 import Image from "next/image";
 import styles from "./Footer.module.scss";
+import { useRouter } from "next/router";
 
 const Footer = () => {
+  const router = useRouter();
   const Classes = {
     apps: styles.apps,
     app: styles.app,

@@ -1,14 +1,20 @@
-
 -- RUN FIRST --
+
+DROP DATABASE IF EXISTS ARADICT;
+CREATE DATABASE ARADICT;
 CREATE EXTENTSION IF NOT EXISTS "uuid-ossp";
 SET TIMEZONE = "EET";
-
 DROP TABLE IF EXISTS USERS;
 DROP TABLE IF EXISTS WORDS;
 DROP TABLE IF EXISTS SOUNDS;
 
+
+
+-- Ceate Tables
+
 CREATE TABLE USERS (
     user_id uuid DEFAULT uuid_generate_v4(),
+    username VARCHAR(50) UNIQUE NOT NULL,
     first_name VARCHAR(50) NOT NULL,
     middle_name VARCHAR(50) NOT NULL,
     join_data TIMESTAMP DEFAULT NOW(),
@@ -20,8 +26,12 @@ CREATE TABLE SOUNDS (
     contributer_id  uuid NOT NULL,
     word_id uuid NOT NULL,
     approved bool DEFAULT false,
+    enc TEXT NOT NULL,
+    mimetype TEXT NOT NULL,
+    file_name TEXT NOT NULL,
+    size  NOT NULL,
 
-    audio TEXT NOT NULL,
+    
     
     CONSTRAINT fk_user
         FOREIGN KEY(contributer_id)
@@ -35,7 +45,6 @@ CREATE TABLE SOUNDS (
     PRIMARY KEY(sound_id)
 );
 
-
 CREATE TABLE WORDS (
     word_id uuid DEFAULT uuid_generate_v4(),
     contributer_id uuid,
@@ -48,18 +57,27 @@ CREATE TABLE WORDS (
     PRIMARY KEY(word_id)
 );
 
--- -- EXAMPLE
+-- EXAMPLE
 INSERT INTO USERS
-    (first_name, middle_name)
+    (first_name, middle_name, username)
 VALUES 
-    ('Ahmad','Adel')
-RETURNING *;
+    ('Ahmad','Adel', "ahamad")
+RETURNING user_id;
 
-DELETE 
-FROM USERS
-WHERE user_id = 'c72c1eca-fc79-4b54-9c2a-055b04669d68';
+-- DELETE 
+-- FROM USERS
+-- WHERE user_id = 'c72c1eca-fc79-4b54-9c2a-055b04669d68';
 
 INSERT INTO WORDS
-    (contributer_id)
+    (contributer_id, ar, en)
 VALUES
-    ('c72c1eca-fc79-4b54-9c2a-055b04669d68');
+    ('9f6053ea-598e-4686-aaed-be4dab194bba','أنا','÷')
+RETURNING *    
+;
+
+INSERT INTO WORDS
+    (contributer_id, ar, en)
+VALUES
+    ('9f6053ea-598e-4686-aaed-be4dab194bba','هو','÷')
+RETURNING *    
+;

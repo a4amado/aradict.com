@@ -7,29 +7,30 @@ import { SecondLayer } from "../../utils/AuthLayers";
 import { hint } from "../../styles/add-sound.module.scss";
 import Hints from "../../components/Hints/Hints";
 import Header from "../../components/Header";
+import axios from "axios";
+import TextF from "../../text";
 
 async function fetcher() {
-  return new Promise((res, rej) => {
-    res({
-      ar: "AHMAD",
-      id: "أنا",
-      sound:
-        "https://file-examples.com/storage/fe52cb0c4862dc676a1b341/2017/11/file_example_MP3_700KB.mp3",
-    });
+  return fetch("/api/sound/get-non-approved-sound").then((res) => {
+    return res.json();
   });
 }
 
 const VoiceReviewer = ({ userType }) => {
   const [isPlaying, setIsPlaying] = React.useState(false);
-
+  const router = useRouter();
+  const t = TextF(router.locale);
   /**
    *
    */
   const sound = React.useRef(null);
-  const { data, isRefetching, isLoading, error } = useQuery(
+  const { data, isRefetching, isLoading, error, refetch } = useQuery(
     ["get-word-with-no-pronounsiation"],
     fetcher
   );
+  const showData = !isLoading && !isRefetching && !error && !!data;
+  const Loading = isLoading || isRefetching;
+  const isError = !isLoading && !isRefetching && error && !data;
 
   const Classes = {
     pageWrapper: styles.pageWrapper,
@@ -55,7 +56,9 @@ const VoiceReviewer = ({ userType }) => {
           console.log("play");
           break;
         case "KeyA":
+          approve();
           console.log("Approve");
+          break;
         case "KeyF":
           console.log("Refused");
           break;
@@ -79,22 +82,42 @@ const VoiceReviewer = ({ userType }) => {
         <Head>
           <title>Review Sound</title>
         </Head>
-        {isLoading ||
-          (isRefetching && (
-            <div className={Classes.loading}>يجري جلب الكلمه</div>
-          ))}
-        {error && <div className={Classes.error}>{error}</div>}
-        {data && (
-          <div className={Classes.wordWrapper}>
-            <div className={Classes.audio}>
-              <audio ref={sound} controls src={data.sound} preload={true} />
-            </div>
-            <div className={Classes.word}>{data.ar}</div>
-          </div>
-        )}
+
+        <div className={Classes.wordWrapper}>
+          {showData && (
+            <>
+              <div className={Classes.audio}>
+                <audio
+                  ref={sound}
+                  controls
+                  src={`/sound/${data[0].file_name}`}
+                  preload={true}
+                />
+              </div>
+
+              <div className={Classes.word}>{data[0].ar}</div>
+            </>
+          )}
+          {Loading && <div className={Classes.loading}>يجري جلب الكلمه</div>}
+          {isError && <div className={Classes.error}>{error}</div>}
+        </div>
       </div>
     </>
   );
+
+  async function approve() {
+    axios({
+      method: "POST",
+      data: { sound_id: data[0].sound_id },
+      url: "/api/sound/approve",
+    })
+      .then((e) => {
+        console.log(e);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }
 };
 
 export default VoiceReviewer;

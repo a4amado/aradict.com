@@ -1,11 +1,10 @@
 import Head from "next/head";
 import Image from "next/image";
-import { useContext } from "react";
-import { MultiLanguageContext } from "../../state/language.context";
+import { useRouter } from "next/router";
 import styles from "./Content.module.scss";
 
 export default function Content() {
-  const Text = useContext(MultiLanguageContext);
+  const router = useRouter();
   const Classes = {
     contentContainer: styles.contentContainer,
     category: styles.category,

@@ -1,0 +1,19 @@
+{
+    "home": "Home",
+    "dir" :"ltr",
+    "reviewSound" :"Review Sound",
+    "contributeSound" : "Contribute",
+    "reject":"Reject",
+    "approve":"Approve",
+    "search":"Search",
+    "whatIsAradict": "What is Aradict.com",
+    "toUseAradict" :"",
+    "onlyAradicLetterAreAllowed": "Only Arabic charachter are allowed !",
+    "record" :"Record",
+    "play": "Play",
+    "submit": "Submit",
+    "stoped" :"Stoped recording",
+    "recording" :"Recording",
+    "someThingWentWrong" :"Something went wrong!"
+  }
+  

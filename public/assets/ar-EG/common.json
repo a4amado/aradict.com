@@ -1,0 +1,25 @@
+{
+  "home": "الرئيسية",
+  "dir" :"rtl",
+  "reviewSound" :"راجع صوتاّ",
+  "CONTRIBUTE_WITH_YOUR_VOICE" : "ساهم بصوتك",
+  "reject":"رفض",
+  "approve":"قبول",
+  "search":"بحث",
+  "whatIsAradict": "ما هو ارادكت ؟",
+  "toUseAradict" :"",
+  "onlyAradicLetterAreAllowed": "يسمح فقط بالحروف العربية !",
+  "RECORD" :"إبدا التسجيل !",
+  "PLAY": "شَغل",
+  "SUBMIT": "إرسال",
+  "STOP_RECORDING" :"إيقاف التسجيل",
+  "recording" :"يجري التسجيل.",
+  "SOMETHING_WENT_WRONG" :"حدث خطأ ما",
+  "ALREADY_RECORDING" : "يجري التسجيل بالفعل",
+  "NO_THING_TO_PLAY": "لا يوجد شئ لتشغيله.",
+  "NOT_RECORDING_YET": "لم تبد التسجيل بعد",
+  "NO_THING_TO_SUBMIT" :"لا يوجد شئ لإرساله",
+  "LOOGIN_FOR_WORD": "جاري البحث عن كلمة",
+  "LGOIN": "تسجيل الدخول"
+ }
+
