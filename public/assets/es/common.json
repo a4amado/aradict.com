@@ -1,0 +1,27 @@
+{
+  "home": "Hogar",
+  "REVIEW_SOUND": "Revisar sonido",
+  "CONTRIBUTE_WITH_YOUR_VOICE": "Contribuye con tu voz",
+  "SEARCH": "Búsqueda",
+  "ONLY_AR_LETTERS": "Solo se permiten letras árabes.",
+  "WHAT_IS_ARADICT": "¿Qué es Aradict.com?",
+  "TO_USE_ARADICT": "Para usar Aradict.com, escriba su palabra en la barra de búsqueda en la parte superior",
+
+  "USERNAME": "Nombre de usuario",
+  "PASSWORD": "Clave",
+  "LOGIN": "Acceso",
+
+  "PLAY": "Tocar",
+  "REJECT": "Rechazar",
+  "APPROVE": "Aprobar",
+  "NOT_RECORDING_YET": "Aún no grabando",
+
+  "ALREADY_RECORDING": "Ya grabando",
+  "NO_THING": "nada que presentar",
+  "RECORD": "Registro",
+  "STOP_RECORDING": "Para de grabar",
+  "SUBMIT": "Enviar",
+  "SEARCHING": "Buscando",
+  "SOMETHING_WENT_WRONG": "¡Algo salió mal!",
+  "LOREM_IPSUM": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+}

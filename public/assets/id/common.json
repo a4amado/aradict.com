@@ -1,0 +1,29 @@
+{
+  "home": "Rumah",
+  "dir": "ltr",
+  "REVIEW_SOUND": "Ulasan Suara",
+  "CONTRIBUTE_WITH_YOUR_VOICE": "Berkontribusi dengan suara Anda",
+  "SEARCH": "Mencari",
+  "ONLY_AR_LETTERS": "Hanya huruf Arab yang diperbolehkan.",
+  "WHAT_IS_ARADICT": "Apa itu Aradict.com?",
+  "TO_USE_ARADICT": "Untuk menggunakan Aradict.com  , ketikkan kata Anda di bilah pencarian di bagian atas",
+
+  "USERNAME": "Nama belakang",
+  "PASSWORD": "Kata sandi",
+  "LOGIN": "Gabung",
+  "PLAY": "Bermain",
+  "REJECT": "Menolak",
+  "APPROVE": "Menyetujui",
+  "NOT_RECORDING_YET": "Belum Merekam",
+
+  "ALREADY_RECORDING": "Sudah Merekam",
+  "NO_THING": "Tidak ada yang bisa diserahkan",
+  "RECORD": "Catatan",
+  "STOP_RECORDING": "Berhenti Merekam",
+  "SUBMIT": "Kirim",
+  "SEARCHING": "Mencari",
+
+  "SOMETHING_WENT_WRONG": "Ada yang salah!",
+
+  "LOREM_IPSUM": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+}

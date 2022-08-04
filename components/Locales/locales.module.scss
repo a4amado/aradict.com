@@ -1,5 +1,11 @@
 .locales {
   position: fixed;
-  left: 0;
-  bottom: 0;
+  left: 10px;
+  bottom: 10px;
+  font-size: 23px;
+  padding: 3px 6px;
+  text-align: center;
+  &:hover {
+    cursor: pointer;
+  }
 }

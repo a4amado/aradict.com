@@ -4,8 +4,11 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import styles from "./Header.module.scss";
 import Logo from "../../resources/abadis.svg";
+import { useTranslation } from "react-i18next";
 
 const Header = ({ userType }) => {
+  // console.log(__dirname, userType);
+  const { t } = useTranslation("common");
   const router = useRouter();
   const [activeMenu, SetActiveMEnu] = useState(false);
 
@@ -33,42 +36,42 @@ const Header = ({ userType }) => {
           <div className={Classes.list}>
             {router.pathname != "/" && (
               <Link href="/">
-                <a>{t["home"]}</a>
+                <a>{t("HOME")}</a>
               </Link>
             )}
             {!userType && (
               <Link href="/login">
-                <a>{t["LOGIN"]}</a>
+                <a>{t("LOGIN")}</a>
               </Link>
             )}
             {userType === "admin" && (
               <>
                 <Link href="/dashboard">
-                  <a>{"Text.activeLanguage.dashboard"}</a>
+                  <a>{t("DASHBOARD")}</a>
                 </Link>
                 <Link href="/sound-reviewer">
-                  <a>{"Text.activeLanguage.reviewSound"}</a>
+                  <a>{t("REVIEW_SOUND")}</a>
                 </Link>
 
                 <Link href="/sound-contributer">
-                  <a>{"Text.activeLanguage.contributeSound"}</a>
+                  <a>{t("CONTRIBUTE_WITH_YOUR_VOICE")}</a>
                 </Link>
               </>
             )}
             {userType === "sound-contributer" && (
               <>
                 <Link href="/sound-contributer">
-                  <a>{"Text.activeLanguage.contributeSound"}</a>
+                  <a>{t("CONTRIBUTE_WITH_YOUR_VOICE")}</a>
                 </Link>
               </>
             )}
             {userType === "sound-reviewer" && (
               <>
                 <Link href="/sound-reviewer">
-                  <a>{"Text.activeLanguage.reviewSound"}</a>
+                  <a>{t("REVIEW_SOUND")}</a>
                 </Link>
                 <Link href="/sound-contributer">
-                  <a>{"Text.activeLanguage.contributeSound"}</a>
+                  <a>{t("CONTRIBUTE_WITH_YOUR_VOICE")}</a>
                 </Link>
               </>
             )}

@@ -22,12 +22,13 @@ a:hover {
 }
 * {
   box-sizing: border-box;
-  font-family: 'bahij';
-  direction: rtl;
+  /* font-family: 'bahij'; */
+
   user-select: none;
   scroll-behavior: smooth;
+  font-family: 'IBM Plex Sans Arabic', sans-serif!important;
+} 
 
-}
 
 
 #__next {

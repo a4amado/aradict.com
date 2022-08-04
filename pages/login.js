@@ -6,11 +6,12 @@ import React from "react";
 import { useAlert } from "react-alert";
 import Header from "../components/Header";
 import styles from "../styles/style.module.scss";
-import TextF from "../text";
+
+import { useTranslation } from "react-i18next";
 
 const Login = ({ userType }) => {
   const router = useRouter();
-  const t = TextF(router.locale);
+  const { t } = useTranslation("common");
   const alert = useAlert();
 
   const [username, setUsername] = React.useState("");
@@ -29,7 +30,7 @@ const Login = ({ userType }) => {
         <Head>Login to Aradict.com</Head>
         <form className={Classes.form} onSubmit={submit}>
           <div className={Classes.formControl}>
-            <label>إسم المستخدم</label>
+            <label>{t("USERNAME")}</label>
             <br />
             <input
               name="ARADICT_USERNAME"
@@ -38,7 +39,7 @@ const Login = ({ userType }) => {
             />
           </div>
           <div className={Classes.formControl}>
-            <label>كلمة السر</label>
+            <label>{t("PASSWORD")}</label>
             <br />
             <input
               type="password"
@@ -48,7 +49,7 @@ const Login = ({ userType }) => {
             />
           </div>
           <div className={Classes.formSubmit}>
-            <button type="submit">تسجيل</button>
+            <button type="submit">{t("LOGIN")}</button>
           </div>
         </form>
       </div>
@@ -64,7 +65,7 @@ const Login = ({ userType }) => {
           username,
           password,
         },
-        url: "/api/login",
+        url: "/api/" + router.locale + "/login",
       });
       router.reload();
     } catch (error) {
@@ -75,17 +76,16 @@ const Login = ({ userType }) => {
 
 export default Login;
 
-export const getServerSideProps = async (ctx) => {
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+export const getServerSideProps = async ({ req, locale }) => {
   return verify(
-    ctx.req.cookies.token || "",
+    req.cookies.token || "",
     process.env?.JWT_SECRET,
-    (err, data) => {
+    async (err, data) => {
       if (err) {
-        const defaultLang = ctx.req.cookies.lang || "";
-
         return {
           props: {
-            defaultLang,
+            ...(await serverSideTranslations(locale, ["common"])),
           },
         };
       }

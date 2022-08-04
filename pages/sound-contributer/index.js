@@ -1,23 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useContext, useState } from "react";
+import React from "react";
 import styles from "../../styles/add-sound.module.scss";
-
 import { useAlert } from "react-alert";
 import { verify } from "jsonwebtoken";
-import { FirstLayer, ThirdLayer } from "../../utils/AuthLayers";
+import { FirstLayer } from "../../utils/AuthLayers";
 import Head from "next/head";
 import Hints from "../../components/Hints";
 import FormData from "form-data";
 import Axios from "axios";
 import Header from "../../components/Header";
-import { MultiLanguageContext } from "../../state/language.context";
-import TextF from "../../text";
-
+import { useRouter } from "next/router";
+import { useTranslation } from "next-i18next";
 let chunks = [];
 
 export default function AddSound({ userType }) {
   const router = useRouter();
-  const t = TextF(router.locale);
+  const { t } = useTranslation("common");
   let mediaStream = React.useRef(null);
   const alert = useAlert();
 
@@ -25,10 +23,15 @@ export default function AddSound({ userType }) {
   const { data, isLoading, isRefetching, error, refetch } = useQuery(
     ["get-word-with-no-sound"],
     () =>
-      fetch(`/api/word/get-word-with-no-sound`).then(async (e) => {
-        const data = await e.json();
-        return data;
-      })
+      fetch(`/api/${router.locale}/word/get-word-with-no-sound`).then(
+        async (e) => {
+          const data = await e.json();
+          return data;
+        }
+      ),
+    {
+      refetchOnWindowFocus: false,
+    }
   );
 
   const showData = !isLoading && !isRefetching && !error && !!data;
@@ -49,10 +52,10 @@ export default function AddSound({ userType }) {
 
   function Recorde() {
     if (isRecordeing) {
-      alert.error(Text.activeLanguage.ALREADY_RECORDING);
+      alert.error(t("ALREADY_RECORDING"));
       return false;
     }
-    alert.show(Text.activeLanguage.RECORD);
+    alert.show(t("RECORD"));
     chunks = [];
     navigator.mediaDevices
       .getUserMedia({ audio: true })
@@ -86,17 +89,17 @@ export default function AddSound({ userType }) {
 
   function Stop() {
     if (!isRecordeing) {
-      alert.show(Text.ativeLanguage.NOT_RECORDING_YET);
+      alert.error(t("NOT_RECORDING_YET"));
       return false;
     } else {
       mediaStream.current.stop();
-      alert.show(Text?.ativeLanguage?.STOP_RECORDING);
+      alert.show(t("STOP_RECORDING"));
     }
   }
 
   function Play() {
     if (chunks.length < 1) {
-      return alert.show(Text.ativeLanguage.NO_THING_TO_PLAY);
+      return alert.error(t("NO_THING"));
     }
     const AudioBlob = new Blob(chunks, { type: "audio/ogg" });
     const AudioBlobURL = URL.createObjectURL(AudioBlob);
@@ -104,16 +107,17 @@ export default function AddSound({ userType }) {
     mySound.play();
   }
   function Submit() {
-    if (chunks.length < 1) {
-      return alert.show(Text.activeLanguage.NO_THING_TO_SUBMIT);
+    if (chunks.length < 1 || !data) {
+      return alert.error(t("NO_THING"));
     }
+
     const blob = new Blob(chunks, { type: "ogg/audio" });
     const Sound = new FormData();
     Sound.append("audio", blob);
     Sound.append("word_id", data[0].word_id);
     Axios({
       method: "POST",
-      url: "/api/sound/add-to-queue",
+      url: "/api/" + router.locale + "/sound/add-to-queue",
       data: Sound,
       headers: {
         "Content-Type": "multipart/form-data",
@@ -152,28 +156,27 @@ export default function AddSound({ userType }) {
     <>
       <Header userType={userType} />
       <div className={Classes.addSoundWrapper}>
-        {console.log(Text)}
         <Head>
-          <title>{Text.activeLanguage.CONTRIBUTE_WITH_YOUR_VOICE}</title>
+          <title>{}</title>
         </Head>
         <Hints>
           <span className={Classes.hint} onClick={Recorde}>
-            \r\ {Text.activeLanguage.RECORD}
+            \r\ {t("RECORD")}
             <span className={Classes.recording}></span>
           </span>
-          <span className={Classes.hint} onClick={Recorde}>
-            \w\ {Text.activeLanguage.STOP_RECORDING}
+          <span className={Classes.hint} onClick={Stop}>
+            \w\ {t("STOP_RECORDING")}
           </span>
 
           <span className={Classes.hint} onClick={Play}>
-            \p\ {Text.activeLanguage.PLAY}
+            \p\ {t("PLAY")}
           </span>
 
-          <span className={Classes.hint}>\s\ {Text.activeLanguage.SUBMIT}</span>
+          <span className={Classes.hint}>\s\ {t("SUBMIT")}</span>
         </Hints>
         <div className={Classes.centerd}>
-          {Loading && Text.activeLanguage.LOOGIN_FOR_WORD + " ...... "}
-          {isError && Text.avtiveLanguage.SOMETHING_WENT_WRONG}
+          {Loading && t("SEARCHING") + " ...... "}
+          {isError && t("SOMETHING_WENT_WRONG")}
           {showData && data[0]?.ar}
         </div>
       </div>
@@ -181,23 +184,28 @@ export default function AddSound({ userType }) {
   );
 }
 
-export const getServerSideProps = async (ctx) => {
-  return verify(ctx.req.cookies.token, process.env.JWT_SECRET, (err, data) => {
-    if (err || !FirstLayer.includes(data.role))
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+
+export const getServerSideProps = async ({ req, locale }) => {
+  return verify(
+    req.cookies.token,
+    process.env.JWT_SECRET,
+    async (err, data) => {
+      if (err || !FirstLayer.includes(data.role))
+        return {
+          redirect: {
+            destination: "/",
+            permanent: false,
+          },
+        };
+      const userType = data?.role || "";
+
       return {
-        redirect: {
-          destination: "/",
-          permanent: false,
+        props: {
+          userType,
+          ...(await serverSideTranslations(locale, ["common"])),
         },
       };
-    const defaultLang = ctx.req.cookies.lang || "";
-    const userType = data?.role || "";
-
-    return {
-      props: {
-        userType,
-        defaultLang,
-      },
-    };
-  });
+    }
+  );
 };

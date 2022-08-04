@@ -1,9 +1,21 @@
+import i18next from "i18next";
 import { Html, Head, Main, NextScript } from "next/document";
 
-export default function Document({}) {
+export default function Document({ __NEXT_DATA__ }) {
   return (
-    <Html>
-      <Head />
+    <Html dir={i18next.dir(__NEXT_DATA__.locale)}>
+      <Head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+
+        {i18next.dir(__NEXT_DATA__.locale) == "ltr" && (
+          <link href="/ltr.css" rel="stylesheet" />
+        )}
+      </Head>
       <body>
         <Main />
         <NextScript />

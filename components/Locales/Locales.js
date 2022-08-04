@@ -1,25 +1,25 @@
-import Link from "next/link";
+import i18next from "i18next";
 import { useRouter } from "next/router";
+import React from "react";
 import styles from "./locales.module.scss";
 const langs = {
-  "en-US": { name: "English" },
-  "ar-EG": { name: "arabic" },
-  "es-ES": { name: "Español" },
-  "nl-NL": { name: "Nederlands" },
-  "id-ID": { name: "Indonesia" },
+  en: { name: " English 🇺🇸 " },
+  ar: { name: " arabic 🇸🇦 " },
+  es: { name: " Español 🇪🇸 " },
+  nl: { name: " Nederlands 🇳🇱 " },
+  id: { name: " Indonesia 🇮🇩 " },
 };
-
-export { langs };
 
 export default function Locales() {
   let { asPath, locale, pathname, query, reload, replace, locales } =
     useRouter();
-  console.log(locales);
   return (
     <select
       className={styles.locales}
       onChange={(e) => {
-        replace({ pathname, query }, asPath, { locale: e.target.value });
+        i18next.changeLanguage(e.target.value).then(() => {
+          replace({ pathname, query }, asPath, { locale: e.target.value });
+        });
       }}
     >
       {locales.map((code) => {
@@ -32,3 +32,4 @@ export default function Locales() {
     </select>
   );
 }
+export { langs };
