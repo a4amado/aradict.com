@@ -38,15 +38,9 @@ Router.post(async (req, res) => {
         '${filename}',
         '${size}'
       );`;
-
-  try {
     const new_sound = await pool.query(Query);
-    console.log(new_sound);
-  } catch (error) {
-    console.error(error);
-  }
 
-  return res.json(req.file);
+  return res.json(new_sound.rows);
 });
 
 export default Router.handler({
@@ -54,7 +48,7 @@ export default Router.handler({
     return res.status(404).send("sssssssss");
   },
   onError: (err, req, res) => {
-    return res.status(500).send(err);
+    return res.status(500).json(err);
   },
 });
 

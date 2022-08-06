@@ -7,7 +7,6 @@ import Logo from "../../resources/abadis.svg";
 import { useTranslation } from "react-i18next";
 
 const Header = ({ userType }) => {
-  // console.log(__dirname, userType);
   const { t } = useTranslation("common");
   const router = useRouter();
   const [activeMenu, SetActiveMEnu] = useState(false);
@@ -34,47 +33,8 @@ const Header = ({ userType }) => {
             </a>
           </Link>
           <div className={Classes.list}>
-            {router.pathname != "/" && (
-              <Link href="/">
-                <a>{t("HOME")}</a>
-              </Link>
-            )}
-            {!userType && (
-              <Link href="/login">
-                <a>{t("LOGIN")}</a>
-              </Link>
-            )}
-            {userType === "admin" && (
-              <>
-                <Link href="/dashboard">
-                  <a>{t("DASHBOARD")}</a>
-                </Link>
-                <Link href="/sound-reviewer">
-                  <a>{t("REVIEW_SOUND")}</a>
-                </Link>
-
-                <Link href="/sound-contributer">
-                  <a>{t("CONTRIBUTE_WITH_YOUR_VOICE")}</a>
-                </Link>
-              </>
-            )}
-            {userType === "sound-contributer" && (
-              <>
-                <Link href="/sound-contributer">
-                  <a>{t("CONTRIBUTE_WITH_YOUR_VOICE")}</a>
-                </Link>
-              </>
-            )}
-            {userType === "sound-reviewer" && (
-              <>
-                <Link href="/sound-reviewer">
-                  <a>{t("REVIEW_SOUND")}</a>
-                </Link>
-                <Link href="/sound-contributer">
-                  <a>{t("CONTRIBUTE_WITH_YOUR_VOICE")}</a>
-                </Link>
-              </>
-            )}
+            <HomeBtn />
+            <HeaderList userType={userType} />
           </div>
         </div>
 
@@ -84,20 +44,73 @@ const Header = ({ userType }) => {
         >
           Menu
         </button>
-        {/*
-         a failed attemped to put an Islamic patterns down the header
-        */}
-        {/* <div
-          style={{
-            height: "10px",
-            backgroundImage:
-              "url(SeekPng.com_futuristic-border-png_1855342.png)",
-            width: "100%",
-          }}
-        ></div> */}
       </div>
     </>
   );
 };
 
 export default Header;
+
+function HomeBtn() {
+  const { t } = useTranslation("common");
+  const { pathname } = useRouter();
+  // Only show this btn if pathname was not "/"
+  if (pathname === "/") return false;
+  return (
+    <Link href="/">
+      <a>{t("HOME")}</a>
+    </Link>
+  );
+}
+
+function HeaderList({ userType }) {
+  const { t } = useTranslation("common");
+  // if usernot auth show login btn
+  if (!userType) {
+    return <LoginBtn/>;
+  }
+
+  if (userType === "admin") {
+    return (
+      <>
+        <Link href="/sound-reviewer">
+          <a>{t("REVIEW_SOUND")}</a>
+        </Link>
+        <Link href="/sound-contributer">
+          <a>{t("CONTRIBUTE_WITH_YOUR_VOICE")}</a>
+        </Link>
+      </>
+    );
+  }
+
+  if (userType === "sound-contributer") {
+    return (
+      <Link href="/sound-contributer">
+        <a>{t("CONTRIBUTE_WITH_YOUR_VOICE")}</a>
+      </Link>
+    );
+  }
+
+  
+  if (userType === "sound-reviewer") {
+    return (
+      <>
+        <Link href="/sound-reviewer">
+          <a>{t("REVIEW_SOUND")}</a>
+        </Link>
+        <Link href="/sound-contributer">
+          <a>{t("CONTRIBUTE_WITH_YOUR_VOICE")}</a>
+        </Link>
+      </>
+    );
+  }
+  return false;
+}
+
+
+function LoginBtn() {
+  const { t }  = useTranslation()
+  return <Link href="/login">
+  <a>{t("LOGIN")}</a>
+</Link>
+}

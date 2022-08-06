@@ -9,7 +9,6 @@ import Logo from "../resources/abadis.svg";
 import { useRouter } from "next/router";
 import Header from "../components/Header";
 import { useTranslation } from "next-i18next";
-import Autocomplete from "react-autocomplete";
 
 function Home({ userType }) {
   const router = useRouter();
@@ -56,7 +55,7 @@ function Home({ userType }) {
             </div>
             <div className={Classes.searchWrapper}>
               <span className={Classes.searchIcon}>{t("SEARCH")}</span>
-              <Autocomplete
+              <input
                 className={Classes.searchFeild}
                 value={q || ""}
                 ref={search}
@@ -79,7 +78,6 @@ function Home({ userType }) {
                   }
                 }}
               />
-              <input />
             </div>
           </div>
           <span className={Classes.goDown}>

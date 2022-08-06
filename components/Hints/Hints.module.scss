@@ -1,8 +1,7 @@
 .hints {
   display: flex;
-  max-width: 400px;
-  width: fit-content;
-  margin-right: auto;
-  margin-left: auto;
-  // direction: ltr !important;
+  max-width: 800px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  margin: 0 auto;
 }

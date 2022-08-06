@@ -17,12 +17,26 @@ Router.use(async (req, res, next) => {
     .catch((errors) => res.status(403).json(errors));
 });
 
-Router.post((req, res) => {
+
+Router.post(async (req, res) => {
+  const { username, password } = req.body;
+
+  const Query = `
+  
+  SELECT username, _role as role
+  FROM users
+    WHERE username  =  '${username}';
+  `
+
+  const user = await pool.query(Query);
+  if (user.rowCount === 0) {
+    throw "username or password is wrong";
+  }
+ 
   const JWT_HASH = sign(
     {
-      sss: 5555555,
-      role: "admin",
-      user_id: "ea3f5633-59bf-43db-8465-d2cbbad5f093",
+      role: user.rows[0].role,
+      user_id: user.rows[0].user_id,
     },
     process.env.JWT_SECRET,
     {

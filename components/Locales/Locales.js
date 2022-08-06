@@ -11,7 +11,7 @@ const langs = {
 };
 
 export default function Locales() {
-  let { asPath, locale, pathname, query, reload, replace, locales } =
+  let { asPath, locale, pathname, query, replace, locales } =
     useRouter();
   return (
     <select
@@ -24,7 +24,7 @@ export default function Locales() {
     >
       {locales.map((code) => {
         return (
-          <option selected={code == locale} key={code} value={code}>
+          <option defaultValue={locale} selected={locale === code} key={code} value={code}>
             {langs[code].name}
           </option>
         );

@@ -12,7 +12,6 @@ import { useTranslation } from "react-i18next";
 const Login = ({ userType }) => {
   const router = useRouter();
   const { t } = useTranslation("common");
-  const alert = useAlert();
 
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -25,7 +24,6 @@ const Login = ({ userType }) => {
   return (
     <>
       <Header userType={userType} />
-
       <div className={Classes.pageWrapper}>
         <Head>Login to Aradict.com</Head>
         <form className={Classes.form} onSubmit={submit}>
@@ -67,7 +65,7 @@ const Login = ({ userType }) => {
         },
         url: "/api/" + router.locale + "/login",
       });
-      router.reload();
+      router.reload()
     } catch (error) {
       console.log(error);
     }
@@ -91,7 +89,7 @@ export const getServerSideProps = async ({ req, locale }) => {
       }
       return {
         redirect: {
-          destination: "/",
+          destination: "/" + locale,
           permanent: false,
         },
       };

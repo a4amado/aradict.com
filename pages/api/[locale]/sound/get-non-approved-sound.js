@@ -19,18 +19,23 @@ Router.get(async (req, res) => {
             FETCH FIRST ROW ONLY;
         `;
     const Non_approved_word = await pool.query(Query);
+    console.log(Non_approved_word);
     if (Non_approved_word.rowCount < 1) {
       throw "DIDN'T Find any thing";
     }
     return res.json(Non_approved_word.rows);
   } catch (error) {
-    return res.json(error);
+    console.log(error);
+    return res.status(500).json(error);
   }
 });
 
 export default Router.handler({
   onNoMatch: (req, res, next) => {
-    return res.status(404).send("sssssssss");
+     res.status(404);
+     res.json({
+      msg: "NOT_SOUND"
+     })
   },
   onError: (req, res, next) => {
     return res.status(500).send("sssssssss");

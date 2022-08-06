@@ -2,7 +2,7 @@ import * as multer from "multer";
 import { createRouter } from "next-connect";
 import { resolve } from "path";
 import { v4 } from "uuid";
-import { ThirdLayerAuth } from "../../../../utils/Auth";
+import { SecondLayerAuth } from "../../../../utils/Auth";
 import pool from "../../../../DB";
 const Router = createRouter();
 
@@ -18,8 +18,7 @@ const upload = multer({
   storage,
 });
 
-Router.use(...ThirdLayerAuth);
-Router.use(upload.single("audio"));
+Router.use(...SecondLayerAuth);
 
 Router.get(async (req, res) => {
   const Query = `

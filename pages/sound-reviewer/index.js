@@ -32,6 +32,8 @@ const VoiceReviewer = ({ userType }) => {
       refetchOnWindowFocus: false,
     }
   );
+
+  console.log(data);
   const showData = !isLoading && !isRefetching && !error && !!data;
   const Loading = isLoading || isRefetching;
   const isError = !isLoading && !isRefetching && error && !data;
