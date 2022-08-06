@@ -18,10 +18,11 @@
   padding: 5px 10px;
   border: 1px solid rgba(#000, 0.6);
   border-radius: 5px;
-  // direction: ltr;
+  
   white-space: nowrap;
   position: relative;
-  // direction: ltr !important;
+  text-overflow: ellipsis;
+  overflow: hidden;
   background-color: aqua;
 }
 .centerd {
@@ -55,7 +56,6 @@
 .buttons {
   position: fixed;
   bottom: 15px;
-  // direction: ltr;
   width: fit-content;
   display: flex;
   flex-wrap: nowrap;

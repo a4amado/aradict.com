@@ -65,7 +65,7 @@ const Login = ({ userType }) => {
         },
         url: "/api/" + router.locale + "/login",
       });
-      router.reload()
+      router.reload();
     } catch (error) {
       console.log(error);
     }
@@ -76,23 +76,24 @@ export default Login;
 
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 export const getServerSideProps = async ({ req, locale }) => {
-  return verify(
-    req.cookies.token || "",
-    process.env?.JWT_SECRET,
-    async (err, data) => {
-      if (err) {
-        return {
-          props: {
-            ...(await serverSideTranslations(locale, ["common"])),
-          },
-        };
-      }
-      return {
-        redirect: {
-          destination: "/" + locale,
-          permanent: false,
-        },
-      };
-    }
-  );
+  const TOEKN = req.cookies.token || "";
+  const JWT_SECRET = process.env?.JWT_SECRET;
+  const data = verify(TOEKN, JWT_SECRET);
+
+  if (data) {
+    return {
+      redirect: {
+        destination: "/" + locale,
+        permanent: false,
+      },
+    };
+  }
+
+  const transition = await serverSideTranslations(locale, ["common"]);
+
+  return {
+    props: {
+      ...transition,
+    },
+  };
 };

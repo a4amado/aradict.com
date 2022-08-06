@@ -12,6 +12,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 
+
 const VoiceReviewer = ({ userType }) => {
   const [isPlaying, setIsPlaying] = React.useState(false);
   const router = useRouter();
@@ -33,9 +34,8 @@ const VoiceReviewer = ({ userType }) => {
     }
   );
 
-  console.log(data);
   const showData = !isLoading && !isRefetching && !error && !!data;
-  const Loading = isLoading || isRefetching;
+  const Loading = isLoading || (isRefetching && !error && !data);
   const isError = !isLoading && !isRefetching && error && !data;
 
   const Classes = {
@@ -113,13 +113,13 @@ const VoiceReviewer = ({ userType }) => {
             <div className={Classes.word}>
               {Loading && t("SEARCHING") + "......"}
               <br />
-              {!!data && data[0].ar}
+              {showData && data[0].ar}
+              <br />
+              {isError && (
+                <div className={Classes.error}>{t("SOMETHING_WENT_WRONG")}</div>
+              )}
             </div>
           </>
-
-          {isError && (
-            <div className={Classes.error}>{JSON.stringify(error.code)}</div>
-          )}
         </div>
       </div>
     </>
@@ -143,17 +143,14 @@ const VoiceReviewer = ({ userType }) => {
   }
 
   async function reject() {
-    if (!data) {
-      return false;
-    }
+    if (!data) return false;
+
     axios({
       method: "POST",
       data: { sound_id: data[0].sound_id },
       url: "/api/" + router.locale + "/sound/reject",
     })
-      .then((e) => {
-        console.log(e);
-      })
+      .then((e) => {})
       .catch((e) => {
         console.log(e);
       });
@@ -162,28 +159,28 @@ const VoiceReviewer = ({ userType }) => {
 
 export default VoiceReviewer;
 
+  
+
+
 export const getServerSideProps = async ({ req, locale }) => {
-  return verify(
-    req.cookies.token,
-    process.env.JWT_SECRET,
-    async (err, data) => {
-      if (err || !SecondLayer.includes(data.role)) {
-        return {
-          redirect: {
-            destination: "/",
-            permanent: false,
-          },
-        };
-      }
+  const TOKEN = req.cookies.token;
+  const JWT_SECRET = process.env.JWT_SECRET;
+  
+  const data = verify(TOKEN, JWT_SECRET);
+  if (!data || !SecondLayer.includes(data.role))
+    return {
+      redirect: {
+        destination: "/" + locale,
+        permanent: false,
+      },
+    };
 
-      const userType = data?.role || "";
-
-      return {
-        props: {
-          userType,
-          ...(await serverSideTranslations(locale, ["common"])),
-        },
-      };
+  const userType = data?.role || "";
+  const translation = await serverSideTranslations(locale, ["common"]);
+  return {
+    props: {
+      ...translation,
+      userType
     }
-  );
+  }
 };

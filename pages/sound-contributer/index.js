@@ -187,25 +187,24 @@ export default function AddSound({ userType }) {
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export const getServerSideProps = async ({ req, locale }) => {
-  return verify(
-    req.cookies.token,
-    process.env.JWT_SECRET,
-    async (err, data) => {
-      if (err || !FirstLayer.includes(data.role))
-        return {
-          redirect: {
-            destination: "/",
-            permanent: false,
-          },
-        };
-      const userType = data?.role || "";
+  const TOKEN = req.cookies.token;
+  const JWT_SECRET = process.env.JWT_SECRET;
+  
+  const data = verify(TOKEN, JWT_SECRET);
+  if (!data || !FirstLayer.includes(data.role))
+    return {
+      redirect: {
+        destination: "/" + locale,
+        permanent: false,
+      },
+    };
 
-      return {
-        props: {
-          userType,
-          ...(await serverSideTranslations(locale, ["common"])),
-        },
-      };
+  const userType = data?.role || "";
+  const translation = await serverSideTranslations(locale, ["common"]);
+  return {
+    props: {
+      ...translation,
+      userType
     }
-  );
+  }
 };

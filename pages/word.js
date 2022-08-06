@@ -19,13 +19,15 @@ export default function AddSound({ userType }) {
   const {
     query: { q },
   } = useRouter();
+
+  const isArabic = q.isArabic(true)
+
+  console.log(isArabic);
+
   const { isLoading, error, data } = useQuery(["getWord"], () =>
     fetch("/api/hello").then((res) => res.json())
   );
 
-  // if (isLoading) return "Loading...";
-
-  // if (error) return "An error has occurred: " + error.message;
   return (
     <>
       <Header userType={userType} />
@@ -35,13 +37,19 @@ export default function AddSound({ userType }) {
             <div className={Classes.word} key={id}>
               <span className={Classes.item}>كلمة</span>
               <span className={Classes.item}>Word</span>
-              <span className={Classes.item}>
-                <Image src="/speaker.png" width={30} height={30} />
-              </span>
+              <span className={Classes.item}>Word</span>
             </div>
           );
         })}
       </div>
     </>
   );
+}
+
+
+
+export async function getServerSideProps() {
+  return {
+    props: {},
+  };
 }

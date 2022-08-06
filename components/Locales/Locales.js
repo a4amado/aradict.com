@@ -16,15 +16,17 @@ export default function Locales() {
   return (
     <select
       className={styles.locales}
+      defaultValue={locale}
       onChange={(e) => {
         i18next.changeLanguage(e.target.value).then(() => {
           replace({ pathname, query }, asPath, { locale: e.target.value });
         });
       }}
+      
     >
       {locales.map((code) => {
         return (
-          <option defaultValue={locale} selected={locale === code} key={code} value={code}>
+          <option key={code} value={code}>
             {langs[code].name}
           </option>
         );

@@ -9,6 +9,7 @@ import Logo from "../resources/abadis.svg";
 import { useRouter } from "next/router";
 import Header from "../components/Header";
 import { useTranslation } from "next-i18next";
+import Locales from "../components/Locales";
 
 function Home({ userType }) {
   const router = useRouter();
@@ -150,22 +151,13 @@ function Home({ userType }) {
 
 export default Home;
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import Autocomplete from "react-autocomplete";
 
-export const getServerSideProps = async ({ req, locale }) => {
-  console.log();
-  return verify(
-    req.cookies.token || "",
-    process.env.JWT_SECRET,
-    async (err, data) => {
-      const userType = data?.role || "";
-      return {
-        props: {
-          userType,
-          ...(await serverSideTranslations(locale, ["common"])),
-          dir: locale,
-        },
-      };
-    }
-  );
-};
+
+export async function getServerSideProps({ req, locale }) {
+  const TOKEN = req.cookies?.token || "";
+  const JWT_SECRET = process.env.JWT_SECRET;
+  const data = verify(TOKEN, JWT_SECRET);
+  const userType = data?.role || "";
+  const translation = await serverSideTranslations(locale, ["common"]);
+  return { props: { userType, ...translation } };
+}

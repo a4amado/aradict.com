@@ -19,14 +19,12 @@ Router.get(async (req, res) => {
             FETCH FIRST ROW ONLY;
         `;
     const Non_approved_word = await pool.query(Query);
-    console.log(Non_approved_word);
-    if (Non_approved_word.rowCount < 1) {
+     if (Non_approved_word.rowCount < 1) {
       throw "DIDN'T Find any thing";
     }
     return res.json(Non_approved_word.rows);
   } catch (error) {
-    console.log(error);
-    return res.status(500).json(error);
+     return res.status(500).json(error);
   }
 });
 

@@ -10,9 +10,17 @@ import { Router } from "next/router";
 import Locales from "../components/Locales";
 import i18next from "i18next";
 
-String.prototype.isArabic = function () {
+String.prototype.isArabic = function (word) {
   let AR =
     /^([\u0600-\u06ff]|[\u0750-\u077f]|[\ufb50-\ufbc1]|[\ufbd3-\ufd3f]|[\ufd50-\ufd8f]|[\ufd92-\ufdc7]|[\ufe70-\ufefc]|[\ufdf0-\ufdfd])*$/g;
+
+  if (word) {
+    return !this
+      .split("")
+      .map((char) => (char.isArabic() ? "" : "N"))
+      .join("")
+      .toString();
+  }
 
   return this.match(AR);
 };

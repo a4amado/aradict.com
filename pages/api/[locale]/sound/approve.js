@@ -8,8 +8,7 @@ const Router = createRouter();
 Router.use(...SecondLayerAuth);
 
 Router.post(async (req, res) => {
-  console.log(req.body);
-  const { sound_id } = req.body;
+   const { sound_id } = req.body;
 
   const Query = `
     UPDATE sounds
