@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import styles from "../../styles/add-sound.module.scss";
 import { useAlert } from "react-alert";
@@ -11,32 +10,87 @@ import Axios from "axios";
 import Header from "../../components/Header";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
+import { msg } from "../../styles/Message.module.scss";
+import Spinner from "../../components/Spinner";
+
 let chunks = [];
+function FreeChunks() {
+  chunks = [];
+}
 
 export default function AddSound({ userType }) {
-  const router = useRouter();
-  const { t } = useTranslation("common");
-  let mediaStream = React.useRef(null);
-  const alert = useAlert();
-
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [LoadingSuccess, setLoadingSuccess] = React.useState(false);
+  const [LoadingFails, setLoadingFails] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [SubmittingSuccess, setSubmittingSuccess] = React.useState(false);
+  const [SubmittingFails, setSubmittingFails] = React.useState(false);
   const [isRecordeing, setIsRecording] = React.useState(false);
-  const { data, isLoading, isRefetching, error, refetch } = useQuery(
-    ["get-word-with-no-sound"],
-    () =>
-      fetch(`/api/${router.locale}/word/get-word-with-no-sound`).then(
-        async (e) => {
-          const data = await e.json();
-          return data;
-        }
-      ),
-    {
-      refetchOnWindowFocus: false,
-    }
-  );
+  const [data, setData] = React.useState([]);
+  const disableShortcuts =
+    isLoading || isSubmitting || data.length === 0;
 
-  const showData = !isLoading && !isRefetching && !error && !!data;
-  const Loading = isLoading || isRefetching;
-  const isError = !isLoading && !isRefetching && error && !data;
+  const alert = useAlert();
+  const router = useRouter();
+  const { t } = useTranslation();
+  let mediaStream = React.useRef(null);
+  React.useEffect(() => {
+    fetcher();
+  }, []);
+
+  function ToogleLoading(status) {
+    setIsLoading(status === "show" ? true : false);
+    setLoadingSuccess(false);
+    setLoadingFails(false);
+    setIsSubmitting(false);
+    setSubmittingSuccess(false);
+    setSubmittingFails(false);
+  }
+
+  function ToogleLoadingSuccess(status) {
+    setIsLoading(false);
+    setLoadingSuccess(status === "show" ? true : false);
+    setLoadingFails(false);
+    setIsSubmitting(false);
+    setSubmittingSuccess(false);
+    setSubmittingFails(false);
+  }
+
+  function ToogleLoadingFails(status) {
+    setIsLoading(false);
+    setLoadingSuccess(false);
+    setLoadingFails(status === "show" ? true : false);
+    setIsSubmitting(false);
+    setSubmittingSuccess(false);
+    setSubmittingFails(false);
+  }
+
+  function ToogleIsSubmitting(status) {
+    setIsLoading(false);
+    setLoadingSuccess(false);
+    setLoadingFails(false);
+    setIsSubmitting(status === "show" ? true : false);
+    setSubmittingSuccess(false);
+    setSubmittingFails(false);
+  }
+
+  function ToogleSubmittingSuccess(status) {
+    setIsLoading(false);
+    setLoadingSuccess(false);
+    setLoadingFails(false);
+    setIsSubmitting(false);
+    setSubmittingSuccess(status === "show" ? true : false);
+    setSubmittingFails(false);
+  }
+
+  function ToogleSubmittingFails(status) {
+    setIsLoading(false);
+    setLoadingSuccess(false);
+    setLoadingFails(false);
+    setIsSubmitting(false);
+    setSubmittingSuccess(false);
+    setSubmittingFails(status === "show" ? true : false);
+  }
 
   const Classes = {
     addSoundWrapper: styles.addSoundWrapper,
@@ -50,13 +104,120 @@ export default function AddSound({ userType }) {
     hint: styles.hint,
   };
 
+  // Initalize shortcuts
+  React.useEffect(() => {
+    function handler(e) {
+      
+      switch (e.code) {
+        case "KeyF":
+          fetcher();
+          break;
+
+        default:
+          break;
+      }
+      // Disable shortcuts while submitting or loading
+      if (disableShortcuts) return false;
+      switch (e.code) {
+        case "KeyR":
+          Recorde();
+          break;
+        case "KeyW":
+          Stop();
+          break;
+        case "KeyS":
+          Submit();
+          break;
+        case "KeyP":
+          Play();
+          break;
+        case "KeyC":
+          resetRecorded();
+          break;
+        default:
+          break;
+      }
+    }
+
+    document.addEventListener("keyup", handler);
+    return () => document.removeEventListener("keyup", handler);
+  });
+
+  return (
+    <>
+      <Header userType={userType} />
+      <div className={Classes.addSoundWrapper}>
+        <Head>
+          <title>{}</title>
+        </Head>
+        <Hints>
+          <button
+            disabled={disableShortcuts}
+            className={Classes.hint}
+            onClick={Recorde}
+          >
+            \r\ {t("RECORD")}
+            <span className={Classes.recording}></span>
+          </button>
+          <button
+            disabled={disableShortcuts}
+            className={Classes.hint}
+            onClick={Stop}
+          >
+            \w\ {t("STOP_RECORDING")}
+          </button>
+          <button
+            disabled={disableShortcuts}
+            className={Classes.hint}
+            onClick={Play}
+          >
+            \p\ {t("PLAY")}
+          </button>
+          <button
+            disabled={disableShortcuts}
+            className={Classes.hint}
+            onClick={fetcher}
+          >
+            \f\ {t("Fetch")}
+          </button>
+          <button
+            disabled={disableShortcuts}
+            className={Classes.hint}
+            onClick={resetRecorded}
+          >
+            \q\ {t("RESET")}
+          </button>
+
+          <button disabled={disableShortcuts} className={Classes.hint}>
+            \s\ {t("SUBMIT")}
+          </button>
+        </Hints>
+        <div className={Classes.centerd}>
+          {isLoading && <div className={msg}><Spinner/></div>}
+
+          {LoadingSuccess && data[0]?.ar}
+
+          {LoadingFails && <div className={msg}>Something went wrong</div>}
+          {isSubmitting && <div className={msg}><Spinner/> </div>}
+          {SubmittingSuccess && (
+            <div className={msg} onClick={fetcher}>
+              <Spinner/>
+              {/* Success!!, To Fetch a newWord press /f/ or client here */}
+            </div>
+          )}
+          {SubmittingFails && "Something went wrong"}
+        </div>
+      </div>
+    </>
+  );
+
   function Recorde() {
     if (isRecordeing) {
       alert.error(t("ALREADY_RECORDING"));
       return false;
     }
     alert.show(t("RECORD"));
-    chunks = [];
+    FreeChunks();
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((e) => {
@@ -105,106 +266,82 @@ export default function AddSound({ userType }) {
     const AudioBlobURL = URL.createObjectURL(AudioBlob);
     let mySound = new Audio(AudioBlobURL);
     mySound.play();
+    return;
   }
+
+  async function fetcher() {
+    ToogleLoading("show");
+    setData([]);
+    return Axios({
+      mathod: "GET",
+      url: `/api/word/get-word-with-no-sound`,
+    })
+      .then((e) => {
+        setData(e.data);
+        ToogleLoadingSuccess("show");
+      })
+      .catch((err) => {
+        ToogleLoadingFails("show");
+      });
+  }
+
   function Submit() {
     if (chunks.length < 1 || !data) {
       return alert.error(t("NO_THING"));
     }
 
+    ToogleIsSubmitting("show");
     const blob = new Blob(chunks, { type: "ogg/audio" });
     const Sound = new FormData();
     Sound.append("audio", blob);
     Sound.append("word_id", data[0].word_id);
     Axios({
       method: "POST",
-      url: "/api/" + router.locale + "/sound/add-to-queue",
+      url: "/api/sound/add-to-queue",
       data: Sound,
       headers: {
         "Content-Type": "multipart/form-data",
       },
     })
-      .then((e) => {})
-      .catch((e) => {});
+      .then((e) => {
+        alert.success("SUBMITTED");
+
+        setTimeout(() => {
+          ToogleLoading("show");
+          setTimeout(() => {
+            fetcher();
+          }, 500);
+        }, 500);
+      })
+      .catch((e) => {
+        ToogleLoadingFails("show");
+      });
   }
 
-  React.useEffect(() => {
-    function handler(e) {
-      switch (e.code) {
-        case "KeyR":
-          Recorde();
-          break;
-        case "KeyW":
-          Stop();
-          break;
-        case "KeyS":
-          Submit();
-          break;
-        case "KeyP":
-          Play();
-          break;
-
-        default:
-          break;
-      }
-    }
-
-    document.addEventListener("keyup", handler);
-    return () => document.removeEventListener("keyup", handler);
-  });
-
-  return (
-    <>
-      <Header userType={userType} />
-      <div className={Classes.addSoundWrapper}>
-        <Head>
-          <title>{}</title>
-        </Head>
-        <Hints>
-          <span className={Classes.hint} onClick={Recorde}>
-            \r\ {t("RECORD")}
-            <span className={Classes.recording}></span>
-          </span>
-          <span className={Classes.hint} onClick={Stop}>
-            \w\ {t("STOP_RECORDING")}
-          </span>
-
-          <span className={Classes.hint} onClick={Play}>
-            \p\ {t("PLAY")}
-          </span>
-
-          <span className={Classes.hint}>\s\ {t("SUBMIT")}</span>
-        </Hints>
-        <div className={Classes.centerd}>
-          {Loading && t("SEARCHING") + " ...... "}
-          {isError && t("SOMETHING_WENT_WRONG")}
-          {showData && data[0]?.ar}
-        </div>
-      </div>
-    </>
-  );
+  function resetRecorded() {
+    console.log("Reset");
+    FreeChunks();
+    console.log(chunks);
+    mediaStream.current = null;
+  }
 }
 
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-
+import Redirect from "../../utils/redirect";
+ 
 export const getServerSideProps = async ({ req, locale }) => {
-  const TOKEN = req.cookies.token;
+  const TOKEN = req.cookies.token || "";
   const JWT_SECRET = process.env.JWT_SECRET;
-  
-  const data = verify(TOKEN, JWT_SECRET);
-  if (!data || !FirstLayer.includes(data.role))
-    return {
-      redirect: {
-        destination: "/" + locale,
-        permanent: false,
-      },
-    };
+
+  const data = verify(TOKEN, JWT_SECRET, (err, data) => (!err ? data : false));
+  if (!data || !FirstLayer.includes(data.role)) return Redirect("/", false);
 
   const userType = data?.role || "";
   const translation = await serverSideTranslations(locale, ["common"]);
   return {
     props: {
       ...translation,
-      userType
-    }
-  }
+      userType,
+    },
+  };
 };

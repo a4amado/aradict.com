@@ -156,7 +156,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 export async function getServerSideProps({ req, locale }) {
   const TOKEN = req.cookies?.token || "";
   const JWT_SECRET = process.env.JWT_SECRET;
-  const data = verify(TOKEN, JWT_SECRET);
+  let data = verify(TOKEN, JWT_SECRET, (err, data) => !err ? data : false);
   const userType = data?.role || "";
   const translation = await serverSideTranslations(locale, ["common"]);
   return { props: { userType, ...translation } };

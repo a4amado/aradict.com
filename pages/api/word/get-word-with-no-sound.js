@@ -2,8 +2,9 @@ import * as multer from "multer";
 import { createRouter } from "next-connect";
 import { resolve } from "path";
 import { v4 } from "uuid";
-import { SecondLayerAuth } from "../../../../utils/Auth";
-import pool from "../../../../DB";
+import pool from "../../../DB";
+import { SecondLayerAuth } from "../../../utils/Auth";
+
 const Router = createRouter();
 
 const storage = multer.diskStorage({
@@ -20,7 +21,7 @@ const upload = multer({
 
 Router.use(...SecondLayerAuth);
 
-Router.get(async (req, res) => {
+Router.get(async (req, res, next) => {
   const Query = `
     SELECT w.ar as ar, w.word_id, w.en as en
     FROM words as w
@@ -30,15 +31,15 @@ Router.get(async (req, res) => {
     FETCH FIRST ROW ONLY;
   `;
 
-  try {
-    const sound = await pool.query(Query);
-    console.log(sound);
-    return res.json(sound.rows);
-  } catch (error) {
-    console.error(error);
-  }
+  const sound = await pool.query(Query);
+    
+    if (sound.rowCount == 0) {
+      return res.status(404).json("Resource not found")
+    }
 
-  return res.json(req.file);
+
+
+  return res.json(sound.rows);
 });
 
 export default Router.handler({
@@ -46,7 +47,7 @@ export default Router.handler({
     return res.status(404).send("sssssssss");
   },
   onError: (err, req, res) => {
-    return res.status(500).send(err);
+    return res.status(500).json(err);
   },
 });
 

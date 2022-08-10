@@ -1,9 +1,8 @@
-import { serialize } from "cookie";
-import { sign } from "jsonwebtoken";
 import { createRouter } from "next-connect";
-import * as Yup from "yup";
-import pool from "../../../../DB";
-import { SecondLayerAuth } from "../../../../utils/Auth";
+import pool from "../../../DB";
+import { SecondLayerAuth } from "../../../utils/Auth";
+
+
 
 const Router = createRouter();
 Router.use(...SecondLayerAuth);
@@ -15,7 +14,10 @@ Router.get(async (req, res) => {
             FROM sounds as S
             LEFT JOIN words as W
               ON S.word_id = W.word_id
-            WHERE S.approved = false
+            WHERE 
+                  S.approved = false
+                  AND 
+                  S.rejected = false
             FETCH FIRST ROW ONLY;
         `;
     const Non_approved_word = await pool.query(Query);

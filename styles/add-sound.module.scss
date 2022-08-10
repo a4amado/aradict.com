@@ -27,11 +27,19 @@
 }
 .centerd {
   position: absolute;
-  max-width: 600px;
+  height: 100px;
+  max-width: 400px;
+  width: 100%;
   top: 40%;
   left: 50%;
   transform: translate(-50%);
-  font-size: xxx-large;
+  font-size: medium;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: aliceblue;
+
 }
 
 .recording {

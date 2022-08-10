@@ -1,7 +1,6 @@
 import { createRouter } from "next-connect";
-
-import { SecondLayerAuth } from "../../../../utils/Auth";
-import pool from "../../../../DB";
+import pool from "../../../DB";
+import { SecondLayerAuth } from "../../../utils/Auth";
 
 const Router = createRouter();
 
@@ -12,7 +11,7 @@ Router.post(async (req, res) => {
 
   const Query = `
     UPDATE sounds
-      SET approved = true 
+      SET rejected = true 
     WHERE sound_id = '${sound_id}'
     RETURNING sound_id;
     `;
@@ -27,8 +26,8 @@ Router.post(async (req, res) => {
     })
     .catch((error) => {
       console.log(error);
-      res.statusCode(500);
-      res.send(error);
+      res.status(500)
+      return res.json(error);
     });
 });
 

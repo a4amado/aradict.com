@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import styles from "./Header.module.scss";
 import Logo from "../../resources/abadis.svg";
 import { useTranslation } from "react-i18next";
+import { deleteCookie, removeCookies } from "cookies-next";
 
 const Header = ({ userType }) => {
   const { t } = useTranslation("common");
@@ -33,8 +34,8 @@ const Header = ({ userType }) => {
             </a>
           </Link>
           <div className={Classes.list}>
-            <HomeBtn />
-            <HeaderList userType={userType} />
+             <HeaderList userType={userType} />
+             {userType && <Logout />}
           </div>
         </div>
 
@@ -67,7 +68,7 @@ function HeaderList({ userType }) {
   const { t } = useTranslation("common");
   // if usernot auth show login btn
   if (!userType) {
-    return <LoginBtn/>;
+    return <LoginBtn />;
   }
 
   if (userType === "admin") {
@@ -91,7 +92,6 @@ function HeaderList({ userType }) {
     );
   }
 
-  
   if (userType === "sound-reviewer") {
     return (
       <>
@@ -107,10 +107,23 @@ function HeaderList({ userType }) {
   return false;
 }
 
-
 function LoginBtn() {
-  const { t }  = useTranslation()
-  return <Link href="/login">
-  <a>{t("LOGIN")}</a>
-</Link>
+  const { t } = useTranslation();
+  return (
+    <Link href="/login">
+      <a>{t("LOGIN")}</a>
+    </Link>
+  );
+}
+
+function Logout() {
+  
+  const router = useRouter();
+  
+  const { t } = useTranslation();
+  return (
+    <Link href={`/api/logout`}>
+       <a>{t("LOGOUT")}</a>
+    </Link>
+  );
 }

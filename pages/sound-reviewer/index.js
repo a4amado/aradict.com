@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { verify } from "jsonwebtoken";
 import Head from "next/head";
 import React from "react";
@@ -11,32 +10,105 @@ import axios from "axios";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
-
+import Redirect from "../../utils/redirect";
+import Spinner from "../../components/Spinner";
+import { msg } from "../../styles/Message.module.scss";
+import { useAlert } from "react-alert";
 
 const VoiceReviewer = ({ userType }) => {
-  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [LoadingSuccess, setLoadingSuccess] = React.useState(false);
+  const [LoadingFails, setLoadingFails] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [SubmittingSuccess, setSubmittingSuccess] = React.useState(false);
+  const [SubmittingFails, setSubmittingFails] = React.useState(false);
+
+  const [data, setData] = React.useState([]);
+  const disableShortcuts = isLoading || isSubmitting || data.length === 0;
+
+  const alert = useAlert();
+  let soundRef = React.useRef(null);
+  React.useEffect(() => {
+    fetcher();
+  }, []);
+
+  function ToogleLoading(status) {
+    setIsLoading(status === "show" ? true : false);
+    setLoadingSuccess(false);
+    setLoadingFails(false);
+    setIsSubmitting(false);
+    setSubmittingSuccess(false);
+    setSubmittingFails(false);
+  }
+
+  function ToogleLoadingSuccess(status) {
+    setIsLoading(false);
+    setLoadingSuccess(status === "show" ? true : false);
+    setLoadingFails(false);
+    setIsSubmitting(false);
+    setSubmittingSuccess(false);
+    setSubmittingFails(false);
+  }
+
+  function ToogleLoadingFails(status) {
+    setIsLoading(false);
+    setLoadingSuccess(false);
+    setLoadingFails(status === "show" ? true : false);
+    setIsSubmitting(false);
+    setSubmittingSuccess(false);
+    setSubmittingFails(false);
+  }
+
+  function ToogleIsSubmitting(status) {
+    setIsLoading(false);
+    setLoadingSuccess(false);
+    setLoadingFails(false);
+    setIsSubmitting(status === "show" ? true : false);
+    setSubmittingSuccess(false);
+    setSubmittingFails(false);
+  }
+
+  function ToogleSubmittingSuccess(status) {
+    setIsLoading(false);
+    setLoadingSuccess(false);
+    setLoadingFails(false);
+    setIsSubmitting(false);
+    setSubmittingSuccess(status === "show" ? true : false);
+    setSubmittingFails(false);
+  }
+
+  function ToogleSubmittingFails(status) {
+    setIsLoading(false);
+    setLoadingSuccess(false);
+    setLoadingFails(false);
+    setIsSubmitting(false);
+    setSubmittingSuccess(false);
+    setSubmittingFails(status === "show" ? true : false);
+  }
+
   const router = useRouter();
   const { t } = useTranslation();
 
   async function fetcher() {
-    return fetch(
-      "/api/" + router.locale + "/sound/get-non-approved-sound"
-    ).then((res) => {
-      return res.json();
-    });
+    ToogleLoading("show");
+    setData([]);
+    return axios({
+      method: "GET",
+      url: "/api/sound/get-non-approved-sound",
+    })
+      .then((e) => {
+        setData(e.data);
+        ToogleLoadingSuccess("show");
+      })
+      .catch((err) => {
+        ToogleLoadingFails("show");
+      });
   }
-  const sound = React.useRef(null);
-  const { data, isRefetching, isLoading, error, refetch } = useQuery(
-    ["get-word-with-no-pronounsiation"],
-    fetcher,
-    {
-      refetchOnWindowFocus: false,
-    }
-  );
+  React.useEffect(() => {
+    fetcher();
+  }, []);
 
-  const showData = !isLoading && !isRefetching && !error && !!data;
-  const Loading = isLoading || (isRefetching && !error && !data);
-  const isError = !isLoading && !isRefetching && error && !data;
+  const sound = React.useRef(null);
 
   const Classes = {
     pageWrapper: styles.pageWrapper,
@@ -50,18 +122,19 @@ const VoiceReviewer = ({ userType }) => {
     if (!data) {
       return false;
     }
-    sound.current.play();
+    soundRef.current.play();
   }
 
   function pause() {
     if (!data) {
       return false;
     }
-    sound.current.pause();
+    soundRef.current.pause();
   }
 
   React.useEffect(() => {
     function handle(e) {
+      if (disableShortcuts) return false;
       switch (e.code) {
         case "KeyP":
           play();
@@ -86,14 +159,25 @@ const VoiceReviewer = ({ userType }) => {
     <>
       <Header userType={userType} />
       <div className={Classes.pageWrapper}>
+        {console.log(data)}
         <Hints>
-          <span onClick={reject} className={Classes.hint}>
+          <button
+            disabled={disableShortcuts}
+            onClick={reject}
+            className={Classes.hint}
+          >
             \r\ {t("REJECT")}
-          </span>
-          <span onClick={approve} className={Classes.hint}>
+          </button>
+          <button
+            disabled={disableShortcuts}
+            onClick={approve}
+            className={Classes.hint}
+          >
             \p\ {t("PLAY")}
-          </span>
-          <span className={Classes.hint}>\a\ {t("APPROVE")}</span>
+          </button>
+          <button disabled={disableShortcuts} className={Classes.hint}>
+            \a\ {t("APPROVE")}
+          </button>
         </Hints>
         <Head>
           <title>Review Sound</title>
@@ -101,23 +185,30 @@ const VoiceReviewer = ({ userType }) => {
 
         <div className={Classes.wordWrapper}>
           <>
-            <div className={Classes.audio}>
-              <audio
-                ref={sound}
-                controls
-                src={`/sound/${data && data[0].file_name}`}
-                preload={true}
-              />
-            </div>
-
             <div className={Classes.word}>
-              {Loading && t("SEARCHING") + "......"}
-              <br />
-              {showData && data[0].ar}
-              <br />
-              {isError && (
-                <div className={Classes.error}>{t("SOMETHING_WENT_WRONG")}</div>
+              {isLoading && (
+                <div className={msg}>
+                  <Spinner />
+                </div>
               )}
+
+              {isSubmitting && (
+                <div className={msg}>
+                  <Spinner />
+                </div>
+              )}
+
+
+              {LoadingSuccess && (
+                <div className={msg}>
+                  <audio ref={soundRef} controls={true} src={`sound/${data[0]?.file_name}`}></audio>
+                  <div>{data[0]?.ar} - {data[0]?.en}</div>
+                </div>
+              )}
+
+              {LoadingFails && <div className={msg}>Something went wrong</div>}
+
+              {SubmittingFails && "Something went wrong"}
             </div>
           </>
         </div>
@@ -126,61 +217,88 @@ const VoiceReviewer = ({ userType }) => {
   );
 
   async function approve() {
-    if (!data) {
-      return false;
-    }
-    axios({
-      method: "POST",
-      data: { sound_id: data[0].sound_id },
-      url: "/api/" + router.locale + "/sound/approve",
-    })
-      .then((e) => {
-        console.log(e);
-      })
-      .catch((e) => {
-        console.log(e);
+    if (!data) return false;
+    ToogleIsSubmitting("show");
+    try {
+      await axios({
+        method: "POST",
+        data: { sound_id: data[0].sound_id },
+        url: "/api/sound/approve",
       });
+      
+      setTimeout(() => {
+        ToogleLoading("show");
+        alert.success("Approves")  
+        setTimeout(() => {
+          fetcher();
+        }, 500);
+      }, 500);
+    } catch (error) {
+      ToogleLoadingFails("show");
+    }
   }
 
   async function reject() {
     if (!data) return false;
 
-    axios({
-      method: "POST",
-      data: { sound_id: data[0].sound_id },
-      url: "/api/" + router.locale + "/sound/reject",
-    })
-      .then((e) => {})
-      .catch((e) => {
-        console.log(e);
+    ToogleIsSubmitting("show");
+    try {
+      await axios({
+        method: "POST",
+        data: { sound_id: data[0].sound_id },
+        url: "/api/sound/reject",
       });
+      alert.success("Approved");
+      setTimeout(() => {
+        ToogleLoading("show");
+        setTimeout(() => {
+          fetcher();
+        }, 500);
+      }, 500);
+    } catch (error) {
+      setTimeout(() => {
+        ToogleIsSubmitting("show");
+        alert.success("Rejected")
+        setTimeout(() => {
+          fetcher();
+        }, 500);
+      }, 500);
+
+      console.error(error);
+    }
   }
 };
 
 export default VoiceReviewer;
 
-  
-
-
 export const getServerSideProps = async ({ req, locale }) => {
   const TOKEN = req.cookies.token;
   const JWT_SECRET = process.env.JWT_SECRET;
-  
-  const data = verify(TOKEN, JWT_SECRET);
-  if (!data || !SecondLayer.includes(data.role))
-    return {
-      redirect: {
-        destination: "/" + locale,
-        permanent: false,
-      },
-    };
+  const data = verify(TOKEN, JWT_SECRET, (err, data) => (!err ? data : false));
 
+  if (!data || !SecondLayer.includes(data.role)) return Redirect("/", false);
   const userType = data?.role || "";
   const translation = await serverSideTranslations(locale, ["common"]);
   return {
     props: {
       ...translation,
-      userType
-    }
-  }
+      userType,
+    },
+  };
 };
+
+/**
+ *
+ *
+ * isLoading
+ * isSubmiting
+ * disableShortcuts
+ *
+ * Error
+ * Didn't find Words
+ *
+ *
+ *
+ *
+ *
+ */

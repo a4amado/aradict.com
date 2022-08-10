@@ -1,37 +1,39 @@
 -- RUN FIRST --
 
 DROP DATABASE IF EXISTS ARADICT;
-
-
-CREATE DATABASE ARADICT;
-
-
+CREATE DATABASE ARADICT ENCODING 'utf-8';
+\c aradict;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
-
 SET TIMEZONE = "EET";
 
 
 DROP TABLE IF EXISTS USERS;
-
-
 DROP TABLE IF EXISTS WORDS;
-
-
-CREATE TYPE IF NOT EXISTS mood AS ENUM ('admin', 'sound-contributer', 'sound-reviewer');
-
 DROP TABLE IF EXISTS SOUNDS;
 
-ALTER TABLE users ADD _role  mood;
+CREATE TYPE  mood AS ENUM ('admin', 'sound-contributer', 'sound-reviewer');
+
+-- ALTER TABLE users ADD _role  mood;
 
 -- Ceate Tables
 
-CREATE TABLE USERS (user_id uuid DEFAULT uuid_generate_v4(),
+CREATE TABLE USERS (
+        user_id uuid DEFAULT uuid_generate_v4(),
         username VARCHAR(50) UNIQUE NOT NULL,
         first_name VARCHAR(50) NOT NULL,
         middle_name VARCHAR(50) NOT NULL,
         join_data TIMESTAMP DEFAULT NOW(),
+        _role  mood NOT NULL,
         PRIMARY KEY(user_id));
+
+CREATE TABLE WORDS
+        (word_id uuid DEFAULT uuid_generate_v4(),
+                              contributer_id uuid,
+                              ar TEXT NOT NULL,
+                                      en TEXT NOT NULL,
+                                              CONSTRAINT fk_user
+         FOREIGN KEY(contributer_id) REFERENCES USERS(user_id) ON DELETE NO ACTION,
+                                                                            PRIMARY KEY(word_id));
 
 
 CREATE TABLE SOUNDS
@@ -50,14 +52,6 @@ CREATE TABLE SOUNDS
                                                                   PRIMARY KEY(sound_id));
 
 
-CREATE TABLE WORDS
-        (word_id uuid DEFAULT uuid_generate_v4(),
-                              contributer_id uuid,
-                              ar TEXT NOT NULL,
-                                      en TEXT NOT NULL,
-                                              CONSTRAINT fk_user
-         FOREIGN KEY(contributer_id) REFERENCES USERS(user_id) ON DELETE NO ACTION,
-                                                                            PRIMARY KEY(word_id));
 
 -- EXAMPLE
 
@@ -71,9 +65,10 @@ VALUES ('Ahmad',
 -- WHERE user_id = 'c72c1eca-fc79-4b54-9c2a-055b04669d68';
 
 INSERT INTO WORDS (contributer_id, ar, en)
-VALUES ('9eaa06b6-156a-4267-bf12-bf1ba8834842',
-        'أنا',
-        '÷') RETURNING * ;
+VALUES ('1598b0d1-d3f9-44ff-9c33-fefa74a36f07',
+        'سشي',
+        'I') RETURNING * ;
+
 
 
 INSERT INTO WORDS (contributer_id, ar, en)

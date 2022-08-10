@@ -2,8 +2,9 @@ import * as multer from "multer";
 import { createRouter } from "next-connect";
 import { resolve } from "path";
 import { v4 } from "uuid";
-import { ThirdLayerAuth } from "../../../../utils/Auth";
-import pool from "../../../../DB";
+import pool from "../../../DB";
+import { ThirdLayerAuth } from "../../../utils/Auth";
+
 const Router = createRouter();
 
 const storage = multer.diskStorage({
@@ -26,7 +27,7 @@ Router.post(async (req, res) => {
   const { word_id } = req.body;
   const { encoding, mimetype, filename, size } = req.file;
 
-  console.table([user_id, word_id, encoding, mimetype, filename, size]);
+  console.table([req.user, word_id, encoding, mimetype, filename, size]);
 
   const Query = `
     INSERT INTO sounds ( contributer_id, word_id, enc, mimetype, file_name, size )

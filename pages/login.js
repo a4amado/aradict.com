@@ -63,7 +63,7 @@ const Login = ({ userType }) => {
           username,
           password,
         },
-        url: "/api/" + router.locale + "/login",
+        url: "/api/login",
       });
       router.reload();
     } catch (error) {
@@ -75,19 +75,15 @@ const Login = ({ userType }) => {
 export default Login;
 
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import Redirect from "../utils/redirect";
+
 export const getServerSideProps = async ({ req, locale }) => {
   const TOEKN = req.cookies.token || "";
   const JWT_SECRET = process.env?.JWT_SECRET;
-  const data = verify(TOEKN, JWT_SECRET);
+  const data = verify(TOEKN, JWT_SECRET, (err, data) => !err ? data: false);
 
-  if (data) {
-    return {
-      redirect: {
-        destination: "/" + locale,
-        permanent: false,
-      },
-    };
-  }
+  console.log(!!data);
+  if (data) return Redirect('/', false)
 
   const transition = await serverSideTranslations(locale, ["common"]);
 

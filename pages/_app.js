@@ -1,22 +1,27 @@
 import "nprogress/nprogress.css";
 import "../styles/globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { transitions, positions, Provider as AlertProvider } from "react-alert";
+import {
+  transitions,
+  positions,
+  Provider as AlertProvider,
+  useAlert,
+} from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
-import { appWithTranslation, i18n } from "next-i18next";
+import { appWithTranslation, i18n, useTranslation } from "next-i18next";
 import React, { Suspense } from "react";
 import nProgress from "nprogress";
 import { Router } from "next/router";
 import Locales from "../components/Locales";
 import i18next from "i18next";
+import AxiosProvider from "../utils/AxiosConfig";
 
 String.prototype.isArabic = function (word) {
   let AR =
     /^([\u0600-\u06ff]|[\u0750-\u077f]|[\ufb50-\ufbc1]|[\ufbd3-\ufd3f]|[\ufd50-\ufd8f]|[\ufd92-\ufdc7]|[\ufe70-\ufefc]|[\ufdf0-\ufdfd])*$/g;
 
   if (word) {
-    return !this
-      .split("")
+    return !this.split("")
       .map((char) => (char.isArabic() ? "" : "N"))
       .join("")
       .toString();
@@ -45,23 +50,17 @@ const options = {
   offset: "5px",
   transition: transitions.SCALE,
 };
-// if (typeof window !== "undefined") {
-
-// }
-
-const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }) {
   const userType = pageProps.userType;
+
   return (
-    <Suspense fallback={<h1>Loading</h1>}>
-      <QueryClientProvider client={queryClient}>
-        <AlertProvider template={AlertTemplate} {...options}>
-          <Component {...pageProps} userType={userType} />
-          <Locales />
-        </AlertProvider>
-      </QueryClientProvider>
-    </Suspense>
+    <AxiosProvider>
+      <AlertProvider template={AlertTemplate} {...options}>
+        <Component {...pageProps} userType={userType} />
+        <Locales />
+      </AlertProvider>
+    </AxiosProvider>
   );
 }
 

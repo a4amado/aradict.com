@@ -49,7 +49,19 @@ export default function AddSound({ userType }) {
 
 
 export async function getServerSideProps() {
-  return {
-    props: {},
-  };
+  const TOKEN = req.cookies.token || "";
+  const JWT_SECRET = process.env.JWT_SECRET;
+  
+  const data = verify(TOKEN, JWT_SECRET);
+  
+  const userType = data?.role || "";
+  const translation = await serverSideTranslations(locale, ["common"]);
+
+  return { 
+    props: {
+      userType,
+      ...translation
+    }
+  }
+
 }
