@@ -11,10 +11,6 @@ export default function Document({ __NEXT_DATA__ }) {
           href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;500;600;700&display=swap"
           rel="stylesheet"
         />
-
-        {i18next.dir(__NEXT_DATA__.locale) == "ltr" && (
-          <link href="/ltr.css" rel="stylesheet" />
-        )}
       </Head>
       <body>
         <Main />
