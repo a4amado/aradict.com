@@ -248,7 +248,7 @@ const VoiceReviewer = ({ userType }) => {
         data: { sound_id: data[0].sound_id },
         url: "/api/sound/reject",
       });
-      alert.success("Approved");
+      alert.success("Rejected");
       setTimeout(() => {
         ToogleLoading("show");
         setTimeout(() => {
