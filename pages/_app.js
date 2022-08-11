@@ -1,11 +1,9 @@
 import "nprogress/nprogress.css";
 import "../styles/globals.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
+ import {
   transitions,
   positions,
   Provider as AlertProvider,
-  useAlert,
 } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
 import { appWithTranslation, i18n, useTranslation } from "next-i18next";

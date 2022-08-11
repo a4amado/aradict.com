@@ -1,7 +1,15 @@
 import { serialize } from "cookie";
- import { createRouter } from "next-connect";
+import NC from "next-connect";
 
-const Router = createRouter();
+
+const Router = NC({
+  onError: (err, req, res) => {
+      res.status(500).send(err).end()
+  },
+  onNoMatch: (req, res) => {
+    res.status(404).send("Not Found").end()
+},
+})
  
 
 
@@ -16,11 +24,4 @@ Router.all(async (req, res) => {
   
 });
 
-export default Router.handler({
-  onNoMatch: (req, res, next) => {
-    return res.status(404).send("sssssssss");
-  },
-  onError: (req, res, next) => {
-    return res.status(500).send("sssssssss");
-  },
-});
+export default Router;

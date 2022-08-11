@@ -1,16 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/router";
+ import { useRouter } from "next/router";
 import React from "react";
 import styles from "../styles/word.module.scss";
-import Image from "next/image";
-import Header from "../components/Header";
-
-const fetcher = async () => {
-  fetch("/api/hello").then(async (e) => {
-    const data = await e.json();
-    return data;
-  });
-};
+ import Header from "../components/Header";
+ 
 export default function AddSound({ userType }) {
   const Classes = {
     words: styles.words,
@@ -23,11 +15,7 @@ export default function AddSound({ userType }) {
   const isArabic = q.isArabic(true)
 
   console.log(isArabic);
-
-  const { isLoading, error, data } = useQuery(["getWord"], () =>
-    fetch("/api/hello").then((res) => res.json())
-  );
-
+ 
   return (
     <>
       <Header userType={userType} />
