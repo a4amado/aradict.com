@@ -2,8 +2,7 @@ import { serialize } from "cookie";
 import { sign } from "jsonwebtoken";
 import { createRouter } from "next-connect";
 import * as Yup from "yup";
-import pool from "../../DB";
-
+ 
 
 const Router = createRouter();
 
@@ -28,17 +27,15 @@ Router.post(async (req, res) => {
     WHERE username  =  '${username}';
   `
 
-  const user = await pool.query(Query).catch(e => console.log(e));
-  if (user.rowCount === 0) {
-    throw "username or password is wrong";
+  const user = {
+    role:"admin",
+    username: "dddd",
+    user_id: "dddddddddddddddddddddddddddddddd"
   }
  
   console.table(user.rows[0])
   const JWT_HASH = sign(
-    {
-      role: user.rows[0].role,
-      user_id: user.rows[0].user_id,
-    },
+    user,
     process.env.JWT_SECRET,
     {
       expiresIn: "2h",

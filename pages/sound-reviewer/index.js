@@ -265,20 +265,17 @@ const VoiceReviewer = ({ userType }) => {
 
     ToogleIsSubmitting("show");
     try {
-      // await axios({
-      //   method: "POST",
-      //   data: { sound_id: data[0].sound_id },
-      //   url: "/api/sound/reject",
-      // });
-      setTimeout(() => {
-        alert.success("Rejected");
+      
+        
         setTimeout(() => {
+          alert.success("Rejected");
           ToogleLoading("show");
           setTimeout(() => {
             fetcher();
           }, 500);
         }, 500);
-      }, 1000);
+      
+
     } catch (error) {
       setTimeout(() => {
         ToogleIsSubmitting("show");

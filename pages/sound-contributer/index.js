@@ -27,8 +27,7 @@ export default function AddSound({ userType }) {
   const [SubmittingFails, setSubmittingFails] = React.useState(false);
   const [isRecordeing, setIsRecording] = React.useState(false);
   const [data, setData] = React.useState([]);
-  const disableShortcuts =
-    isLoading || isSubmitting || data.length === 0;
+  const disableShortcuts = isLoading || isSubmitting || data.length === 0;
 
   const alert = useAlert();
   const router = useRouter();
@@ -107,7 +106,6 @@ export default function AddSound({ userType }) {
   // Initalize shortcuts
   React.useEffect(() => {
     function handler(e) {
-      
       switch (e.code) {
         case "KeyF":
           fetcher();
@@ -193,15 +191,23 @@ export default function AddSound({ userType }) {
           </button>
         </Hints>
         <div className={Classes.centerd}>
-          {isLoading && <div className={msg}><Spinner/></div>}
+          {isLoading && (
+            <div className={msg}>
+              <Spinner />
+            </div>
+          )}
 
           {LoadingSuccess && data[0]?.ar}
 
           {LoadingFails && <div className={msg}>Something went wrong</div>}
-          {isSubmitting && <div className={msg}><Spinner/> </div>}
+          {isSubmitting && (
+            <div className={msg}>
+              <Spinner />{" "}
+            </div>
+          )}
           {SubmittingSuccess && (
             <div className={msg} onClick={fetcher}>
-              <Spinner/>
+              <Spinner />
               {/* Success!!, To Fetch a newWord press /f/ or client here */}
             </div>
           )}
@@ -272,17 +278,22 @@ export default function AddSound({ userType }) {
   async function fetcher() {
     ToogleLoading("show");
     setData([]);
-    return Axios({
-      mathod: "GET",
-      url: `/api/word/get-word-with-no-sound`,
-    })
-      .then((e) => {
-        setData(e.data);
-        ToogleLoadingSuccess("show");
-      })
-      .catch((err) => {
-        ToogleLoadingFails("show");
-      });
+    const word = {
+      ar: "أنا",
+      en: "I",
+      file_name: "64cdd16c-dc84-4695-8095-2f33c1734637.web",
+      sound_id: "7a16995e-b721-4fb5-ab3e-14ec479923fe",
+      word_id: "1379fef1-34eb-47e4-88d9-c5ac519afcce",
+    };
+    return new Promise((res, rej) => {
+      setTimeout(() => {
+        ToogleLoading("show");
+        setTimeout(() => {
+          ToogleLoadingSuccess("show")
+          setData([word])
+        }, 500);
+      }, 500);
+    });
   }
 
   function Submit() {
@@ -291,31 +302,14 @@ export default function AddSound({ userType }) {
     }
 
     ToogleIsSubmitting("show");
-    const blob = new Blob(chunks, { type: "ogg/audio" });
-    const Sound = new FormData();
-    Sound.append("audio", blob);
-    Sound.append("word_id", data[0].word_id);
-    Axios({
-      method: "POST",
-      url: "/api/sound/add-to-queue",
-      data: Sound,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    })
-      .then((e) => {
-        alert.success("SUBMITTED");
-
-        setTimeout(() => {
-          ToogleLoading("show");
-          setTimeout(() => {
-            fetcher();
-          }, 500);
-        }, 500);
-      })
-      .catch((e) => {
-        ToogleLoadingFails("show");
-      });
+        
+    setTimeout(() => {
+      ToogleLoading("show");
+      setTimeout(() => {
+        fetcher();
+      }, 500);
+    }, 500);
+      
   }
 
   function resetRecorded() {
@@ -328,7 +322,7 @@ export default function AddSound({ userType }) {
 
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Redirect from "../../utils/redirect";
- 
+
 export const getServerSideProps = async ({ req, locale }) => {
   const TOKEN = req.cookies.token || "";
   const JWT_SECRET = process.env.JWT_SECRET;
