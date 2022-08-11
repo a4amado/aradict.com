@@ -11,7 +11,7 @@ const langs = {
 };
 
 export default function Locales() {
-  let { asPath, locale, pathname, query, replace, locales } =
+  let { asPath, locale, pathname, query, push, locales, reload } =
     useRouter();
   return (
     <select
@@ -19,7 +19,8 @@ export default function Locales() {
       defaultValue={locale}
       onChange={(e) => {
         i18next.changeLanguage(e.target.value).then(() => {
-          replace({ pathname, query }, asPath, { locale: e.target.value });
+          push({ pathname, query }, asPath, { locale: e.target.value })
+          
         });
       }}
       
