@@ -52,7 +52,7 @@ function Home({ userType }) {
         <section className={Classes.primarySection}>
           <div className={Classes.content}>
             <div className={Classes.logoContainer}>
-              <Image src={Logo} width={400} height={150} />
+              <Image alt="s" src={Logo} width={400} height={150} />
             </div>
             <div className={Classes.searchWrapper}>
               <span className={Classes.searchIcon}>{t("SEARCH")}</span>
@@ -83,6 +83,7 @@ function Home({ userType }) {
           </div>
           <span className={Classes.goDown}>
             <img
+            alt="s"
               src="https://www.svgrepo.com/show/80156/down-arrow.svg"
               style={{
                 width: "100%",
@@ -98,6 +99,7 @@ function Home({ userType }) {
           <div className={Classes.content}>
             <br />
             <img
+            alt="s"
               style={{
                 margin: "0 auto",
                 display: "block",
@@ -112,6 +114,7 @@ function Home({ userType }) {
             {t("LOREM_IPSUM")}
             <br />
             <img
+            alt="s"
               style={{
                 margin: "0 auto",
                 display: "block",
@@ -127,6 +130,7 @@ function Home({ userType }) {
             {t("LOREM_IPSUM")}
             <br />
             <img
+            alt="ddddddd"
               style={{
                 margin: "0 auto",
                 display: "block",
