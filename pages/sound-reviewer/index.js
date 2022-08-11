@@ -92,17 +92,32 @@ const VoiceReviewer = ({ userType }) => {
   async function fetcher() {
     ToogleLoading("show");
     setData([]);
-    return axios({
-      method: "GET",
-      url: "/api/sound/get-non-approved-sound",
-    })
-      .then((e) => {
-        setData(e.data);
-        ToogleLoadingSuccess("show");
-      })
-      .catch((err) => {
-        ToogleLoadingFails("show");
-      });
+    // return axios({
+    //   method: "GET",
+    //   url: "/api/sound/get-non-approved-sound",
+    // })
+    //   .then((e) => {
+    //     setData(e.data);
+    //     ToogleLoadingSuccess("show");
+    //   })
+    //   .catch((err) => {
+    //     ToogleLoadingFails("show");
+    //   });
+
+    return new Promise((res, rej) => {
+      const Sound = {
+        ar: "أنا",
+        en: "I",
+        file_name: "64cdd16c-dc84-4695-8095-2f33c1734637.web",
+        sound_id: "7a16995e-b721-4fb5-ab3e-14ec479923fe",
+        word_id: "1379fef1-34eb-47e4-88d9-c5ac519afcce",
+      };
+
+      return setTimeout(() => {
+         setData([Sound]);
+         ToogleLoadingSuccess("show")
+      }, 1000);
+    });
   }
   React.useEffect(() => {
     fetcher();
@@ -198,11 +213,16 @@ const VoiceReviewer = ({ userType }) => {
                 </div>
               )}
 
-
               {LoadingSuccess && (
                 <div className={msg}>
-                  <audio ref={soundRef} controls={true} src={`sound/${data[0]?.file_name}`}></audio>
-                  <div>{data[0]?.ar} - {data[0]?.en}</div>
+                  <audio
+                    ref={soundRef}
+                    controls={true}
+                    src={`sound/${data[0]?.file_name}`}
+                  ></audio>
+                  <div>
+                    {data[0]?.ar} - {data[0]?.en}
+                  </div>
                 </div>
               )}
 
@@ -220,19 +240,21 @@ const VoiceReviewer = ({ userType }) => {
     if (!data) return false;
     ToogleIsSubmitting("show");
     try {
-      await axios({
-        method: "POST",
-        data: { sound_id: data[0].sound_id },
-        url: "/api/sound/approve",
-      });
-      
-      setTimeout(() => {
-        ToogleLoading("show");
-        alert.success("Approves")  
+      // await axios({
+      //   method: "POST",
+      //   data: { sound_id: data[0].sound_id },
+      //   url: "/api/sound/approve",
+      // });
+
+      return setTimeout(() => {
         setTimeout(() => {
-          fetcher();
+          ToogleLoading("show");
+          alert.success("Approves");
+          setTimeout(() => {
+            fetcher();
+          }, 500);
         }, 500);
-      }, 500);
+      }, 1000);
     } catch (error) {
       ToogleLoadingFails("show");
     }
@@ -243,22 +265,24 @@ const VoiceReviewer = ({ userType }) => {
 
     ToogleIsSubmitting("show");
     try {
-      await axios({
-        method: "POST",
-        data: { sound_id: data[0].sound_id },
-        url: "/api/sound/reject",
-      });
-      alert.success("Rejected");
+      // await axios({
+      //   method: "POST",
+      //   data: { sound_id: data[0].sound_id },
+      //   url: "/api/sound/reject",
+      // });
       setTimeout(() => {
-        ToogleLoading("show");
+        alert.success("Rejected");
         setTimeout(() => {
-          fetcher();
+          ToogleLoading("show");
+          setTimeout(() => {
+            fetcher();
+          }, 500);
         }, 500);
-      }, 500);
+      }, 1000);
     } catch (error) {
       setTimeout(() => {
         ToogleIsSubmitting("show");
-        alert.success("Rejected")
+        alert.success("Rejected");
         setTimeout(() => {
           fetcher();
         }, 500);
