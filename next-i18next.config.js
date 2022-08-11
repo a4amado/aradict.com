@@ -1,7 +1,9 @@
+const path  = require("path");
+
 module.exports = {
   i18n: {
     defaultLocale: "ar",
     locales: ["en", "ar", "es", "nl", "id"],
-    localePath: "./public/assets",
+    localePath: path.resolve("./json")
   },
 };
