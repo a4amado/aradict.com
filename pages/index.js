@@ -2,21 +2,21 @@ import { verify } from "jsonwebtoken";
 import Head from "next/head";
 import Image from "next/image";
 import React from "react";
-import { useAlert } from "react-alert";
+import Header from "../components/Header";
 import Footer from "../components/Footer";
 import styles from "../styles/Home.module.scss";
 import Logo from "../resources/abadis.svg";
 import { useRouter } from "next/router";
-import Header from "../components/Header";
 import { useTranslation } from "next-i18next";
-import Locales from "../components/Locales";
+
 
 function Home({ userType }) {
   const router = useRouter();
   const { t } = useTranslation("common");
 
   const [q, setQ] = React.useState("");
-  const alert = useAlert();
+  const toast = useToast();
+  
   const search = React.useRef();
   React.useEffect(() => {
     search.current.focus();
@@ -45,6 +45,7 @@ function Home({ userType }) {
   return (
     <>
       <Header userType={userType} />
+      
       <Head>
         <title>Aradict.com | أرادكت</title>
       </Head>
@@ -94,7 +95,7 @@ function Home({ userType }) {
           </span>
         </section>
         <div className={Classes.contentContainer}>
-          <span className={Classes.category}>{t("WHAT_IS_ARADICT")}</span>
+        <Tag variant="solid" colorSchema="teal" size="lg">{t("WHAT_IS_ARADICT")}</Tag>
           <p className={Classes.title}>{t("TO_USE_ARADICT")}</p>
           <div className={Classes.content}>
             <br />
@@ -155,7 +156,8 @@ function Home({ userType }) {
 
 export default Home;
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-
+import { Tag, useToast } from "@chakra-ui/react";
+ 
 
 export async function getServerSideProps({ req, locale }) {
   const TOKEN = req.cookies?.token || "";

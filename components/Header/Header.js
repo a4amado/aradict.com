@@ -6,6 +6,9 @@ import styles from "./Header.module.scss";
 import Logo from "../../resources/abadis.svg";
 import { useTranslation } from "react-i18next";
 import { deleteCookie, removeCookies } from "cookies-next";
+import DrawerC from "../Drawer";
+import { Box } from "@chakra-ui/react";
+import Locales from "../Locales";
 
 const Header = ({ userType }) => {
   const { t } = useTranslation("common");
@@ -25,28 +28,24 @@ const Header = ({ userType }) => {
     mob_btn: styles.mob_btn,
   };
   return (
-    <>
-      <div className={Classes.headerWrapper}>
-        <div className={Classes.header}>
-          <Link href="/">
-            <a className={Classes.logo}>
-              <Image src={Logo} width={150} height={40} alt="dd" />
-            </a>
-          </Link>
-          <div className={Classes.list}>
-             <HeaderList userType={userType} />
-             {userType && <Logout />}
-          </div>
-        </div>
+    <Box
+      height={65}
+      display="flex"
+      width="100%"
+      backgroundColor="#fff"
+      justifyContent="space-evenly"
+      p='10px 5px'
+      _fullScreen={true}
+    >
+      <Locales />
+      <Link href="/">
+        <Image src={Logo} width={150} height={40} alt="dd" />
+      </Link>
 
-        <button
-          onClick={() => SetActiveMEnu(!activeMenu)}
-          className={Classes.mob_btn}
-        >
-          Menu
-        </button>
-      </div>
-    </>
+      <DrawerC>
+        <HeaderList userType={userType} />
+      </DrawerC>
+    </Box>
   );
 };
 
@@ -117,13 +116,12 @@ function LoginBtn() {
 }
 
 function Logout() {
-  
   const router = useRouter();
-  
+
   const { t } = useTranslation();
   return (
     <Link href={`/api/logout`}>
-       <a>{t("LOGOUT")}</a>
+      <a>{t("LOGOUT")}</a>
     </Link>
   );
 }
