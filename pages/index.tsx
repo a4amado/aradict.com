@@ -8,7 +8,7 @@ import styles from "../styles/Home.module.scss";
 import Logo from "../resources/abadis.svg";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
-
+import isArabic from "../utils/isArabic";
 
 function Home({ userType }) {
   const router = useRouter();
@@ -17,7 +17,7 @@ function Home({ userType }) {
   const [q, setQ] = React.useState("");
   const toast = useToast();
   
-  const search = React.useRef();
+  const search = React.useRef<HTMLInputElement>();
   React.useEffect(() => {
     search.current.focus();
   }, []);
@@ -36,7 +36,6 @@ function Home({ userType }) {
     contentContainer: styles.contentContainer,
     category: styles.category,
     title: styles.title,
-    content: styles.content,
     apps: styles.apps,
     categories: styles.categories,
     footer: styles.footer,
@@ -65,10 +64,16 @@ function Home({ userType }) {
                 onChange={(e) => {
                   const lastCharachter =
                     e.target.value[e.target.value.length - 1] || "";
-                  let isArabic = lastCharachter.isArabic();
+                  let isLetterArabic = isArabic.validate(({ word: lastCharachter }))
 
-                  if (!isArabic && !lastCharachter.match(/\s/)) {
-                    alert.error(t("ONLY_AR_LETTERS"));
+                  if (!isLetterArabic && !lastCharachter.match(/\s/)) {
+                    toast({
+                      duration: 2000,
+                      status: "error",
+                      position: "top",
+                      isClosable: true,
+                    });
+
                     setQ(q);
                   } else {
                     setQ(e.target.value);
@@ -95,7 +100,7 @@ function Home({ userType }) {
           </span>
         </section>
         <div className={Classes.contentContainer}>
-        <Tag variant="solid" colorSchema="teal" size="lg">{t("WHAT_IS_ARADICT")}</Tag>
+        <Tag variant="solid" colorScheme="teal" size="lg">{t("WHAT_IS_ARADICT")}</Tag>
           <p className={Classes.title}>{t("TO_USE_ARADICT")}</p>
           <div className={Classes.content}>
             <br />

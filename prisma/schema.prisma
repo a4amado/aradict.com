@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+
+}
+
+
+
+model Users {
+  userId String @id @db.Uuid
+  username String @db.VarChar(20)
+  hash String
+  role Role 
+  joiningDate DateTime @default(dbgenerated("now()"))
+  words Words[]
+  sounds Sounds[]
+}
+
+model Words {
+  wordId String @id @db.Uuid
+  ar String
+  en String
+  auther Users @relation(fields: [autherId], references: [userId], onDelete: SetNull, onUpdate: Cascade)
+  autherId String @db.Uuid
+  sounds Sounds[]
+}
+
+model Sounds {
+  soundId String @id @db.Uuid
+  fileName String
+  auther Users @relation(fields: [autherId], references: [userId], onDelete: SetNull, onUpdate: Cascade)
+  autherId String @db.Uuid
+
+  word Words @relation(fields: [wordId], references: [wordId], onDelete: SetNull, onUpdate: Cascade)
+  wordId String @db.Uuid
+
+}
+
+
+enum Role {
+  admin
+  soundContributer
+  soundReviewer
+}

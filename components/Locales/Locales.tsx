@@ -33,6 +33,8 @@ const langs = [
 ];
 import FuzzySearch from "fuzzy-search";
 import Image from "next/image";
+import { setCookie } from "cookies-next";
+
 
 const Locales: FC = () => {
   let { asPath, locale, pathname, query, push, locales } = useRouter();
@@ -52,7 +54,11 @@ const Locales: FC = () => {
 
 
   function Swith(lang: string) {
-    push({ pathname, query}, asPath, { locale: lang });
+    setCookie("NEXT_LOCALE", lang);
+    i18next.changeLanguage(lang).finally(() => {
+      push({ pathname, query}, asPath, { locale: lang });
+    })
+    
   }
   return (
     <>

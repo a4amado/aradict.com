@@ -9,23 +9,7 @@ import i18next from "i18next";
 import AxiosProvider from "../utils/AxiosConfig";
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "../utils/Chakra/Config";
-import scrollDetector from "scroll-detector";
 
-
-
-String.prototype!.isArabic = function (word) {
-  let AR =
-    /^([\u0600-\u06ff]|[\u0750-\u077f]|[\ufb50-\ufbc1]|[\ufbd3-\ufd3f]|[\ufd50-\ufd8f]|[\ufd92-\ufdc7]|[\ufe70-\ufefc]|[\ufdf0-\ufdfd])*$/g;
-
-  if (word) {
-    return !this.split("")
-      .map((char) => (char.isArabic() ? "" : "N"))
-      .join("")
-      .toString();
-  }
-
-  return this.match(AR);
-};
 
 i18next.init();
 i18next.on("languageChanged", (lng) => {

@@ -1,14 +1,23 @@
+import { NextApiRequest, NextApiResponse } from "next";
+
 import { serialize } from "cookie";
 import { sign } from "jsonwebtoken";
 import * as Yup from "yup";
+import prisma from "../../DB";
 
-import nextConnect from "next-connect";
-const Router = nextConnect({
+ 
+import nextConnect, { NextHandler, ErrorHandler } from "next-connect";
+
+const Route = nextConnect<NextApiRequest, NextApiResponse>({
   onNoMatch: (req, res) => {
-    res.status().end("Not Found").end();
+    res.status(404)
+    res.end("Not Found")
+    res.end();
   },
   onError: (err, req, res) => {
-    res.status(500).send("Some thing went wrong").end();
+    res.status(500)
+    res.send("Some thing went wrong")
+    res.end()
   },
 });
 
@@ -17,17 +26,20 @@ const LoginSchema = Yup.object().shape({
   password: Yup.string().required().min(8),
 });
 
-Router.use(async (req, res, next) => {
+Route.use<NextApiRequest, NextApiRequest>(async (req, res, next: NextHandler) => {
+  
   console.log("Sss");
   try {
     await LoginSchema.validate(req.body);
     next();
   } catch (error) {
-    res.status(500).json(error).end();
+    res.status(500)
+    res.json(error)
+    res.end()
   }
 });
 
-Router.post(async (req, res) => {
+Route.post<NextApiRequest, NextApiResponse>(async (req, res) => {
    const user = {
     role: "admin",
     username: "dddd",
@@ -47,4 +59,4 @@ Router.post(async (req, res) => {
    res.end();
 });
 
-export default Router;
+export default Route;

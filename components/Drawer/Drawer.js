@@ -1,6 +1,5 @@
 import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, Input, useDisclosure } from "@chakra-ui/react";
 import React from "react";
-import Locales from "../Locales"
 
 function DrawerExample({ children }) {
   const { isOpen, onOpen, onClose } = useDisclosure()
