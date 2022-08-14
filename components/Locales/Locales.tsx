@@ -1,8 +1,7 @@
 import i18next from "i18next";
 import { useRouter } from "next/router";
 import React, { FC, useRef } from "react";
-import styles from "./locales.module.scss";
-import {
+ import {
   Modal,
   ModalHeader,
   ModalBody,
@@ -38,9 +37,11 @@ import { setCookie } from "cookies-next";
 
 const Locales: FC = () => {
   let { asPath, locale, pathname, query, push, locales } = useRouter();
-  const { isOpen, onClose, onOpen } = useDisclosure();
+  const { isOpen, onClose, onOpen, onToggle} = useDisclosure();
   const [lang, setLang] = React.useState("");
-
+  const SInput = useRef<HTMLInputElement>();
+  
+  
   const handleChange = (event) => setLang(event.target.value);
   const LangFind = new FuzzySearch(langs, ["name"], {
     caseSensitive: false
@@ -53,6 +54,7 @@ const Locales: FC = () => {
   const ff = useRef();
 
 
+
   function Swith(lang: string) {
     setCookie("NEXT_LOCALE", lang);
     i18next.changeLanguage(lang).finally(() => {
@@ -60,12 +62,15 @@ const Locales: FC = () => {
     })
     
   }
+
+  
+
   return (
     <>
       <Button onClick={onOpen} ref={ff}>
       <Image src={ShowLang[0].Flag} width={50} height={30} alt={ShowLang[0].name}/>
       </Button>
-      <Modal finalFocusRef={ff} isOpen={isOpen} onClose={onClose}>
+      <Modal closeOnEsc={true}  finalFocusRef={ff} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
 
         <ModalContent>
@@ -73,7 +78,7 @@ const Locales: FC = () => {
           <ModalBody my={20}>
             <ModalHeader textAlign="center">
               <h2>Choose language</h2>
-              <Input type="text"  onChange={handleChange}/>
+              <Input type="text" ref={SInput} placeholder="Search ..."  onChange={handleChange}/>
             </ModalHeader>
             <Grid
               templateColumns="repeat(auto-fit, minmax(200px, 1fr));"
@@ -82,8 +87,8 @@ const Locales: FC = () => {
             >
               {(LangFind.search(lang) || locales).map(({name, code, Flag}) => {
                 return (
-                  <GridItem>
-                    <Button w="100%" onClick={() => Swith(code)}>
+                  <GridItem  key={`${code}-flag`} >
+                    <Button w="100%"onClick={() => Swith(code)}>
                       <>{name} <Image src={Flag} width={50} height={30} alt={name}/> </>
                     </Button>
                   </GridItem>

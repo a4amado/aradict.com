@@ -7,10 +7,8 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
     
-    height: 100%;
-    background: url('/829s-min.png');
-    background-size:10% auto;
 }
+
 
 a {
   color: inherit;
@@ -22,27 +20,9 @@ a:hover {
 }
 * {
   box-sizing: border-box;
-  /* font-family: 'bahij'; */
-
   user-select: none;
   scroll-behavior: smooth;
   font-family: 'IBM Plex Sans Arabic', sans-serif!important;
 } 
 
-
-
-#__next {
-
-  position: relative;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
-  
-}
-
-#__react-alert__ div div div {
-  width: fit-content !important;
-}
-
+ 

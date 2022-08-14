@@ -12,8 +12,12 @@ const breakpoints = {
 
 const styles: Styles = {
   global: (props: GlobalStyleProps) => ({
+    html: {
+      bg: "url(/829s-min.png)",
+      bgSize: "10% auto"
+    },
     body: {
-      bg: "none"
+      bg: "transparent"
     }
   })
 };
@@ -24,7 +28,6 @@ const theme = extendTheme({
   styles
 });
 
- 
 
 
 

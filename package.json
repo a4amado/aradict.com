@@ -11,6 +11,7 @@
     "prod:locally": "next build && next start"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.8",
     "@chakra-ui/react": "^2.2.6",
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
@@ -39,8 +40,10 @@
     "react-alert-template-basic": "^1.0.2",
     "react-autocomplete": "^1.8.1",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.34.1",
     "react-i18next": "^11.18.3",
     "react-spinner": "^0.2.7",
+    "react-sticky": "^6.0.3",
     "react-textfit": "^1.1.1",
     "scroll-detector": "^0.6.1",
     "uuid": "^8.3.2",

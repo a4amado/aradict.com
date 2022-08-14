@@ -1,19 +1,16 @@
+import axios from "axios";
 import { verify } from "jsonwebtoken";
 import Head from "next/head";
 import React from "react";
-import styles from "../../styles/voice-reviewer.module.scss";
 import { SecondLayer } from "../../utils/AuthLayers";
-import { hint } from "../../styles/add-sound.module.scss";
-import Hints from "../../components/Hints/Hints";
 import Header from "../../components/Header";
-import axios from "axios";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 import Redirect from "../../utils/redirect";
-import Spinner from "../../components/Spinner";
-import { msg } from "../../styles/Message.module.scss";
-import { useAlert } from "react-alert";
+import { Box, Button, Center, Circle, Grid, GridItem, Heading, Kbd, Spinner, Text, useToast } from "@chakra-ui/react";
+
+
 
 const VoiceReviewer = ({ userType }) => {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -26,7 +23,7 @@ const VoiceReviewer = ({ userType }) => {
   const [data, setData] = React.useState([]);
   const disableShortcuts = isLoading || isSubmitting || data.length === 0;
 
-  const alert = useAlert();
+  const toast = useToast();
   let soundRef = React.useRef(null);
   React.useEffect(() => {
     fetcher();
@@ -125,13 +122,7 @@ const VoiceReviewer = ({ userType }) => {
 
   const sound = React.useRef(null);
 
-  const Classes = {
-    pageWrapper: styles.pageWrapper,
-    wordWrapper: styles.wordWrapper,
-    hint: hint,
-    word: styles.word,
-    audio: styles.audio,
-  };
+ 
 
   function play() {
     if (!data) {
@@ -173,66 +164,106 @@ const VoiceReviewer = ({ userType }) => {
   return (
     <>
       <Header userType={userType} />
-      <div className={Classes.pageWrapper}>
-        {console.log(data)}
-        <Hints>
-          <button
-            disabled={disableShortcuts}
-            onClick={reject}
-            className={Classes.hint}
-          >
-            \r\ {t("REJECT")}
-          </button>
-          <button
-            disabled={disableShortcuts}
-            onClick={approve}
-            className={Classes.hint}
-          >
-            \p\ {t("PLAY")}
-          </button>
-          <button disabled={disableShortcuts} className={Classes.hint}>
-            \a\ {t("APPROVE")}
-          </button>
-        </Hints>
-        <Head>
-          <title>Review Sound</title>
-        </Head>
+      <Head>
+        <title>{}</title>
+      </Head>
 
-        <div className={Classes.wordWrapper}>
-          <>
-            <div className={Classes.word}>
-              {isLoading && (
-                <div className={msg}>
-                  <Spinner />
-                </div>
-              )}
+      <Center
+        h="100%"
+        w="100%"
+        m="10px auto"
+        overflow="hidden"
+        position="relative"
+        maxW={600}
+      >
+        <Center
+          w="100%"
+          h="100%"
+          position="absolute"
+          top={0}
+          left={0}
+          backgroundColor="white"
+        >
+          <Spinner />
+        </Center>
+        <Center fontSize={20} height="100%" w="100%" h={200} bg="#fff"></Center>
+      </Center>
 
-              {isSubmitting && (
-                <div className={msg}>
-                  <Spinner />
-                </div>
-              )}
+      <Box
+        maxWidth="calc(800px + (10px * 3))"
+        width="100%"
+        m="10px auto"
+        bg="#fff"
+        borderRadius={10}
+      >
+        <Center paddingTop={10}>
+          <Heading as="h5">Controllers</Heading>
+        </Center>
+        <Grid
+          templateColumns="repeat(auto-fit, minmax(200px, 1fr))"
+          width="100%"
+          gap="10px"
+          p={10}
+        >
+          <GridItem textAlign="center">
+            <Button
+              disabled={disableShortcuts}
+              onClick={reject}
+              colorScheme="teal"
+              w="100%"
+              size="lg"
+            >
+              <Kbd color="#000">P</Kbd> <Text m="0 10px">{t("PLAY")}</Text>
+            </Button>
+          </GridItem>
+          <GridItem textAlign="center">
+            <Button
+              disabled={disableShortcuts}
+              onClick={reject}
+              colorScheme="teal"
+              w="100%"
+              size="lg"
+            >
+              <Kbd color="#000">R</Kbd> <Text m="0 10px">{t("REJECT")}</Text>
+            </Button>
+          </GridItem>
+          <GridItem textAlign="center">
+            <Button
+              disabled={disableShortcuts}
+              onClick={pause}
+              colorScheme="teal"
+              w="100%"
+              size="lg"
+            >
+              <Kbd color="#000">W</Kbd>{" "}
+              <Text m="0 10px"> Pause </Text>
+            </Button>
+          </GridItem>
+          <GridItem textAlign="center">
+            <Button
+              disabled={disableShortcuts}
+              onClick={fetcher}
+              colorScheme="teal"
+              w="100%"
+              size="lg"
+            >
+              <Kbd color="#000">F</Kbd> <Text m="0 10px">{t("Fetch")} </Text>
+            </Button>
+          </GridItem>
+          <GridItem textAlign="center">
+            <Button
+              disabled={disableShortcuts}
+              colorScheme="teal"
+              w="100%"
+              size="lg"
+              onClick={approve}
+            >
+              <Kbd color="#000">A</Kbd> <Text m="0 10px"> {t("APPROVE")} </Text>
+            </Button>
+          </GridItem>
+        </Grid>
+      </Box>
 
-              {LoadingSuccess && (
-                <div className={msg}>
-                  <audio
-                    ref={soundRef}
-                    controls={true}
-                    src={`sound/${data[0]?.file_name}`}
-                  ></audio>
-                  <div>
-                    {data[0]?.ar} - {data[0]?.en}
-                  </div>
-                </div>
-              )}
-
-              {LoadingFails && <div className={msg}>Something went wrong</div>}
-
-              {SubmittingFails && "Something went wrong"}
-            </div>
-          </>
-        </div>
-      </div>
     </>
   );
 
@@ -249,7 +280,11 @@ const VoiceReviewer = ({ userType }) => {
       return setTimeout(() => {
         setTimeout(() => {
           ToogleLoading("show");
-          alert.success("Approves");
+          toast({
+            title: "Approves",
+            status: "success",
+            isClosable: true
+          })
           setTimeout(() => {
             fetcher();
           }, 500);
@@ -268,7 +303,11 @@ const VoiceReviewer = ({ userType }) => {
       
         
         setTimeout(() => {
-          alert.success("Rejected");
+          toast({
+            status: "success",
+            title: t("Rejected"),
+            isClosable: true
+          });
           ToogleLoading("show");
           setTimeout(() => {
             fetcher();
@@ -279,8 +318,12 @@ const VoiceReviewer = ({ userType }) => {
     } catch (error) {
       setTimeout(() => {
         ToogleIsSubmitting("show");
-        alert.success("Rejected");
-        setTimeout(() => {
+        toast({
+          status: "error",
+          title: t("SOMETHING_WENT_WRONG"),
+          isClosable: true
+        });
+         setTimeout(() => {
           fetcher();
         }, 500);
       }, 500);

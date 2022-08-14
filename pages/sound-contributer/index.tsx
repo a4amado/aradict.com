@@ -1,22 +1,33 @@
 import React from "react";
-import styles from "../../styles/add-sound.module.scss";
-import { useAlert } from "react-alert";
 import { verify } from "jsonwebtoken";
 import { FirstLayer } from "../../utils/AuthLayers";
 import Head from "next/head";
-import Hints from "../../components/Hints";
+
 import FormData from "form-data";
 import Axios from "axios";
 import Header from "../../components/Header";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
-import { msg } from "../../styles/Message.module.scss";
-import Spinner from "../../components/Spinner";
 
 let chunks = [];
 function FreeChunks() {
   chunks = [];
 }
+const indicate = keyframes`
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+`;
+const indicateClass = css`
+  animation: ${indicate} 1s ease infinite;
+`;
 
 export default function AddSound({ userType }) {
   const [isLoading, setIsLoading] = React.useState(true);
@@ -29,9 +40,9 @@ export default function AddSound({ userType }) {
   const [data, setData] = React.useState([]);
   const disableShortcuts = isLoading || isSubmitting || data.length === 0;
 
-  const alert = useAlert();
   const router = useRouter();
   const { t } = useTranslation();
+  const toast = useToast();
   let mediaStream = React.useRef(null);
   React.useEffect(() => {
     fetcher();
@@ -91,18 +102,6 @@ export default function AddSound({ userType }) {
     setSubmittingFails(status === "show" ? true : false);
   }
 
-  const Classes = {
-    addSoundWrapper: styles.addSoundWrapper,
-    alerts: styles.alerts,
-    centerd: styles.centerd,
-    alert: styles.alert,
-    msg: styles.message,
-    shortcuts: styles.shortcuts,
-    recording: isRecordeing ? styles.recording : "",
-    buttons: styles.buttons,
-    hint: styles.hint,
-  };
-
   // Initalize shortcuts
   React.useEffect(() => {
     function handler(e) {
@@ -144,85 +143,141 @@ export default function AddSound({ userType }) {
   return (
     <>
       <Header userType={userType} />
-      <div className={Classes.addSoundWrapper}>
-        <Head>
-          <title>{}</title>
-        </Head>
-        <Hints>
-          <button
-            disabled={disableShortcuts}
-            className={Classes.hint}
-            onClick={Recorde}
-          >
-            \r\ {t("RECORD")}
-            <span className={Classes.recording}></span>
-          </button>
-          <button
-            disabled={disableShortcuts}
-            className={Classes.hint}
-            onClick={Stop}
-          >
-            \w\ {t("STOP_RECORDING")}
-          </button>
-          <button
-            disabled={disableShortcuts}
-            className={Classes.hint}
-            onClick={Play}
-          >
-            \p\ {t("PLAY")}
-          </button>
-          <button
-            disabled={disableShortcuts}
-            className={Classes.hint}
-            onClick={fetcher}
-          >
-            \f\ {t("Fetch")}
-          </button>
-          <button
-            disabled={disableShortcuts}
-            className={Classes.hint}
-            onClick={resetRecorded}
-          >
-            \q\ {t("RESET")}
-          </button>
+      <Head>
+        <title>{}</title>
+      </Head>
 
-          <button disabled={disableShortcuts} className={Classes.hint}>
-            \s\ {t("SUBMIT")}
-          </button>
-        </Hints>
-        <div className={Classes.centerd}>
-          {isLoading && (
-            <div className={msg}>
-              <Spinner />
-            </div>
-          )}
+      <Center
+        h="100%"
+        w="100%"
+        m="10px auto"
+        overflow="hidden"
+        position="relative"
+        maxW={600}
+      >
+        <Center
+          w="100%"
+          h="100%"
+          position="absolute"
+          top={0}
+          left={0}
+          backgroundColor="white"
+        >
+          <Spinner />
+        </Center>
+        <Center fontSize={20} height="100%" w="100%" h={200} bg="#fff"></Center>
+      </Center>
 
-          {LoadingSuccess && data[0]?.ar}
-
-          {LoadingFails && <div className={msg}>Something went wrong</div>}
-          {isSubmitting && (
-            <div className={msg}>
-              <Spinner />{" "}
-            </div>
-          )}
-          {SubmittingSuccess && (
-            <div className={msg} onClick={fetcher}>
-              <Spinner />
-              {/* Success!!, To Fetch a newWord press /f/ or client here */}
-            </div>
-          )}
-          {SubmittingFails && "Something went wrong"}
-        </div>
-      </div>
+      <Box
+        maxWidth="calc(800px + (10px * 3))"
+        width="100%"
+        m="10px auto"
+        bg="#fff"
+        borderRadius={10}
+      >
+        <Center paddingTop={10}>
+          <Heading as="h5">Controllers</Heading>
+        </Center>
+        <Grid
+          templateColumns="repeat(auto-fit, minmax(200px, 1fr))"
+          width="100%"
+          gap="10px"
+          p={10}
+        >
+          <GridItem textAlign="center">
+            <Button
+              disabled={disableShortcuts}
+              onClick={Play}
+              colorScheme="teal"
+              w="100%"
+              size="lg"
+            >
+              <Kbd color="#000">P</Kbd> <Text m="0 10px">{t("PLAY")}</Text>
+            </Button>
+          </GridItem>
+          <GridItem textAlign="center" position="relative">
+          <Circle
+              position="absolute"
+              top="10px"
+              right="10px"
+              css={indicateClass}
+              bg="red"
+              zIndex={2}
+              size={4}
+            />
+            <Button
+              disabled={disableShortcuts}
+              onClick={Recorde}
+              colorScheme="teal"
+              w="100%"
+              size="lg"
+            >
+              <Kbd color="#000">R</Kbd> <Text m="0 10px">{t("RECORD")}</Text>
+            </Button>
+          </GridItem>
+          <GridItem textAlign="center">
+            <Button
+              disabled={disableShortcuts}
+              onClick={Stop}
+              colorScheme="teal"
+              w="100%"
+              size="lg"
+            >
+              <Kbd color="#000">W</Kbd>{" "}
+              <Text m="0 10px"> {t("STOP_RECORDING")} </Text>
+            </Button>
+          </GridItem>
+          <GridItem textAlign="center">
+            <Button
+              disabled={disableShortcuts}
+              onClick={fetcher}
+              colorScheme="teal"
+              w="100%"
+              size="lg"
+            >
+              <Kbd color="#000">F</Kbd> <Text m="0 10px">{t("Fetch")} </Text>
+            </Button>
+          </GridItem>
+          <GridItem textAlign="center">
+            <Button
+              disabled={disableShortcuts}
+              colorScheme="teal"
+              w="100%"
+              size="lg"
+              onClick={resetRecorded}
+            >
+              <Kbd color="#000">Q</Kbd> <Text m="0 10px"> {t("RESET")} </Text>
+            </Button>
+          </GridItem>
+          <GridItem textAlign="center">
+            <Button
+              disabled={disableShortcuts}
+              colorScheme="teal"
+              w="100%"
+              size="lg"
+            >
+              <Kbd color="#000">S</Kbd> <Text m="0 10px"> {t("SUBMIT")} </Text>
+            </Button>
+          </GridItem>
+        </Grid>
+      </Box>
     </>
   );
 
   function Recorde() {
     if (isRecordeing) {
-      alert.error(t("ALREADY_RECORDING"));
+      toast({
+        title: t("ALREADY_RECORDING"),
+        status: "error",
+        isClosable: true,
+      });
       return false;
     }
-    alert.show(t("RECORD"));
+    toast({
+      title: "",
+      description: t("RECORD"),
+      status: "info",
+    });
     FreeChunks();
     navigator.mediaDevices
       .getUserMedia({ audio: true })
@@ -240,7 +295,7 @@ export default function AddSound({ userType }) {
 
         mediaStream.current.onstop = () => {
           e.getTracks().forEach((track) => {
-            if (track.readyState != "inactive") {
+            if (track.readyState === "live") {
               track.stop();
             }
           });
@@ -256,17 +311,30 @@ export default function AddSound({ userType }) {
 
   function Stop() {
     if (!isRecordeing) {
-      alert.error(t("NOT_RECORDING_YET"));
+      toast({
+        title: "Error",
+        description: t("NOT_RECORDING_YET"),
+        status: "error",
+      });
       return false;
     } else {
       mediaStream.current.stop();
-      alert.show(t("STOP_RECORDING"));
+      toast({
+        title: "Message",
+        description: t("STOP_RECORDING"),
+        status: "success",
+      });
     }
   }
 
   function Play() {
     if (chunks.length < 1) {
-      return alert.error(t("NO_THING"));
+      return toast({
+        status: "error",
+        isClosable: true,
+        title: "Error",
+        description: t("NO_THING"),
+      });
     }
     const AudioBlob = new Blob(chunks, { type: "audio/ogg" });
     const AudioBlobURL = URL.createObjectURL(AudioBlob);
@@ -289,8 +357,8 @@ export default function AddSound({ userType }) {
       setTimeout(() => {
         ToogleLoading("show");
         setTimeout(() => {
-          ToogleLoadingSuccess("show")
-          setData([word])
+          ToogleLoadingSuccess("show");
+          setData([word]);
         }, 500);
       }, 500);
     });
@@ -298,30 +366,57 @@ export default function AddSound({ userType }) {
 
   function Submit() {
     if (chunks.length < 1 || !data) {
-      return alert.error(t("NO_THING"));
+      return toast({
+        title: t("NO_THING"),
+        isClosable: true,
+        status: "error",
+        containerStyle: {
+          direction: "initial",
+        },
+      });
     }
 
     ToogleIsSubmitting("show");
-        
+
     setTimeout(() => {
       ToogleLoading("show");
       setTimeout(() => {
         fetcher();
       }, 500);
     }, 500);
-      
   }
 
   function resetRecorded() {
-    console.log("Reset");
     FreeChunks();
     console.log(chunks);
     mediaStream.current = null;
+
+    toast({
+      title: "Reset",
+      status: "success",
+      isClosable: true,
+    });
   }
 }
 
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Redirect from "../../utils/redirect";
+import {
+  Box,
+  Button,
+  Center,
+  Circle,
+  Container,
+  Grid,
+  GridItem,
+  Heading,
+  Kbd,
+  keyframes,
+  Spinner,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
+import { css } from "@emotion/react";
 
 export const getServerSideProps = async ({ req, locale }) => {
   const TOKEN = req.cookies.token || "";
