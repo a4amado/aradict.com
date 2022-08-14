@@ -4,13 +4,12 @@ import Image from "next/image";
 import React from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import styles from "../styles/Home.module.scss";
 import Logo from "../resources/abadis.svg";
 import { useRouter } from "next/router";
-import { i18n, useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next";
 import isArabic from "../utils/isArabic";
+import NextLink from "next/link";
 import {
-  Box,
   Center,
   Container,
   Grid,
@@ -19,13 +18,15 @@ import {
   Input,
   InputGroup,
   InputLeftAddon,
-  Square,
+  Link,
+  Button,
   Tag,
   Text,
   useToast,
 } from "@chakra-ui/react";
+
 import { css, keyframes } from "@emotion/react";
-import { ArrowDownIcon } from "@chakra-ui/icons";
+import { CUIAutoComplete } from "chakra-ui-autocomplete";
 
 const BounseKeyFrames = keyframes`
   0% {
@@ -47,14 +48,21 @@ const BounseCss = css`
 function Home({ userType }) {
   const router = useRouter();
   const { t } = useTranslation("common");
-
+  const ff = Array.from({ length: 15 }, (e, k) => {
+    return {
+      label: `Item-${k}`,
+      value: `Value-${k}`,
+    };
+  });
   const [q, setQ] = React.useState("");
   const toast = useToast();
+  const handleSelectedItemsChange = (selectedItems) => {
+    if (selectedItems) {
+      console.log(selectedItems);
+    }
+  };
 
   const search = React.useRef<HTMLInputElement>();
-  React.useEffect(() => {
-    search.current.focus();
-  }, []);
 
   return (
     <>
@@ -67,61 +75,16 @@ function Home({ userType }) {
       <Container maxW={1140} width="100%">
         <Container h="100vh" maxW={800}>
           <Center
-            height="60%"
+            height="30%"
             maxW="800px"
             width="100%"
             textAlign="center"
             flexDirection="column"
           >
             <Image alt="s" src={Logo} width={400} height={150} />
-            <InputGroup height={65} width="100%" mt={10} dir="rtl">
-              <Input
-                
-                value={q || ""}
-                ref={search}
-                dir="rtl"
-                onChange={(e) => {
-                  const lastCharachter =
-                    e.target.value[e.target.value.length - 1] || "";
-                  let isLetterArabic = isArabic.validate({
-                    word: lastCharachter,
-                  });
-
-                  if (!isLetterArabic && !lastCharachter.match(/\s/)) {
-                    toast({
-                      duration: 2000,
-                      status: "error",
-                      position: "top",
-                      isClosable: true,
-                    });
-
-                    setQ(q);
-                  } else {
-                    setQ(e.target.value);
-                  }
-                }}
-                onKeyUp={(e) => {
-                  if (e.key === "Enter") {
-                    Submit();
-                  }
-                }}
-                type="search"
-                bg="white"
-                pr="4.5rem"
-                textAlign="center"
-                height="100%"
-                w="100%"
-                
-              />
-              <InputLeftAddon height="100%">{t("SEARCH")}</InputLeftAddon>
-              
-            </InputGroup>
           </Center>
-          <Center>
-            <Square css={BounseCss} bg="white" size="40px">
-              <ArrowDownIcon fontSize={20} />
-            </Square>
-          </Center>
+          
+          
         </Container>
         <Container width="100%" maxW="100%" bg="white" p="20px">
           <Tag variant="solid" colorScheme="teal" size="lg">
@@ -213,7 +176,6 @@ function Home({ userType }) {
             منظم، غير منسق، أو حتى غير مفهوم. لأنه مازال نصاً بديلاً ومؤقتاً.
           </Text>
         </Container>
-        
       </Container>
       <Footer />
     </>
@@ -233,3 +195,26 @@ export async function getServerSideProps({ req, locale }) {
   const translation = await serverSideTranslations(locale, ["common"]);
   return { props: { userType, ...translation } };
 }
+
+const CustomInput = (inputProps) => {
+  const { t } = useTranslation("common");
+  const toast = useToast();
+  return (
+    <InputGroup height={65}>
+      <Input
+        {...inputProps}
+        dir="rtl"
+        bg="white"
+        pr="4.5rem"
+        textAlign="center"
+        height="100%"
+        w="100%"
+      />
+      <InputLeftAddon height="100%">{t("SEARCH")}</InputLeftAddon>
+    </InputGroup>
+  );
+};
+
+const AutocompleteContainer =  () => {}
+const AutocompleteInput = () => {}
+const AutocompleteList = () => {}
