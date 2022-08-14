@@ -56,9 +56,12 @@ const Locales: FC = () => {
 
 
   function Swith(lang: string) {
+    if (lang === locale) return onClose()
     setCookie("NEXT_LOCALE", lang);
+    
     i18next.changeLanguage(lang).finally(() => {
-      push({ pathname, query}, asPath, { locale: lang });
+      
+      push({ pathname, query}, asPath, { locale: lang , unstable_skipClientCache: true});
     })
     
   }

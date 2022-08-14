@@ -7,7 +7,7 @@ import Footer from "../components/Footer";
 import styles from "../styles/Home.module.scss";
 import Logo from "../resources/abadis.svg";
 import { useRouter } from "next/router";
-import { useTranslation } from "next-i18next";
+import { i18n, useTranslation } from "next-i18next";
 import isArabic from "../utils/isArabic";
 import {
   Box,
@@ -74,8 +74,9 @@ function Home({ userType }) {
             flexDirection="column"
           >
             <Image alt="s" src={Logo} width={400} height={150} />
-            <InputGroup height={65} width="100%" mt={10}>
+            <InputGroup height={65} width="100%" mt={10} dir="rtl">
               <Input
+                
                 value={q || ""}
                 ref={search}
                 dir="rtl"
@@ -110,8 +111,10 @@ function Home({ userType }) {
                 textAlign="center"
                 height="100%"
                 w="100%"
+                
               />
               <InputLeftAddon height="100%">{t("SEARCH")}</InputLeftAddon>
+              
             </InputGroup>
           </Center>
           <Center>
