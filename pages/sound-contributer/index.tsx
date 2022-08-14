@@ -148,12 +148,12 @@ export default function AddSound({ userType }) {
       </Head>
 
       <Center
-        h="100%"
         w="100%"
         m="10px auto"
         overflow="hidden"
         position="relative"
         maxW={600}
+        
       >
         <Center
           w="100%"

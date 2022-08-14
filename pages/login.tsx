@@ -16,11 +16,12 @@ import {
   InputGroup,
   InputRightElement,
   ButtonSpinner,
+  Container,
 } from "@chakra-ui/react";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 import Header from "../components/Header";
- 
+
 import { useTranslation } from "react-i18next";
 
 interface FormData {
@@ -37,15 +38,13 @@ const Login = ({ userType }) => {
     formState: { errors, isSubmitting },
   } = useForm();
   const onSubmit: SubmitHandler<FormData> = (data) => submit(data);
- 
 
-  
   return (
     <>
       <Header userType={userType} />
-      
-        <Head>Login to Aradict.com</Head>
-        <Center height="100%" h="75%">
+      <Head>Login to Aradict.com</Head>
+
+        <Center width="100%" height="100%">
           <Box
             borderRadius={10}
             bg="white"
@@ -66,7 +65,6 @@ const Login = ({ userType }) => {
                   defaultValue=""
                   {...register("username", {
                     required: "Username is required",
-                    
                   })}
                 />
 
@@ -106,29 +104,25 @@ const Login = ({ userType }) => {
                 <FormErrorMessage id="password_error_msg">
                   <>
                     <FormErrorIcon />
-                  {errors.password?.message}
+                    {errors.password?.message}
                   </>
                 </FormErrorMessage>
                 <FormHelperText>Username is not case-sensitive</FormHelperText>
               </FormControl>
               <FormControl>
                 <Center>
-                  <Button 
-                    type="submit"
-                    size="lg"
-                    colorScheme="teal"
-                  >
+                  <Button type="submit" size="lg" colorScheme="teal">
                     Submit
                   </Button>
                 </Center>
               </FormControl>
             </form>
           </Box>
-        </Center>    </>
+        </Center>
+    </>
   );
 
   async function submit(e) {
-    
     try {
       await Axios({
         method: "POST",

@@ -169,7 +169,6 @@ const VoiceReviewer = ({ userType }) => {
       </Head>
 
       <Center
-        h="100%"
         w="100%"
         m="10px auto"
         overflow="hidden"

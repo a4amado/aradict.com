@@ -25,4 +25,7 @@ a:hover {
   font-family: 'IBM Plex Sans Arabic', sans-serif!important;
 } 
 
- 
+#__next {
+
+  height: 100vh;
+}
