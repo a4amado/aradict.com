@@ -14,10 +14,15 @@ const styles: Styles = {
   global: (props: GlobalStyleProps) => ({
     html: {
       bg: "url(/829s-min.png)",
-      bgSize: "10% auto"
+      bgSize: "10% auto",
+      height: "auto"
+
     },
     body: {
-      bg: "transparent"
+      bg: "transparent",
+      minHeight: "auto"
+    },
+    "#__next": {
     }
   })
 };

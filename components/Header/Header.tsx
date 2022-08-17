@@ -1,12 +1,12 @@
 import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React from "react";
 import Logo from "../../resources/abadis.svg";
 import { useTranslation } from "react-i18next";
 
 import DrawerC from "../Drawer";
-import { Box, Link, Stack, ButtonGroup, Button } from "@chakra-ui/react";
+import { Box, Button, Link, Stack } from "@chakra-ui/react";
 
 import Locales from "../Locales";
 
