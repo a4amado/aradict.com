@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import React from "react";
  import Header from "../components/Header";
  
-export default function AddSound({ userType }) {
+export default function AddSound() {
 
   const {
     query: { q },
@@ -14,7 +14,7 @@ export default function AddSound({ userType }) {
  
   return (
     <>
-      <Header userType={userType} />
+      <Header  />
       
       <div>SOOOOOOOOOOOOOOOOON</div>
     </>
@@ -23,16 +23,19 @@ export default function AddSound({ userType }) {
 
 import { verify } from "jsonwebtoken";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { jwtVerify } from "../utils/jwt";
 
 
-interface UserTOKENDecoded {
-  role: string;
-}
+
 const getServerSideProps:GetServerSideProps = async ({ req, locale }) => {
   const TOKEN = req.cookies.token || "";
   const JWT_SECRET = process.env.JWT_SECRET;
   
-  const data = verify(TOKEN, JWT_SECRET, (err, data) => !err || !data ? data: false );
+  let data;
+  try {
+     data = await jwtVerify(TOKEN, JWT_SECRET);
+  } catch (error) {
+  }
   
   const userType: any = data!.role || "";
   const translation = await serverSideTranslations(locale, ["common"]);

@@ -343,27 +343,27 @@ const VoiceReviewer = () => {
 
 export default VoiceReviewer;
 
-// export const getServerSideProps = async ({ req, locale }) => {
-//   const TOKEN = req.cookies.token;
-//   const JWT_SECRET = process.env.JWT_SECRET;
-//   let data: any;
+export const getServerSideProps = async ({ req, locale }) => {
+  const TOKEN = req.cookies.token;
+  const JWT_SECRET = process.env.JWT_SECRET;
+  let data: any;
 
-//   try {
-//     data = await jwtVerify(TOKEN, JWT_SECRET);
-//   } catch (error) {
-//     if (!data || !SecondLayer.includes(data.role) || error) {
-//       return Redirect("/", false);
-//     }
-//   }
+  try {
+    data = await jwtVerify(TOKEN, JWT_SECRET);
+  } catch (error) {
+    return Redirect("/", false);
+  }
+  if (!data || !SecondLayer.includes(data.role)) {
+    return Redirect("/", false);
+  }
 
-
-//   const userType = data?.role || "";
-//   const translation = await serverSideTranslations(locale, ["common"]);
-//   return {
-//     props: {
-//       ...translation,
-//       userType,
-//     },
-//   };
-// };
+  const userType = data?.role || "";
+  const translation = await serverSideTranslations(locale, ["common"]);
+  return {
+    props: {
+      ...translation,
+      userType,
+    },
+  };
+};
 

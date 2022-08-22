@@ -27,7 +27,7 @@ interface FormData {
   password: string;
 }
 
-const Login = ({ userType }) => {
+const Login = () => {
   const router = useRouter();
   const { t } = useTranslation("common");
   const {
@@ -39,8 +39,8 @@ const Login = ({ userType }) => {
 
   return (
     <>
-      <Header userType={userType} />
-      {/* <Head>Login to Aradict.com</Head> */}
+      <Header />
+      <Head>Login to Aradict.com</Head>
 
         <Center width="100%" flex={1} display="flex" flexDir="column" >
           <Box
@@ -142,6 +142,7 @@ export default Login;
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Redirect from "../utils/redirect";
 import { jwtVerify } from "../utils/jwt";
+import Head from "next/head";
 
 export const getServerSideProps = async ({ req, locale }) => {
   const TOEKN = req.cookies.token || "";

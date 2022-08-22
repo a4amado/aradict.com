@@ -29,7 +29,9 @@ const indicateClass = css`
   animation: ${indicate} 1s ease infinite;
 `;
 
-export default function AddSound({ userType }) {
+
+export default function AddSound() {
+  
   const [isLoading, setIsLoading] = React.useState(true);
   const [LoadingSuccess, setLoadingSuccess] = React.useState(false);
   const [LoadingFails, setLoadingFails] = React.useState(false);
@@ -142,9 +144,9 @@ export default function AddSound({ userType }) {
 
   return (
     <>
-      <Header userType={userType} />
+      <Header/>
       <Head>
-        <title>{}</title>
+        <title>Review Sound</title>
       </Head>
 
       <Center
@@ -417,12 +419,19 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { css } from "@emotion/react";
+import { jwtVerify } from "../../utils/jwt";
+import { usePageProps } from "../../utils/PagePropsInComponents";
 
 export const getServerSideProps = async ({ req, locale }) => {
   const TOKEN = req.cookies.token || "";
   const JWT_SECRET = process.env.JWT_SECRET;
 
-  const data = verify(TOKEN, JWT_SECRET, (err, data) => (!err ? data : false));
+  let data;
+  try {
+    data = await jwtVerify(TOKEN, JWT_SECRET)
+  } catch (error) {
+    return Redirect("/", false);
+  }
   if (!data || !FirstLayer.includes(data.role)) return Redirect("/", false);
 
   const userType = data?.role || "";
