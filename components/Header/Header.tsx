@@ -115,7 +115,7 @@ function LoginBtn() {
   
   const { t } = useTranslation();
 
-  if (!userType) return <></>;
+  if (userType) return <></>;
 
   return (
     <NextLink href="/login" passHref shallow={true}>
