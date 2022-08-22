@@ -48,12 +48,12 @@ const BounseKeyFrames = keyframes`
   }
 `;
 
-export default function Home({ userType }) {
+export default function Home() {
   const { t } = useTranslation("common");
   
   return (
     <>
-      <Header userType={userType} />
+      <Header />
       <Head>
         <title>Aradict.com | أرادكت</title>
       </Head>
