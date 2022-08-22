@@ -1,5 +1,19 @@
 @import url("https://www.fontstatic.com/f=bahij");
 
+#load {
+  position: fixed;
+  height: 100vh;
+  overflow: hidden;
+  width: 100%;
+  z-index: 5000;
+  top: 0;
+  left: 0;
+  text-align: center;
+  background: green;
+  color: #fff;
+  padding-top:25%;
+}
+
 html,
 body {
   padding: 0;
@@ -8,6 +22,10 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
+
+html{
+  overflow-y: overlay;
+}
 
 a {
   color: inherit;

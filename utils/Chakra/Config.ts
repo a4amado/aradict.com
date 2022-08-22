@@ -13,17 +13,23 @@ const breakpoints = {
 const styles: Styles = {
   global: (props: GlobalStyleProps) => ({
     html: {
-      bg: "url(/829s-min.png)",
-      bgSize: "10% auto",
-      height: "auto"
-
+      
+      height: "100%"
     },
     body: {
       bg: "transparent",
-      minHeight: "auto"
+      height: "100%"
+      
     },
     "#__next": {
-    }
+      bg: "url(/829s-min.png)",
+      bgSize: "10% auto",
+        display: "flex",
+        flexDir: "column",
+        alignItems: "stretch",
+        height: "100%"
+    }, 
+
   })
 };
 

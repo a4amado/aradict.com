@@ -1,45 +1,67 @@
-import theme from "../utils/Chakra/Config";
-import "nprogress/nprogress.css";
+/* eslint-disable @next/next/no-img-element */
 import "../styles/globals.css";
+import "../resources/abadis.svg";
+
+import theme from "../utils/Chakra/Config";
+
 import { appWithTranslation, i18n } from "next-i18next";
 import i18next from "i18next";
 i18next.init();
 
-import nProgress from "nprogress";
-
 import React from "react";
 
-import { Router } from "next/router";
-
 import AxiosProvider from "../utils/AxiosConfig";
-import { ChakraProvider, PortalManager } from "@chakra-ui/react";
+import {
+  Box,
+  ChakraProvider,
+  Portal,
+  PortalManager,
+  Spinner,
+  useBoolean,
+} from "@chakra-ui/react";
 
 i18next.on("languageChanged", (lng) => {
   document.documentElement.setAttribute("dir", i18n!.dir(lng));
 });
 
-nProgress.configure();
-Router.events.on("routeChangeStart", () => {
-  nProgress.start();
-});
-Router.events.on("routeChangeComplete", () => {
-  nProgress.done();
-});
-
 import type { AppProps } from "next/app";
+import Loading from "../components/Loading";
+import PagePropsProvider from "../utils/PagePropsInComponents";
 
+
+
+
+
+
+
+
+
+
+function SafeHydrate({ children }) {
+  return (
+    <div suppressHydrationWarning>
+      {typeof window === 'undefined' ? null : children}
+    </div>
+  )
+}
 function MyApp({ Component, pageProps }: AppProps) {
   const userType: string = pageProps.userType;
 
   return (
-    <AxiosProvider>
-      <ChakraProvider theme={theme}>
-        <PortalManager>
-          <Component {...pageProps} userType={userType} />
-        </PortalManager>
-      </ChakraProvider>
-    </AxiosProvider>
+    <PagePropsProvider value={pageProps}>
+      <AxiosProvider>
+        <ChakraProvider theme={theme}>
+          <PortalManager>            
+            <Loading />
+            <Component {...pageProps} />
+          </PortalManager>
+        </ChakraProvider>
+      </AxiosProvider>
+    </PagePropsProvider>
   );
 }
 
+
+
 export default appWithTranslation(MyApp);
+

@@ -3,12 +3,21 @@
 
 class isArabic {
     static validate({ word }: { word: string  }) {
-        if (word.length > 1) {
+        if(!word) return false;
+        if(typeof word != "string") return false;
+
+        const SpaceRegEx = /[\t\n\v\f\r \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000]/
+        
+        if (word.length > 1 ) {
             return !word.split("")
-              .map((char) => (this.isArabic(char) ? "" : "N"))
+              .map((char) => (this.isArabic(char) || char.match(SpaceRegEx) ? "" : "N"))
               .join("")
-              .toString();
-          }
+              .toString()
+        }
+        
+
+
+        
         return this.isArabic(word)
     }
     private static  isArabic(char: string) {

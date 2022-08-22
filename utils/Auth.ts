@@ -1,17 +1,25 @@
-import { StatusCodes, ReasonPhrases } from 'http-status-codes';
+import { StatusCodes, ReasonPhrases, getStatusCode } from 'http-status-codes';
 import { NextApiResponse } from 'next';
 import { NextApiRequest } from 'next';
-import { verify, ErrorHandler } from "jsonwebtoken";
+
 import { ThirdLayer, SecondLayer, FirstLayer } from "./AuthLayers";
 import { NextHandler } from "next-connect";
+import { jwtSign, jwtVerify } from './jwt';
 
 
-const isAuth = (req: NextApiRequest, res: NextApiResponse, next: NextHandler) => {
-  verify(req.cookies?.token, process.env.JWT_SECRET, (err: ErrorHandler, data) => {
-    if (err) return res.status(StatusCodes.NON_AUTHORITATIVE_INFORMATION).send(ReasonPhrases.NON_AUTHORITATIVE_INFORMATION);
-    req.user = data;
-    return next();
-  });
+
+
+const isAuth = async (req: NextApiRequest, res: NextApiResponse, next: NextHandler) => {
+  try {
+    const TOKEN  = req.cookies.token;
+    const JWT_Secret  = req.cookies.token;
+    const  payload = await jwtVerify(TOKEN, JWT_Secret);
+    req.user = payload;
+    next();
+  } catch (error) {
+    res.status(StatusCodes.UNAUTHORIZED).send({ msg:  ReasonPhrases.UNAUTHORIZED })
+    res.end();
+  }
 };
 
 const ThirdLayerAuth = [

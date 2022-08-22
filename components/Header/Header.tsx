@@ -6,11 +6,14 @@ import Logo from "../../resources/abadis.svg";
 import { useTranslation } from "react-i18next";
 
 import DrawerC from "../Drawer";
-import { Box, Button, Link, Stack } from "@chakra-ui/react";
+import { Box, Button,Link, Stack } from "@chakra-ui/react";
 
 import Locales from "../Locales";
+import { usePageProps } from "../../utils/PagePropsInComponents";
 
-const Header = ({ userType }) => {
+
+const Header = () => {
+
   return (
     <Box
       height={65}
@@ -21,14 +24,17 @@ const Header = ({ userType }) => {
       p="10px 5px"
     >
       <Locales />
-      <Link href="/">
+      <NextLink href="/"  passHref={true}>
+        <Link>
+        
         <Image src={Logo} width={150} height={40} alt="dd" />
-      </Link>
+        </Link>
+      </NextLink>
 
       <DrawerC>
         <Stack>
           <HomeBtn />
-          <HeaderList userType={userType} />
+          <HeaderList />
         </Stack>
       </DrawerC>
     </Box>
@@ -51,7 +57,8 @@ function HomeBtn() {
   );
 }
 
-function HeaderList({ userType }) {
+function HeaderList() {
+  const {userType} = usePageProps()
   const { t } = useTranslation("common");
   // if usernot auth show login btn
   if (!userType) {
@@ -104,9 +111,14 @@ function HeaderList({ userType }) {
 }
 
 function LoginBtn() {
+  const {userType} = usePageProps()
+  
   const { t } = useTranslation();
+
+  if (!userType) return <></>;
+
   return (
-    <NextLink href="/login" passHref>
+    <NextLink href="/login" passHref shallow={true}>
       <Link as={Button}>
         <a>{t("LOGIN")}</a>
       </Link>
@@ -115,9 +127,11 @@ function LoginBtn() {
 }
 
 function Logout() {
-  const router = useRouter();
-
+  const {userType} = usePageProps()
+  
   const { t } = useTranslation();
+
+  if (userType) return <></>
   return (
     <NextLink href="/api/logout" passHref>
       <Link as={Button}>

@@ -7,7 +7,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: { domains: ["abadis.ir", "www.svgrepo.com", "img.icons8.com"] },
-  i18n,
+  i18n
 };
 
 module.exports = nextConfig;

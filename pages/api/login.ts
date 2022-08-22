@@ -1,12 +1,15 @@
+import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { serialize } from "cookie";
-import { sign } from "jsonwebtoken";
+import * as jose from "jose";
 import * as Yup from "yup";
+
 import prisma from "../../DB";
 
- 
+
 import nextConnect, { NextHandler, ErrorHandler } from "next-connect";
+import { jwtSign } from '../../utils/jwt';
 
 const Route = nextConnect<NextApiRequest, NextApiResponse>({
   onNoMatch: (req, res) => {
@@ -46,10 +49,17 @@ Route.post<NextApiRequest, NextApiResponse>(async (req, res) => {
     user_id: "dddddddddddddddddddddddddddddddd",
   };
 
+    
+  let JWT_HASH: string;
+  const JWT_SECRET = process.env.JWT_SECRET;
+  try {
+    JWT_HASH = await jwtSign(user, JWT_SECRET);
+  } catch (error) {    
+    console.log(error);
+    
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ msg: ReasonPhrases.INTERNAL_SERVER_ERROR });
+  }
   
-  const JWT_HASH = sign(user, process.env.JWT_SECRET, {
-    expiresIn: "2h",
-  });
   res.setHeader(
     "Set-Cookie",
     serialize("token", JWT_HASH, { httpOnly: true, path: "/" })

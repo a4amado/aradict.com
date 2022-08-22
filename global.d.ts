@@ -1,3 +1,4 @@
+import { KeyLike } from 'jose';
 import {IncomingMessage} from "http";
 declare module 'next' {
   export interface NextApiRequest extends IncomingMessage{
@@ -5,4 +6,12 @@ declare module 'next' {
   }
 }
 
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      JWT_SECRET:  string
+    }
+  }
+}
 export {}

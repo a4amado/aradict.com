@@ -1,6 +1,4 @@
 import Axios from "axios";
-import { verify } from "jsonwebtoken";
-import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import {
@@ -14,10 +12,10 @@ import {
   FormLabel,
   Input,
   InputGroup,
-  InputRightElement,
-  ButtonSpinner,
-  Container,
+  InputRightElement
 } from "@chakra-ui/react";
+
+
 import { useForm, SubmitHandler } from "react-hook-form";
 
 import Header from "../components/Header";
@@ -42,9 +40,9 @@ const Login = ({ userType }) => {
   return (
     <>
       <Header userType={userType} />
-      <Head>Login to Aradict.com</Head>
+      {/* <Head>Login to Aradict.com</Head> */}
 
-        <Center width="100%" height="100%">
+        <Center width="100%" flex={1} display="flex" flexDir="column" >
           <Box
             borderRadius={10}
             bg="white"
@@ -143,14 +141,19 @@ export default Login;
 
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Redirect from "../utils/redirect";
+import { jwtVerify } from "../utils/jwt";
 
 export const getServerSideProps = async ({ req, locale }) => {
   const TOEKN = req.cookies.token || "";
   const JWT_SECRET = process.env?.JWT_SECRET;
-  const data = verify(TOEKN, JWT_SECRET, (err, data) => (!err ? data : false));
+  
+  try {
+    let data = await jwtVerify(TOEKN, JWT_SECRET);
+    if (data) return Redirect("/", false);
+  } catch (error) {}
 
-  console.log(!!data);
-  if (data) return Redirect("/", false);
+  
+  
 
   const transition = await serverSideTranslations(locale, ["common"]);
 
