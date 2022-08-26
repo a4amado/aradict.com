@@ -1,7 +1,5 @@
-import { useBoolean } from "@chakra-ui/react";
 import i18next from "i18next";
 import { Html, Head, Main, NextScript, DocumentContext } from "next/document";
-import { Router, useRouter } from "next/router";
 import React from "react";
 
 export default function Document(ctx: DocumentContext) {
@@ -15,13 +13,9 @@ export default function Document(ctx: DocumentContext) {
           rel="stylesheet"
         />
       </Head>
-      
       <body>
-              
-
         <Main />
-        <NextScript />
-        
+        <NextScript />        
       </body>
     </Html>
   );

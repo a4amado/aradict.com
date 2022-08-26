@@ -1,8 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
-
 import Head from "next/head";
-import React, { useState } from "react";
+import React, { Dispatch, useCallback, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
@@ -18,7 +17,6 @@ import {
   Heading,
   InputGroup,
   InputLeftAddon,
-  Link,
   Button,
   Tag,
   Text,
@@ -28,29 +26,16 @@ import {
   Input,
   useBoolean,
   Portal,
-  Toast,
   Image,
+  Link,
 } from "@chakra-ui/react";
+import NextLink from "next/link";
 
-import { css, keyframes } from "@emotion/react";
-
-const BounseKeyFrames = keyframes`
-  0% {
-    transform: translatey(0);
-  }
-
-  50% {
-    transform: translateY(-5px);
-  }
-
-  100% {
-    transform: translateY(0);
-  }
-`;
+import { css } from "@emotion/react";
 
 export default function Home() {
   const { t } = useTranslation("common");
-  
+
   return (
     <>
       <Header />
@@ -173,10 +158,8 @@ const getServerSideProps = async ({ req, locale }) => {
   try {
     data = await jwtVerify(TOKEN, JWT_SECRET);
     console.log(data);
-    
   } catch (error) {
     console.log(error);
-    
   }
   const userType = data?.role || "";
   const translation = await serverSideTranslations(locale, ["common"]);
@@ -185,7 +168,6 @@ const getServerSideProps = async ({ req, locale }) => {
 };
 
 export { getServerSideProps };
-
 
 const ListStyle = css`
   & > button {
@@ -198,22 +180,19 @@ const ListStyle = css`
   }
 `;
 
-
-
 import { Circular, Node } from "doublie";
-
-
-
+import ConShow from "../components/Show";
+import { useRouter } from "next/router";
 
 const AutoComplete = () => {
   const toast = useToast();
   const [show, { on, off }] = useBoolean();
   const [q, setQ] = React.useState("");
-  const onChange = (e) => {
-    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-      return e.preventDefault();
-    }
+  const router = useRouter();
 
+  const onChange = (e) => {
+    const key = e.key;
+    if (key === "ArrowUp" || e.key === "ArrowDown") e.preventDefault();
     const Coee = isArabic.validate({ word: e.target.value });
     if (!Coee)
       return toast({
@@ -225,53 +204,41 @@ const AutoComplete = () => {
     search(e.target.value);
   };
   const inputRefContainer = React.useRef<HTMLDivElement>();
-  const inputRef = React.useRef<HTMLElement>();
   const [searching, setSearching] = useState<boolean>();
   const [items, setItems] = useState<Circular>();
-  const [activeItem, setActiveItem] = useState<Node>();
-
+  
+  const [activeItem, setActiveItem] = useStateDep(items?.head, [items]);
   const { t } = useTranslation("common");
 
   function search(e) {
     setItems(null);
-    setActiveItem(null);
     setSearching(true);
-    console.log(e);
-
     setTimeout(() => {
       const circular = new Circular();
-
       Array.from({ length: 10 }, () => ({ id: Math.random() * 10 })).map((e) =>
         circular.append(e)
       );
-
       setItems(circular);
-
       setSearching(false);
     }, 2000);
   }
 
   function SwitchNode(e) {
-    if (e.key === "ArrowDown") {
+    const key = e.key;
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
       if (!items) return false;
-      if (!activeItem) return setActiveItem(items.head);
-      setActiveItem(activeItem.next);
-      return false;
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      if (!items) return false;
-      if (!activeItem) return setActiveItem(items.last);
-      setActiveItem(activeItem.prev);
-      return false;
+      if (key === "ArrowDown") return setActiveItem(activeItem.next);
+      if (key === "ArrowUp") return setActiveItem(activeItem.prev);
     }
+    if (key === "Enter") return router.push({ pathname: "/word", query: { q: "wwwww" } });
     return true;
-  }
+  };
 
   return (
     <>
       <Portal>
-        {show && (
+        <ConShow condetion={show}>
           <Box
             onClick={off}
             position="absolute"
@@ -282,7 +249,7 @@ const AutoComplete = () => {
             bg="blackAlpha.400"
             zIndex={1}
           />
-        )}
+        </ConShow>
       </Portal>
       <Box
         position="relative"
@@ -325,13 +292,11 @@ const AutoComplete = () => {
             left={0}
             // gap={1}
           >
-            {!!items && !searching && !!q && show && (
-              <>
-                <ListOfSuggestions items={items} activeItem={activeItem} />
-              </>
-            )}
+            <ConShow condetion={!!items && !searching && !!q && show}>
+              <ListOfSuggestions items={items} activeItem={activeItem} />
+            </ConShow>
 
-            {searching && !!q && (
+            <ConShow condetion={searching && !!q}>
               <Center height={200}>
                 <Spinner
                   thickness="4px"
@@ -341,10 +306,11 @@ const AutoComplete = () => {
                   size="xl"
                 />
               </Center>
-            )}
-            {!items && !searching && !!q && (
+            </ConShow>
+
+            <ConShow condetion={!items && !searching && !!q}>
               <Center height={400}>Nothing Found</Center>
-            )}
+            </ConShow>
           </Box>
         </InputGroup>
       </Box>
@@ -358,16 +324,29 @@ const ListOfSuggestions = ({ items, activeItem }) => {
       {items.toArray().map((e, i) => {
         const active = activeItem?.value?.id === e.id;
         return (
-          <Button
-            key={e.id}
-            tabIndex={active ? 0 : -1}
-            onClick={console.log}
-            bg={active ? "yellow" : "ref"}
-          >
-            Item - {i}
-          </Button>
+          <NextLink key={i} href={`/word?q=word`} passHref>
+            <Link
+              as={Button}
+              key={e.id}
+              tabIndex={active ? 0 : -1}
+              bg={active ? "yellow" : "ref"}
+            >
+              Word - {i}
+            </Link>
+          </NextLink>
         );
       })}
     </Box>
   );
 };
+
+
+
+const useStateDep = (state: any,  dep: any[]): [any, Dispatch<Node>] => {
+  const [value, setValue] = useState<Node>();
+
+  React.useEffect(() => {
+    setValue(state)
+  }, [...dep])
+  return [value, setValue]
+}

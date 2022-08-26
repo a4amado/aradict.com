@@ -1,7 +1,9 @@
 import axios, { AxiosError } from "axios"
 import { StatusCodes } from "http-status-codes";
 import { useRouter } from "next/router"
-import React from "react";
+import React, { lazy } from "react";
+
+
 
  
 
@@ -10,7 +12,9 @@ function AxiosProvider({ children }) {
     const { locale, replace } = useRouter();
     
     React.useEffect(() => {
+        
         axios.defaults.headers.common['locale'] = locale;
+        axios.defaults.headers.common['fingerprint'];
     }, [locale]);
     
     axios.interceptors.response.use((res) => res, (err: AxiosError) => {

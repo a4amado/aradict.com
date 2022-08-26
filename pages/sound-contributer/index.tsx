@@ -8,6 +8,25 @@ import Axios from "axios";
 import Header from "../../components/Header";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
+import { useHotkeys } from "react-hotkeys-hook";
+
+import {
+  Box,
+  Button,
+  Center,
+  Circle,
+  Container,
+  Grid,
+  GridItem,
+  Heading,
+  Kbd,
+  keyframes,
+  Spinner,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
+import { css } from "@emotion/react";
+import { jwtVerify } from "../../utils/jwt";
 
 let chunks = [];
 function FreeChunks() {
@@ -29,9 +48,7 @@ const indicateClass = css`
   animation: ${indicate} 1s ease infinite;
 `;
 
-
 export default function AddSound() {
-  
   const [isLoading, setIsLoading] = React.useState(true);
   const [LoadingSuccess, setLoadingSuccess] = React.useState(false);
   const [LoadingFails, setLoadingFails] = React.useState(false);
@@ -104,47 +121,45 @@ export default function AddSound() {
     setSubmittingFails(status === "show" ? true : false);
   }
 
-  // Initalize shortcuts
-  React.useEffect(() => {
-    function handler(e) {
-      switch (e.code) {
-        case "KeyF":
-          fetcher();
-          break;
-
-        default:
-          break;
-      }
-      // Disable shortcuts while submitting or loading
-      if (disableShortcuts) return false;
-      switch (e.code) {
-        case "KeyR":
-          Recorde();
-          break;
-        case "KeyW":
-          Stop();
-          break;
-        case "KeyS":
-          Submit();
-          break;
-        case "KeyP":
-          Play();
-          break;
-        case "KeyC":
-          resetRecorded();
-          break;
-        default:
-          break;
-      }
-    }
-
-    document.addEventListener("keyup", handler);
-    return () => document.removeEventListener("keyup", handler);
+  useHotkeys("F", () => {
+    fetcher();
   });
+  useHotkeys("F", () => {
+    Recorde();
+  });
+
+  useHotkeys(
+    "W",
+    () => {
+      Stop();
+    },
+    [!disableShortcuts]
+  );
+  useHotkeys(
+    "S",
+    () => {
+      Submit();
+    },
+    [!disableShortcuts]
+  );
+  useHotkeys(
+    "P",
+    () => {
+      Play();
+    },
+    [!disableShortcuts]
+  );
+  useHotkeys(
+    "C",
+    () => {
+      resetRecorded();
+    },
+    [!disableShortcuts]
+  );
 
   return (
     <>
-      <Header/>
+      <Header />
       <Head>
         <title>Review Sound</title>
       </Head>
@@ -155,7 +170,6 @@ export default function AddSound() {
         overflow="hidden"
         position="relative"
         maxW={600}
-        
       >
         <Center
           w="100%"
@@ -198,7 +212,7 @@ export default function AddSound() {
             </Button>
           </GridItem>
           <GridItem textAlign="center" position="relative">
-          <Circle
+            <Circle
               position="absolute"
               top="10px"
               right="10px"
@@ -403,24 +417,6 @@ export default function AddSound() {
 
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Redirect from "../../utils/redirect";
-import {
-  Box,
-  Button,
-  Center,
-  Circle,
-  Container,
-  Grid,
-  GridItem,
-  Heading,
-  Kbd,
-  keyframes,
-  Spinner,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
-import { css } from "@emotion/react";
-import { jwtVerify } from "../../utils/jwt";
-import { usePageProps } from "../../utils/PagePropsInComponents";
 
 export const getServerSideProps = async ({ req, locale }) => {
   const TOKEN = req.cookies.token || "";
@@ -428,7 +424,7 @@ export const getServerSideProps = async ({ req, locale }) => {
 
   let data;
   try {
-    data = await jwtVerify(TOKEN, JWT_SECRET)
+    data = await jwtVerify(TOKEN, JWT_SECRET);
   } catch (error) {
     return Redirect("/", false);
   }

@@ -6,7 +6,7 @@ const { i18n } = require('./next-i18next.config');
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  images: { domains: ["abadis.ir", "www.svgrepo.com", "img.icons8.com"] },
+  images: { domains: ["abadis.ir", "www.svgrepo.com", "img.icons8.com", "cloudflare-ipfs.com"] },
   i18n
 };
 

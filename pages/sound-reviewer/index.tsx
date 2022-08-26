@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import Head from "next/head";
@@ -24,6 +23,8 @@ import {
 } from "@chakra-ui/react";
 import { jwtVerify } from "../../utils/jwt";
 import ConShow from "../../components/Show";
+import Footer from "../../components/Footer";
+
 
 const VoiceReviewer = () => {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -196,6 +197,7 @@ const VoiceReviewer = () => {
             <Center display="flex" flexDir="column" fontSize={20} height="100%" w="100%" h={200} bg="#fff">
               <Kbd m={3} p={3} display="block" size="xl">{data[0]?.ar}</Kbd>
               <audio ref={soundRef} controls src={`/sound/${data[0]?.file_name}`} />
+              
             </Center>
           </ConShow>
         </Center>
@@ -276,6 +278,7 @@ const VoiceReviewer = () => {
           </Grid>
         </Box>
       </Box>
+      <Footer />
     </>
   );
 

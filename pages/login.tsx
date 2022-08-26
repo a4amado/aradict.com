@@ -117,6 +117,7 @@ const Login = () => {
             </form>
           </Box>
         </Center>
+        <Footer/>
     </>
   );
 
@@ -143,6 +144,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Redirect from "../utils/redirect";
 import { jwtVerify } from "../utils/jwt";
 import Head from "next/head";
+import Footer from "../components/Footer";
 
 export const getServerSideProps = async ({ req, locale }) => {
   const TOEKN = req.cookies.token || "";
