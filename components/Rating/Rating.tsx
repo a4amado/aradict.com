@@ -13,7 +13,7 @@ import {
   PopoverTrigger,
   Portal,
   Spinner,
-  Text,
+  Button,
   useBoolean,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -45,7 +45,7 @@ const Rating = ({ rating = 0 }: { rating: number }) => {
       initialFocusRef={initialFocusRef}
     >
       <PopoverTrigger>
-        <Text textAlign="center">Rate</Text>
+        <Button textAlign="center">Rate</Button>
       </PopoverTrigger>
 
       <Portal>

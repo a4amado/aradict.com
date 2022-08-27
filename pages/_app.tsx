@@ -2,6 +2,7 @@ import "../styles/globals.css";
 
 
 
+
 import { appWithTranslation, i18n } from "next-i18next";
 import i18next from "i18next";
 i18next.init();
@@ -28,7 +29,9 @@ import theme from "../utils/Chakra/Config";
 
 
 
+
 function MyApp({ Component, pageProps }: AppProps) {
+
   return (
     <PagePropsProvider value={pageProps}>
       <AxiosProvider>

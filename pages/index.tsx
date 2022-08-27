@@ -7,6 +7,8 @@ import Footer from "../components/Footer";
 
 import { useTranslation } from "next-i18next";
 
+
+
 import isArabic from "../utils/isArabic";
 // import NextLink from "next/link";
 import {
@@ -151,7 +153,10 @@ export default function Home() {
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { jwtVerify } from "../utils/jwt";
 
-const getServerSideProps = async ({ req, locale }) => {
+const getServerSideProps: GetServerSideProps = async ({ req, locale, res }) => {
+
+  
+
   const TOKEN = req.cookies?.token || "";
   const JWT_SECRET = process.env.JWT_SECRET;
   let data: any;
@@ -183,6 +188,8 @@ const ListStyle = css`
 import { Circular, Node } from "doublie";
 import ConShow from "../components/Show";
 import { useRouter } from "next/router";
+import { GetServerSideProps } from "next";
+import { noSSR } from "next/dynamic";
 
 const AutoComplete = () => {
   const toast = useToast();
@@ -324,7 +331,7 @@ const ListOfSuggestions = ({ items, activeItem }) => {
       {items.toArray().map((e, i) => {
         const active = activeItem?.value?.id === e.id;
         return (
-          <NextLink key={i} href={`/word?q=word`} passHref>
+          <NextLink key={i} href={`/word?q=word`} passHref shallow>
             <Link
               as={Button}
               key={e.id}
@@ -350,3 +357,4 @@ const useStateDep = (state: any,  dep: any[]): [any, Dispatch<Node>] => {
   }, [...dep])
   return [value, setValue]
 }
+
