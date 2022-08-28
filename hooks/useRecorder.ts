@@ -21,6 +21,8 @@ const useRecorder = (constraintes: constraintes) => {
     };
     mediaRecorder.current.onstart = () => {
       chunks.current = [];
+      setisRecording(true);
+
     };
 
     mediaRecorder.current.onstop = () => {

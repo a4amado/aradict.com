@@ -303,7 +303,6 @@ export default function AddSound() {
   }
 
   function Stop() {
-    console.log(r.blob);
     if (!r.isRecording) {
       return toast({
         title: "Error",
