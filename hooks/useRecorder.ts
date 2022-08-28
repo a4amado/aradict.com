@@ -6,7 +6,6 @@ interface constraintes {
 }
 
 const useRecorder = (constraintes: constraintes) => {
-  const [trigger, setTrigget] = React.useState(false);
   const chunks = React.useRef([]);
   const mediaStream = React.useRef<MediaStream>(null);
   const mediaRecorder = React.useRef<MediaRecorder>(null);
@@ -22,7 +21,6 @@ const useRecorder = (constraintes: constraintes) => {
     };
     mediaRecorder.current.onstart = () => {
       chunks.current = [];
-      setisRecording(true);
     };
 
     mediaRecorder.current.onstop = () => {
@@ -47,7 +45,6 @@ const useRecorder = (constraintes: constraintes) => {
       const isTrackActive = track.readyState === "live";
       if (isTrackActive) track.stop();
     });
-    setTrigget(!trigger);
   }
 
   const getStream = React.useCallback(async () => {

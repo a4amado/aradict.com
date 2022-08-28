@@ -56,7 +56,7 @@ export default function AddSound() {
   const [SubmittingSuccess, setSubmittingSuccess] = React.useState(false);
   const [SubmittingFails, setSubmittingFails] = React.useState(false);
 
-  const [data, setData] = React.useState<object>();
+  const [data, setData] = React.useState<any>();
   const disableShortcuts = isLoading || isSubmitting || !data;
 
   const { t } = useTranslation();
@@ -376,6 +376,7 @@ export default function AddSound() {
 
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Redirect from "../../utils/redirect";
+import { string } from "yup";
 export const getServerSideProps = async ({ req, locale }) => {
   const TOKEN = req.cookies.token || "";
   const JWT_SECRET = process.env.JWT_SECRET;
