@@ -19,117 +19,52 @@ import {
   Kbd,
   Spinner,
   Text,
+  Toast,
+  ToastId,
+  ToastProvider,
   useToast,
 } from "@chakra-ui/react";
 import { jwtVerify } from "../../utils/jwt";
 import ConShow from "../../components/Show";
 import Footer from "../../components/Footer";
-
+import useAxios from "../../hooks/useAxios";
+import axios, { Axios } from "axios";
 
 const VoiceReviewer = () => {
   const [isLoading, setIsLoading] = React.useState(false);
-  const [LoadingSuccess, setLoadingSuccess] = React.useState(false);
-  const [LoadingFails, setLoadingFails] = React.useState(false);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [SubmittingSuccess, setSubmittingSuccess] = React.useState(false);
-  const [SubmittingFails, setSubmittingFails] = React.useState(false);
 
   const [data, setData] = React.useState([]);
-  const disableShortcuts = isLoading || isSubmitting || data.length === 0;
+  // const disableShortcuts = isLoading || isSubmitting || data.length === 0;
 
+  const net = useAxios();
   const toast = useToast();
+
   let soundRef = React.useRef(null);
+
   React.useEffect(() => {
     fetcher();
   }, []);
-
-  function ToogleLoading(status) {
-    setIsLoading(status === "show" ? true : false);
-    setLoadingSuccess(false);
-    setLoadingFails(false);
-    setIsSubmitting(false);
-    setSubmittingSuccess(false);
-    setSubmittingFails(false);
-  }
-
-  function ToogleLoadingSuccess(status) {
-    setIsLoading(false);
-    setLoadingSuccess(status === "show" ? true : false);
-    setLoadingFails(false);
-    setIsSubmitting(false);
-    setSubmittingSuccess(false);
-    setSubmittingFails(false);
-  }
-
-  function ToogleLoadingFails(status) {
-    setIsLoading(false);
-    setLoadingSuccess(false);
-    setLoadingFails(status === "show" ? true : false);
-    setIsSubmitting(false);
-    setSubmittingSuccess(false);
-    setSubmittingFails(false);
-  }
-
-  function ToogleIsSubmitting(status) {
-    setIsLoading(false);
-    setLoadingSuccess(false);
-    setLoadingFails(false);
-    setIsSubmitting(status === "show" ? true : false);
-    setSubmittingSuccess(false);
-    setSubmittingFails(false);
-  }
-
-  function ToogleSubmittingSuccess(status) {
-    setIsLoading(false);
-    setLoadingSuccess(false);
-    setLoadingFails(false);
-    setIsSubmitting(false);
-    setSubmittingSuccess(status === "show" ? true : false);
-    setSubmittingFails(false);
-  }
-
-  function ToogleSubmittingFails(status) {
-    setIsLoading(false);
-    setLoadingSuccess(false);
-    setLoadingFails(false);
-    setIsSubmitting(false);
-    setSubmittingSuccess(false);
-    setSubmittingFails(status === "show" ? true : false);
-  }
 
   const router = useRouter();
   const { t } = useTranslation();
 
   async function fetcher() {
-    ToogleLoading("show");
-    setData([]);
-    // return axios({
-    //   method: "GET",
-    //   url: "/api/sound/get-non-approved-sound",
-    // })
-    //   .then((e) => {
-    //     setData(e.data);
-    //     ToogleLoadingSuccess("show");
-    //   })
-    //   .catch((err) => {
-    //     ToogleLoadingFails("show");
-    //   });
-
     return new Promise((res, rej) => {
-      const Sound = {
-        ar: "أنا",
-        en: "I",
-        file_name: "fb3da276-6b3f-4f2b-a467-fc363675a490.mp3",
-        sound_id: "7a16995e-b721-4fb5-ab3e-14ec479923fe",
-        word_id: "1379fef1-34eb-47e4-88d9-c5ac519afcce",
-      };
+    const Sound = {
+      ar: "أنا",
+      en: "I",
+      file_name: "fb3da276-6b3f-4f2b-a467-fc363675a490.mp3",
+      sound_id: "7a16995e-b721-4fb5-ab3e-14ec479923fe",
+      word_id: "1379fef1-34eb-47e4-88d9-c5ac519afcce",
+    };
+    
 
-      return setTimeout(() => {
-        setData([Sound]);
-        ToogleLoadingSuccess("show");
-      }, 1000);
-    });
-  }
+    return setTimeout(() => {
+      res(Sound)
+    }, 3000);
+  })
+  };
+
   React.useEffect(() => {
     fetcher();
   }, []);
@@ -150,10 +85,14 @@ const VoiceReviewer = () => {
     console.log("Pause");
   });
 
-  useHotkeys("P", () => {
-    play();
-    console.log("play");
-  });
+  useHotkeys(
+    "P",
+    () => {
+      play();
+      console.log("play");
+    },
+    [isLoading]
+  );
   useHotkeys("A", () => {
     approve();
     console.log("Approve");
@@ -164,7 +103,6 @@ const VoiceReviewer = () => {
     console.log("Approve");
   });
 
-  
   return (
     <>
       <Header />
@@ -180,7 +118,7 @@ const VoiceReviewer = () => {
           maxW={600}
           height={200}
         >
-          <ConShow condetion={disableShortcuts}>
+          <ConShow condetion={data.length === 0}>
             <Center
               w="100%"
               h="100%"
@@ -193,11 +131,24 @@ const VoiceReviewer = () => {
             </Center>
           </ConShow>
 
-          <ConShow condetion={!disableShortcuts}>
-            <Center display="flex" flexDir="column" fontSize={20} height="100%" w="100%" h={200} bg="#fff">
-              <Kbd m={3} p={3} display="block" size="xl">{data[0]?.ar}</Kbd>
-              <audio ref={soundRef} controls src={`/sound/${data[0]?.file_name}`} />
-              
+          <ConShow condetion={data.length > 0}>
+            <Center
+              display="flex"
+              flexDir="column"
+              fontSize={20}
+              height="100%"
+              w="100%"
+              h={200}
+              bg="#fff"
+            >
+              <Kbd m={3} p={3} display="block" size="xl">
+                {data[0]?.ar}
+              </Kbd>
+              <audio
+                ref={soundRef}
+                controls
+                src={`/sound/${data[0]?.file_name}`}
+              />
             </Center>
           </ConShow>
         </Center>
@@ -220,7 +171,7 @@ const VoiceReviewer = () => {
           >
             <GridItem textAlign="center">
               <Button
-                disabled={disableShortcuts}
+                disabled={data.length < 1}
                 onClick={reject}
                 colorScheme="teal"
                 w="100%"
@@ -231,7 +182,7 @@ const VoiceReviewer = () => {
             </GridItem>
             <GridItem textAlign="center">
               <Button
-                disabled={disableShortcuts}
+                disabled={data.length < 1}
                 onClick={reject}
                 colorScheme="teal"
                 w="100%"
@@ -243,18 +194,18 @@ const VoiceReviewer = () => {
             <GridItem textAlign="center">
               <Button
                 aria-keyshortcuts="W"
-                disabled={disableShortcuts}
+                disabled={data.length < 1}
                 onClick={pause}
                 colorScheme="teal"
                 w="100%"
                 size="lg"
               >
-                <Kbd color="#000">\W\</Kbd>  <Text m="0 10px"> Pause </Text>
+                <Kbd color="#000">\W\</Kbd> <Text m="0 10px"> Pause </Text>
               </Button>
             </GridItem>
             <GridItem textAlign="center">
               <Button
-                disabled={disableShortcuts}
+                disabled={data.length < 1}
                 onClick={fetcher}
                 colorScheme="teal"
                 w="100%"
@@ -265,7 +216,7 @@ const VoiceReviewer = () => {
             </GridItem>
             <GridItem textAlign="center">
               <Button
-                disabled={disableShortcuts}
+                disabled={data.length < 1}
                 colorScheme="teal"
                 w="100%"
                 size="lg"
@@ -283,52 +234,46 @@ const VoiceReviewer = () => {
   );
 
   async function approve() {
-    if (!data) return false;
-    ToogleIsSubmitting("show");
-    try {
-      // await axios({
-      //   method: "POST",
-      //   data: { sound_id: data[0].sound_id },
-      //   url: "/api/sound/approve",
-      // });
+    const ff = new Promise((res, rej) => {
+      setTimeout(() => {
+        res("HI")
+      }, 5000)
+    });
 
-      return setTimeout(() => {
-        setTimeout(() => {
-          ToogleLoading("show");
-          toast({
-            title: "Approves",
-            status: "success",
-            isClosable: true,
-          });
-          setTimeout(() => {
-            fetcher();
-          }, 500);
-        }, 500);
-      }, 1000);
-    } catch (error) {
-      ToogleLoadingFails("show");
-    }
+
+    toast.promise(ff, {
+      loading: {
+        title: "loading"
+      },
+      error: {
+        title: "error"
+      },
+      success: {
+        title: "Success"
+      }
+    })
+    // setTimeout(function () {
+      
+    //   // setTimeout(function () {
+    //   //   // fetcher();
+    //   // }, 500);
+    // }, 500);
   }
 
   async function reject() {
     if (!data) return false;
 
-    ToogleIsSubmitting("show");
+    setIsLoading(true);
     try {
       setTimeout(() => {
-        toast({
-          status: "success",
-          title: t("Rejected"),
-          isClosable: true,
-        });
-        ToogleLoading("show");
+        
+
         setTimeout(() => {
           fetcher();
         }, 500);
       }, 500);
     } catch (error) {
       setTimeout(() => {
-        ToogleIsSubmitting("show");
         toast({
           status: "error",
           title: t("SOMETHING_WENT_WRONG"),
@@ -369,4 +314,3 @@ export const getServerSideProps = async ({ req, locale }) => {
     },
   };
 };
-

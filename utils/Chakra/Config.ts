@@ -1,5 +1,7 @@
+import { AspectRatio } from '@chakra-ui/react';
+
 import { extendTheme } from '@chakra-ui/react';
-import { mode, Styles, GlobalStyleProps } from '@chakra-ui/theme-tools'
+import { mode, Styles, GlobalStyleProps, JSXElementStyles } from '@chakra-ui/theme-tools'
  
 
 const breakpoints = {

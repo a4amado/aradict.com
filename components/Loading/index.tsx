@@ -1,66 +1,76 @@
-import { Box, Spinner, useBoolean } from "@chakra-ui/react";
-import { css, CSSObject } from "@emotion/react";
-import { Router, useRouter } from "next/router";
-import React, { useCallback, useState } from "react";
-import useFirstMount from "../../hooks/isFirstMount";
+import { Box, Spinner } from "@chakra-ui/react";
+
+import {
+  motion,
+  useAnimationControls,
+  Variants,
+  AnimationControls,
+} from "framer-motion";
+import Router from "next/router";
+import React, { memo } from "react";
+import { useFirstMountState } from "react-use";
+
+const variants: Variants = {
+  active: {
+    position: "fixed",
+    width: "100%",
+    height: "100%",
+    top: "0",
+    left: "0",
+    zIndex: 500000,
+    backgroundColor: "white",
+    display: "block",
+    opacity: 1,
+  },
+  hide: {
+    transition: {
+      duration: 0.5,
+      ease: "easeInOut",
+    },
+
+    opacity: 0,
+  },
+  out: {
+    display: "none",
+  },
+};
 
 const Loading = () => {
-  const FirstMount = useFirstMount();
-  const { isReady } = useRouter();
-  let Styles = css`
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    background: white;
-    z-index: calc(var(--chakra-zIndices-overlay) * 2);
-    left: 0;
-    transition: all 1s;
-  `;
-  const fade = css`opacity: 0;`;
-  const displayNone = css`display: none;`;
+  const isFirstMount = useFirstMountState();
+  const controle: AnimationControls = useAnimationControls();
 
-  const [StylesArr, setStylesArr] = useState([Styles]);
-
-  const AddFaceClasses = useCallback(() => {
-    setStylesArr([...StylesArr, fade]);
-    setTimeout(() => {
-      setStylesArr([...StylesArr, displayNone]);
-    }, 1000);
-  }, [StylesArr, displayNone, fade])
-  
+  const H = () => controle.start("hide").then(() => controle.start("out"));
 
   React.useEffect(() => {
-    if (isReady) {
-        AddFaceClasses()
-    }
+    if (isFirstMount && Router.ready) H();
   }, []);
 
-  React.useEffect(() => {
-    Router.events.on("routeChangeStart", () => setStylesArr([Styles]));
-    Router.events.on("routeChangeComplete", AddFaceClasses);
-    return () => {
-      Router.events.on("routeChangeStart", () => setStylesArr([Styles]));
-      Router.events.on("routeChangeComplete", () => AddFaceClasses());
-    };
-  }, [AddFaceClasses, Styles]);
+  Router.events.on("routeChangeStart", () => controle.start("active"));
+  Router.events.on("routeChangeComplete", H);
 
   return (
-    <Box css={StylesArr}>
+    <>
       <Box
-        display="flex"
-        w="100%"
-        h="100%"
-        justifyContent="center"
-        alignItems="center"
-        flexDir="column"
+        as={motion.div}
+        variants={variants}
+        animate={controle}
+        initial="active"
       >
-        <img alt="s" src="/abadis.svg" width={400} height={150} />
-        <Spinner size="lg" m={10}/>
+        <Box
+          display="flex"
+          w="100vw"
+          h="100vh"
+          justifyContent="center"
+          alignItems="center"
+          flexDir="column"
+        >
+          <img alt="s" src="/abadis.svg" width={400} height={150} />
+          <Spinner size="lg" m={10} />
+        </Box>
+        <Spinner />
       </Box>
-      <Spinner/>
-    </Box>
+    </>
   );
 };
 
-export default Loading;
+export default memo(Loading);

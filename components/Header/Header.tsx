@@ -1,18 +1,24 @@
 import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
-import Logo from "../../resources/abadis.svg";
 import { useTranslation } from "react-i18next";
-
-import DrawerC from "../Drawer";
-import { Box, Button,Link, Stack } from "@chakra-ui/react";
-
+import {
+  Box,
+  Button,
+  Link,
+  Stack,
+  useImage,
+  Skeleton,
+  AspectRatio,
+} from "@chakra-ui/react";
 import Locales from "../Locales";
 import { usePageProps } from "../../utils/PagePropsInComponents";
-
+import Logo from "../../public/abadis.svg";
+import DrawerC from "../Drawer";
+import React from "react";
 
 const Header = () => {
+  const logostate = useImage({ src: "/abadis.svg", loading: "lazy" });
 
   return (
     <Box
@@ -24,10 +30,18 @@ const Header = () => {
       p="10px 5px"
     >
       <Locales />
-      <NextLink href="/"  passHref={true}>
+      <NextLink href="/" passHref={true}>
         <Link>
-        
-        <Image src={Logo} width={150} height={40} alt="dd" />
+          <Image
+            src={Logo}
+            loading="lazy"
+            placeholder="blur"
+            title="Logo"
+            blurDataURL="ssssssssssssssssss"
+            width={150}
+            height={40}
+            alt="dd"
+          />
         </Link>
       </NextLink>
 
@@ -54,11 +68,11 @@ function HomeBtn() {
           <a>{t("HOME")}</a>
         </Link>
       </NextLink>
-  );
+    );
 }
 
 function HeaderList() {
-  const {userType} = usePageProps()
+  const { userType } = usePageProps();
   const { t } = useTranslation("common");
   // if usernot auth show login btn
   if (!userType) {
@@ -111,8 +125,8 @@ function HeaderList() {
 }
 
 function LoginBtn() {
-  const {userType} = usePageProps()
-  
+  const { userType } = usePageProps();
+
   const { t } = useTranslation();
 
   if (userType) return <></>;
@@ -127,11 +141,11 @@ function LoginBtn() {
 }
 
 function Logout() {
-  const {userType} = usePageProps()
-  
+  const { userType } = usePageProps();
+
   const { t } = useTranslation();
 
-  if (userType) return <></>
+  if (userType) return <></>;
   return (
     <NextLink href="/api/logout" passHref>
       <Link as={Button}>

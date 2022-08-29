@@ -13,7 +13,7 @@ import {
   Portal,
   useDisclosure,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { memo } from "react";
 import { usePageProps } from "../../utils/PagePropsInComponents";
 
 
@@ -35,7 +35,9 @@ function DrawerExample({ children }) {
         isOpen={isOpen}
         placement="right"
         onClose={onClose}
-        
+        closeOnEsc={true}
+        closeOnOverlayClick={true}
+        blockScrollOnMount={true}
       >
         <DrawerOverlay />
         <DrawerContent>
@@ -51,4 +53,4 @@ function DrawerExample({ children }) {
   );
 }
 
-export default DrawerExample;
+export default memo(DrawerExample)

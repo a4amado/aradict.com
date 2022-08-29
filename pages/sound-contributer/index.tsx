@@ -155,7 +155,7 @@ export default function AddSound() {
     () => {
       resetRecorded();
     },
-    [r.isRecording]
+    [r.isRecording, r.isEmpty]
   );
 
   return (
@@ -211,7 +211,7 @@ export default function AddSound() {
         >
           <GridItem textAlign="center">
             <Button
-              // disabled={r.status === "no_specified_media_found"}
+              disabled={r.isEmpty}
               onClick={Play}
               colorScheme="teal"
               w="100%"
@@ -234,7 +234,7 @@ export default function AddSound() {
             </ConShow>
             <Button
               disabled={r.isRecording}
-              // onClick={Recorde}
+              onClick={Record}
               colorScheme="teal"
               w="100%"
               size="lg"
@@ -244,7 +244,7 @@ export default function AddSound() {
           </GridItem>
           <GridItem textAlign="center">
             <Button
-              disabled={r.isRecording}
+              disabled={!r.isRecording}
               onClick={Stop}
               colorScheme="teal"
               w="100%"
@@ -256,7 +256,7 @@ export default function AddSound() {
           </GridItem>
           <GridItem textAlign="center">
             <Button
-              disabled={disableShortcuts}
+              disabled={!data}
               onClick={fetcher}
               colorScheme="teal"
               w="100%"
@@ -267,7 +267,7 @@ export default function AddSound() {
           </GridItem>
           <GridItem textAlign="center">
             <Button
-              disabled={disableShortcuts}
+              disabled={r.isEmpty}
               colorScheme="teal"
               w="100%"
               size="lg"
@@ -278,7 +278,7 @@ export default function AddSound() {
           </GridItem>
           <GridItem textAlign="center">
             <Button
-              disabled={disableShortcuts}
+              disabled={r.isEmpty}
               colorScheme="teal"
               w="100%"
               size="lg"
@@ -321,11 +321,11 @@ export default function AddSound() {
   }
 
   function Play() {
-    // if (r.isEmpty) return toast({ status: "error", isClosable: true, title: "Error", description: t("NO_THING") });
-    console.log(r.chunks);
+    if (r.isEmpty) return toast({ status: "error", isClosable: true, title: "Error", description: t("NO_THING") });
+    
 
-    // const aa = new Audio();
-    // aa.play()
+    const aa = new Audio(r.url);
+    aa.play()
   }
 
   async function fetcher() {
@@ -368,7 +368,7 @@ export default function AddSound() {
   }
 
   function resetRecorded() {
-    // r.clearBlobUrl();
+    r.reset();
     toast({ title: "Reset", status: "success", isClosable: true });
   }
 }

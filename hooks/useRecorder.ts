@@ -12,6 +12,10 @@ const useRecorder = (constraintes: constraintes) => {
   const [blob, setBlob] = React.useState<Blob>();
   const [url, setURL] = React.useState<string>();
   const [isRecording, setisRecording] = React.useState<boolean>(false);
+  const isEmpty = React.useMemo(() => {
+    const e = !blob?.size|| !url?.length ? true : false;
+    return e;
+  }, [blob, url])
 
   async function StartRecording() {
     if (!mediaStream.current) mediaStream.current = await getStream();
@@ -22,7 +26,6 @@ const useRecorder = (constraintes: constraintes) => {
     mediaRecorder.current.onstart = () => {
       chunks.current = [];
       setisRecording(true);
-
     };
 
     mediaRecorder.current.onstop = () => {
@@ -49,6 +52,15 @@ const useRecorder = (constraintes: constraintes) => {
     });
   }
 
+  function reset() {
+
+    if (isRecording) StopRecording()
+    if (chunks.current) chunks.current = []
+    if (blob?.size) setBlob(null);
+    if (url) setURL(null)
+
+  }
+
   const getStream = React.useCallback(async () => {
     return await navigator.mediaDevices.getUserMedia(constraintes);
   }, [constraintes]);
@@ -60,6 +72,8 @@ const useRecorder = (constraintes: constraintes) => {
     isRecording,
     blob,
     url,
+    isEmpty,
+    reset
   };
 };
 
