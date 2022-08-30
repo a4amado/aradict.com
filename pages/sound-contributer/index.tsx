@@ -1,152 +1,58 @@
-import React, { useMemo } from "react";
-import { FirstLayer } from "../../utils/AuthLayers";
-import Head from "next/head";
+const PageUserRank = layers.VC.rank;
 
-import FormData from "form-data";
-import Axios from "axios";
+
+import React from "react";
+import Head from "next/head";
+import { motion } from "framer-motion";
 import Header from "../../components/Header";
-import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
 import { useHotkeys } from "react-hotkeys-hook";
-import {
-  Box,
-  Button,
-  Center,
-  Circle,
-  Container,
-  Grid,
-  GridItem,
-  Heading,
-  Kbd,
-  keyframes,
-  Spinner,
-  Text,
-  Toast,
-  useToast,
-} from "@chakra-ui/react";
-import { css } from "@emotion/react";
-import { jwtVerify } from "../../utils/jwt";
-
+import * as Chakra from "@chakra-ui/react";
 import ConShow from "../../components/Show";
-
-const indicate = keyframes`
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 1;
-  }
-`;
-const indicateClass = css`
-  animation: ${indicate} 1s ease infinite;
-`;
-
-import swr from "swr";
 import useRecorder from "../../hooks/useRecorder";
 
+
+
 export default function AddSound() {
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [LoadingSuccess, setLoadingSuccess] = React.useState(false);
-  const [LoadingFails, setLoadingFails] = React.useState(false);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [SubmittingSuccess, setSubmittingSuccess] = React.useState(false);
-  const [SubmittingFails, setSubmittingFails] = React.useState(false);
+  React.useEffect(() => { fetch() }, []);
 
-  const [data, setData] = React.useState<any>();
-  const disableShortcuts = isLoading || isSubmitting || !data;
-
+  const [data, setData] = React.useState<any>();  
+  const toast = Chakra.useToast();
   const { t } = useTranslation();
-  React.useEffect(() => {
-    fetcher();
-  }, []);
+  
+  const f_request = useAxios(); // handle Fetching
+  const s_request = useAxios(); // Handle submitting
 
-  const toast = useToast();
 
   const r = useRecorder({ audio: true, video: false });
-
-  function ToogleLoading(status) {
-    setIsLoading(status === "show" ? true : false);
-    setLoadingSuccess(false);
-    setLoadingFails(false);
-    setIsSubmitting(false);
-    setSubmittingSuccess(false);
-    setSubmittingFails(false);
-  }
-
-  function ToogleLoadingSuccess(status) {
-    setIsLoading(false);
-    setLoadingSuccess(status === "show" ? true : false);
-    setLoadingFails(false);
-    setIsSubmitting(false);
-    setSubmittingSuccess(false);
-    setSubmittingFails(false);
-  }
-
-  function ToogleLoadingFails(status) {
-    setIsLoading(false);
-    setLoadingSuccess(false);
-    setLoadingFails(status === "show" ? true : false);
-    setIsSubmitting(false);
-    setSubmittingSuccess(false);
-    setSubmittingFails(false);
-  }
-
-  function ToogleIsSubmitting(status) {
-    setIsLoading(false);
-    setLoadingSuccess(false);
-    setLoadingFails(false);
-    setIsSubmitting(status === "show" ? true : false);
-    setSubmittingSuccess(false);
-    setSubmittingFails(false);
-  }
-
-  function ToogleSubmittingSuccess(status) {
-    setIsLoading(false);
-    setLoadingSuccess(false);
-    setLoadingFails(false);
-    setIsSubmitting(false);
-    setSubmittingSuccess(status === "show" ? true : false);
-    setSubmittingFails(false);
-  }
-
-  function ToogleSubmittingFails(status) {
-    setIsLoading(false);
-    setLoadingSuccess(false);
-    setLoadingFails(false);
-    setIsSubmitting(false);
-    setSubmittingSuccess(false);
-    setSubmittingFails(status === "show" ? true : false);
-  }
+  
+  
 
   useHotkeys("F", () => {
-    fetcher();
+    fetch();
   });
   useHotkeys("R", () => {
-    Record();
+    record();
   });
 
   useHotkeys(
     "W",
     () => {
-      Stop();
+      stop();
     },
     [r.isRecording]
   );
   useHotkeys(
     "S",
     () => {
-      Submit();
+      submit();
     },
     [r.isRecording]
   );
   useHotkeys(
     "P",
     () => {
-      Play();
+      play();
     },
     [r.isRecording]
   );
@@ -165,7 +71,7 @@ export default function AddSound() {
         <title>Review Sound</title>
       </Head>
 
-      <Center
+      <Chakra.Center
         w="100%"
         m="10px auto"
         overflow="hidden"
@@ -173,8 +79,8 @@ export default function AddSound() {
         maxW={600}
         h={200}
       >
-        <ConShow condetion={disableShortcuts}>
-          <Center
+        <ConShow condetion={f_request.isLoading}>
+          <Chakra.Center
             w="100%"
             h="100%"
             position="absolute"
@@ -182,116 +88,121 @@ export default function AddSound() {
             left={0}
             backgroundColor="white"
           >
-            <Spinner />
-          </Center>
+            <Chakra.Spinner />
+          </Chakra.Center>
         </ConShow>
-        <ConShow condetion={!disableShortcuts}>
-          <Center fontSize={20} height="100%" w="100%" h={200} bg="#fff">
+        <ConShow condetion={!f_request.isLoading || !f_request.isError || f_request.data}>
+          <Chakra.Center fontSize={20} height="100%" w="100%" h={200} bg="#fff">
             {data?.ar}
             {JSON.stringify(r.url)}
-          </Center>
+          </Chakra.Center>
         </ConShow>
-      </Center>
+      </Chakra.Center>
 
-      <Box
+      <Chakra.Box
         maxWidth="calc(800px + (10px * 3))"
         width="100%"
         m="10px auto"
         bg="#fff"
         borderRadius={10}
       >
-        <Center paddingTop={10}>
-          <Heading as="h5">Controllers</Heading>
-        </Center>
-        <Grid
+        <Chakra.Center paddingTop={10}>
+          <Chakra.Heading as="h5">Controllers</Chakra.Heading>
+        </Chakra.Center>
+        <Chakra.Grid
           templateColumns="repeat(auto-fit, minmax(200px, 1fr))"
           width="100%"
           gap="10px"
           p={10}
         >
-          <GridItem textAlign="center">
-            <Button
+          <Chakra.GridItem textAlign="center">
+            <Chakra.Button
               disabled={r.isEmpty}
-              onClick={Play}
+              onClick={play}
               colorScheme="teal"
               w="100%"
               size="lg"
             >
-              <Kbd color="#000">P</Kbd> <Text m="0 10px">{t("PLAY")}</Text>
-            </Button>
-          </GridItem>
-          <GridItem textAlign="center" position="relative">
+              <Chakra.Kbd color="#000">P</Chakra.Kbd>{" "}
+              <Chakra.Text m="0 10px">{t("PLAY")}</Chakra.Text>
+            </Chakra.Button>
+          </Chakra.GridItem>
+          <Chakra.GridItem textAlign="center" position="relative">
             <ConShow condetion={r.isRecording}>
-              <Circle
+              <Chakra.Circle
                 position="absolute"
                 top="10px"
                 right="10px"
-                css={indicateClass}
                 bg="red"
                 zIndex={2}
                 size={4}
+                as={motion.div}
               />
             </ConShow>
-            <Button
+            <Chakra.Button
               disabled={r.isRecording}
-              onClick={Record}
+              onClick={record}
               colorScheme="teal"
               w="100%"
               size="lg"
             >
-              <Kbd color="#000">R</Kbd> <Text m="0 10px">{t("RECORD")}</Text>
-            </Button>
-          </GridItem>
-          <GridItem textAlign="center">
-            <Button
+              <Chakra.Kbd color="#000">R</Chakra.Kbd>{" "}
+              <Chakra.Text m="0 10px">{t("RECORD")}</Chakra.Text>
+            </Chakra.Button>
+          </Chakra.GridItem>
+          <Chakra.GridItem textAlign="center">
+            <Chakra.Button
               disabled={!r.isRecording}
-              onClick={Stop}
+              onClick={stop}
               colorScheme="teal"
               w="100%"
               size="lg"
             >
-              <Kbd color="#000">W</Kbd>{" "}
-              <Text m="0 10px"> {t("STOP_RECORDING")} </Text>
-            </Button>
-          </GridItem>
-          <GridItem textAlign="center">
-            <Button
+              <Chakra.Kbd color="#000">W</Chakra.Kbd>{" "}
+              <Chakra.Text m="0 10px"> {t("STOP_RECORDING")} </Chakra.Text>
+            </Chakra.Button>
+          </Chakra.GridItem>
+          <Chakra.GridItem textAlign="center">
+            <Chakra.Button
               disabled={!data}
-              onClick={fetcher}
+              onClick={fetch}
               colorScheme="teal"
               w="100%"
               size="lg"
             >
-              <Kbd color="#000">F</Kbd> <Text m="0 10px">{t("Fetch")} </Text>
-            </Button>
-          </GridItem>
-          <GridItem textAlign="center">
-            <Button
+              <Chakra.Kbd color="#000">F</Chakra.Kbd>{" "}
+              <Chakra.Text m="0 10px">{t("Fetch")} </Chakra.Text>
+            </Chakra.Button>
+          </Chakra.GridItem>
+          <Chakra.GridItem textAlign="center">
+            <Chakra.Button
               disabled={r.isEmpty}
               colorScheme="teal"
               w="100%"
               size="lg"
               onClick={resetRecorded}
             >
-              <Kbd color="#000">Q</Kbd> <Text m="0 10px"> {t("RESET")} </Text>
-            </Button>
-          </GridItem>
-          <GridItem textAlign="center">
-            <Button
+              <Chakra.Kbd color="#000">Q</Chakra.Kbd>{" "}
+              <Chakra.Text m="0 10px"> {t("RESET")} </Chakra.Text>
+            </Chakra.Button>
+          </Chakra.GridItem>
+          <Chakra.GridItem textAlign="center">
+            <Chakra.Button
               disabled={r.isEmpty}
               colorScheme="teal"
               w="100%"
               size="lg"
             >
-              <Kbd color="#000">S</Kbd> <Text m="0 10px"> {t("SUBMIT")} </Text>
-            </Button>
-          </GridItem>
-        </Grid>
-      </Box>
+              <Chakra.Kbd color="#000">S</Chakra.Kbd>{" "}
+              <Chakra.Text m="0 10px"> {t("SUBMIT")} </Chakra.Text>
+            </Chakra.Button>
+          </Chakra.GridItem>
+        </Chakra.Grid>
+      </Chakra.Box>
     </>
   );
 
-  function Record() {
+  function record() {
     if (r.isRecording) {
       return toast({
         title: "Error",
@@ -302,7 +213,7 @@ export default function AddSound() {
     r.StartRecording();
   }
 
-  function Stop() {
+  function stop() {
     if (!r.isRecording) {
       return toast({
         title: "Error",
@@ -320,51 +231,35 @@ export default function AddSound() {
     });
   }
 
-  function Play() {
-    if (r.isEmpty) return toast({ status: "error", isClosable: true, title: "Error", description: t("NO_THING") });
-    
+  function play() {
+    if (r.isEmpty)
+      return toast({
+        status: "error",
+        isClosable: true,
+        title: "Error",
+        description: t("NO_THING"),
+      });
 
     const aa = new Audio(r.url);
-    aa.play()
+    aa.play();
   }
 
-  async function fetcher() {
-    ToogleLoading("show");
-    setData(null);
-    const word = {
-      ar: "أنا",
-      en: "I",
-      file_name: "64cdd16c-dc84-4695-8095-2f33c1734637.web",
-      sound_id: "7a16995e-b721-4fb5-ab3e-14ec479923fe",
-      word_id: "1379fef1-34eb-47e4-88d9-c5ac519afcce",
-    };
-    return new Promise((res, rej) => {
-      setTimeout(() => {
-        ToogleLoading("show");
-        setTimeout(() => {
-          ToogleLoadingSuccess("show");
-          setData(word);
-        }, 500);
-      }, 500);
+  async function fetch() {
+    const newWord = f_request.call({
+      url: "/api/words/get-word-without-sound",
+      method: "GET"
     });
   }
 
-  function Submit() {
-    // if (!r.state.isEmpty)
-    //   return toast({
-    //     title: t("NO_THING"),
-    //     isClosable: true,
-    //     status: "error",
-    //     containerStyle: { direction: "initial" },
-    //   });
-    ToogleIsSubmitting("show");
+  function submit() {
+    if (s_request.isLoading || f_request.isLoading) {
+        return toast({ title: t("NO_THING"), isClosable: true, status: "error", containerStyle: { direction: "initial" }, })
+    }
 
-    setTimeout(() => {
-      ToogleLoading("show");
-      setTimeout(() => {
-        fetcher();
-      }, 500);
-    }, 500);
+
+
+
+
   }
 
   function resetRecorded() {
@@ -375,21 +270,18 @@ export default function AddSound() {
 
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Redirect from "../../utils/redirect";
-import { string } from "yup";
+import useAxios from "../../hooks/useAxios";
+import parseCookie from "../../utils/parseCookie";
+import layers from "../../utils/AuthLayers";
+
 export const getServerSideProps = async ({ req, locale }) => {
-  const TOKEN = req.cookies.token || "";
-  const JWT_SECRET = process.env.JWT_SECRET;
-
-  let data;
-  try {
-    data = await jwtVerify(TOKEN, JWT_SECRET);
-  } catch (error) {
-    return Redirect("/", false);
-  }
-  if (!data || !FirstLayer.includes(data.role)) return Redirect("/", false);
-
-  const userType = data?.role || "";
   const translation = await serverSideTranslations(locale, ["common"]);
+  const user = await parseCookie(req);
+  if (!user || user.rank > PageUserRank) return Redirect("/", false);
+
+  const userType = user?.role;
+  console.log(user?.role);
+  
   return {
     props: {
       ...translation,
@@ -397,3 +289,6 @@ export const getServerSideProps = async ({ req, locale }) => {
     },
   };
 };
+
+
+

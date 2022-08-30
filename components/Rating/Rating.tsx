@@ -1,30 +1,13 @@
 import { StarIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  Center,
-  ModalOverlay,
-  Popover,
-  PopoverAnchor,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
-  Portal,
-  Spinner,
-  Button,
-  useBoolean,
-  useDisclosure,
-} from "@chakra-ui/react";
+import * as Chakra from "@chakra-ui/react";
 import React from "react";
 import ConShow from "../Show";
 
 const Rating = ({ rating = 0 }: { rating: number }) => {
   const [Rateing, setRating] = React.useState(rating);
-  const [loading, { on, off }] = useBoolean(false);
+  const [loading, { on, off }] = Chakra.useBoolean(false);
 
-  const { isOpen, onClose, onOpen, onToggle } = useDisclosure({
+  const { isOpen, onClose, onOpen, onToggle } = Chakra.useDisclosure({
     defaultIsOpen: false,
   });
   const initialFocusRef = React.useRef();
@@ -37,27 +20,27 @@ const Rating = ({ rating = 0 }: { rating: number }) => {
   }
 
   return (
-    <Popover
+    <Chakra.Popover
       isOpen={isOpen}
       closeOnBlur={true}
       onClose={onClose}
       onOpen={onOpen}
       initialFocusRef={initialFocusRef}
     >
-      <PopoverTrigger>
-        <Button textAlign="center">Rate</Button>
-      </PopoverTrigger>
+      <Chakra.PopoverTrigger>
+        <Chakra.Button textAlign="center">Rate</Chakra.Button>
+      </Chakra.PopoverTrigger>
 
-      <Portal>
-        <PopoverContent>
-          <PopoverCloseButton onClick={onClose} />
+      <Chakra.Portal>
+        <Chakra.PopoverContent>
+          <Chakra.PopoverCloseButton onClick={onClose} />
 
-          <PopoverBody textAlign="center">
-            <PopoverArrow />
+          <Chakra.PopoverBody textAlign="center">
+            <Chakra.PopoverArrow />
             <ConShow condetion={loading}>
-              <Center w="100%" h="100%">
-                <Spinner />
-              </Center>
+              <Chakra.Center w="100%" h="100%">
+                <Chakra.Spinner />
+              </Chakra.Center>
             </ConShow>
             <ConShow condetion={!loading}>
               <React.Fragment>
@@ -76,10 +59,10 @@ const Rating = ({ rating = 0 }: { rating: number }) => {
                 ))}
               </React.Fragment>
             </ConShow>
-          </PopoverBody>
-        </PopoverContent>
-      </Portal>
-    </Popover>
+          </Chakra.PopoverBody>
+        </Chakra.PopoverContent>
+      </Chakra.Portal>
+    </Chakra.Popover>
   );
 };
 

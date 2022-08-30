@@ -1,20 +1,7 @@
 import i18next from "i18next";
 import { useRouter } from "next/router";
 import React, { FC, useRef } from "react";
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalContent,
-  ModalCloseButton,
-  Button,
-  useDisclosure,
-  ModalOverlay,
-  Grid,
-  GridItem,
-  Input,
-  Portal
-} from "@chakra-ui/react";
+import * as Chakra from "@chakra-ui/react";
 import US from "../../public/USA.svg";
 import SAUDI from "../../public/SAUDI.svg";
 import NL from "../../public/NL.svg";
@@ -34,7 +21,7 @@ import { setCookie } from "cookies-next";
 
 const Locales: FC = () => {
   let { asPath, locale, pathname, query, push, locales } = useRouter();
-  const { isOpen, onClose, onOpen, onToggle } = useDisclosure();
+  const { isOpen, onClose, onOpen, onToggle } = Chakra.useDisclosure();
   const [lang, setLang] = React.useState("");
   const SInput = useRef<HTMLInputElement>();
 
@@ -63,37 +50,37 @@ const Locales: FC = () => {
 
   return (
     <>
-      <Button onClick={onOpen} ref={ff}>
+      <Chakra.Button onClick={onOpen} ref={ff}>
         <Image
           src={ShowLang[0].Flag}
           width={50}
           height={30}
           alt={ShowLang[0].name}
         />
-      </Button>
-      <Portal>
-        <Modal
+      </Chakra.Button>
+      <Chakra.Portal>
+        <Chakra.Modal
           closeOnEsc={true}
           finalFocusRef={ff}
           isOpen={isOpen}
           onClose={onClose}
         >
-          <ModalOverlay />
+          <Chakra.ModalOverlay />
 
-          <ModalContent>
-            <ModalCloseButton />
-            <ModalBody my={20}>
-              <ModalHeader textAlign="center">
+          <Chakra.ModalContent>
+            <Chakra.ModalCloseButton />
+            <Chakra.ModalBody my={20}>
+              <Chakra.ModalHeader textAlign="center">
                 <h2>Choose language</h2>
-                <Input
+                <Chakra.Input
                   type="text"
                   ref={SInput}
                   autoFocus={true}
                   placeholder="Search ..."
                   onChange={handleChange}
                 />
-              </ModalHeader>
-              <Grid
+              </Chakra.ModalHeader>
+              <Chakra.Grid
                 templateColumns="repeat(auto-fit, minmax(200px, 1fr));"
                 gap={5}
                 overflowY="auto"
@@ -101,8 +88,8 @@ const Locales: FC = () => {
                 {(LangFind.search(lang) || locales).map(
                   ({ name, code, Flag }) => {
                     return (
-                      <GridItem  key={`${code}-flag`}>
-                        <Button w="100%" onClick={() => Swith(code)}>
+                      <Chakra.GridItem  key={`${code}-flag`}>
+                        <Chakra.Button w="100%" onClick={() => Swith(code)}>
                             {name}{" "}
                             <Image
                               src={Flag}
@@ -111,16 +98,16 @@ const Locales: FC = () => {
                               alt={name}
                             />{" "}
                           
-                        </Button>
-                      </GridItem>
+                        </Chakra.Button>
+                      </Chakra.GridItem>
                     );
                   }
                 )}
-              </Grid>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      </Portal>
+              </Chakra.Grid>
+            </Chakra.ModalBody>
+          </Chakra.ModalContent>
+        </Chakra.Modal>
+      </Chakra.Portal>
     </>
   );
 };

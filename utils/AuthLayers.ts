@@ -1,5 +1,13 @@
-const FirstLayer = ["voice-contributer", "voice-reviewer", "admin"];
-const SecondLayer = ["voice-reviewer", "admin"];
-const ThirdLayer = ["admin"];
+const Admin = { code: "admin", rank: 0 };
+const VR = { code: "voice-reviewer", rank: 1 };
+const VC = { code: "voice-contributer", rank: 2 };
+const Public = { code: null };
 
-export { FirstLayer, SecondLayer, ThirdLayer };
+const layers = {
+  Admin,
+  VR,
+  VC,
+  Public
+};
+
+export default layers;

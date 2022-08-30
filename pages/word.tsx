@@ -1,21 +1,12 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import React, { lazy, useMemo, useRef, useState } from "react";
+import React from "react";
 import Header from "../components/Header";
 import { faker } from "@faker-js/faker";
 faker.setLocale("ar");
 import Footer from "../components/Footer";
-import {
-  Box,
-  Center,
-  Kbd,
-  Text,
-  Circle,
-  List,
-  ListItem,
-  useImage,
-  SkeletonCircle,
-} from "@chakra-ui/react";
+
+import * as Chakra from "@chakra-ui/react";
 import { useHotkeys } from "react-hotkeys-hook";
 import ConShow from "../components/Show";
 
@@ -33,16 +24,20 @@ export default function AddSound({ data }) {
     <>
       <Header />
 
-      <Box flex={1} maxW={700} w="100%" m="0 auto">
-        <Center m="10px 15px" alignItems="center" justifyContent="center">
-          <Text as="h1" fontWeight="bold" p="10px 15px" bg="white">
-            كيفيه نظق <Kbd>المقاولون</Kbd>
-          </Text>
-        </Center>
-        <Box w="100%" gap={2} display="grid">
+      <Chakra.Box flex={1} maxW={700} w="100%" m="0 auto">
+        <Chakra.Center
+          m="10px 15px"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Chakra.Text as="h1" fontWeight="bold" p="10px 15px" bg="white">
+            كيفيه نظق <Chakra.Kbd>المقاولون</Chakra.Kbd>
+          </Chakra.Text>
+        </Chakra.Center>
+        <Chakra.Box w="100%" gap={2} display="grid">
           <ListC list={data} />
-        </Box>
-      </Box>
+        </Chakra.Box>
+      </Chakra.Box>
       <Footer />
     </>
   );
@@ -51,7 +46,7 @@ export default function AddSound({ data }) {
 import { Circular, Node } from "doublie";
 
 const ListC = ({ list }: any) => {
-  const items = useMemo(() => {
+  const items = React.useMemo(() => {
     const CirculatList = new Circular();
     list.map((e, i) => {
       CirculatList.append(e);
@@ -60,7 +55,7 @@ const ListC = ({ list }: any) => {
     return CirculatList;
   }, [list]);
 
-  const [activeItem, setActiveItem] = useState<Node>();
+  const [activeItem, setActiveItem] = React.useState<Node>();
 
   function next() {
     if (items.isEmpty()) return false;
@@ -88,7 +83,7 @@ const ListC = ({ list }: any) => {
 
   return (
     <ConShow condetion={!items.isEmpty()}>
-      <List display="grid" gap={2}>
+      <Chakra.List display="grid" gap={2}>
         {list.map((item, i) => (
           <Item
             setActiveItem={setActiveItemClick}
@@ -98,7 +93,7 @@ const ListC = ({ list }: any) => {
             nodeIndex={i}
           />
         ))}
-      </List>
+      </Chakra.List>
     </ConShow>
   );
 };
@@ -115,12 +110,17 @@ const Item = ({
   nodeIndex: number;
 }) => {
   const isActive = item.id === active?.value?.id;
-  const state = useImage({ src: item.img });
+  const state = Chakra.useImage({ src: item.img });
 
   return (
-    <ListItem>
-      <Box w="100%" flexDir="row" display="flex" bg={isActive ? "yellow" : "white"}>
-        <Box
+    <Chakra.ListItem>
+      <Chakra.Box
+        w="100%"
+        flexDir="row"
+        display="flex"
+        bg={isActive ? "yellow" : "white"}
+      >
+        <Chakra.Box
           flexDir="row"
           display="flex"
           p="4px 6px"
@@ -134,7 +134,7 @@ const Item = ({
             isActive={isActive}
           />
 
-          <Circle margin="1px 5px" borderRadius="50%" overflow="hidden">
+          <Chakra.Circle margin="1px 5px" borderRadius="50%" overflow="hidden">
             {state === "loaded" ? (
               <NextImage
                 src={item.img}
@@ -144,21 +144,21 @@ const Item = ({
                 loading="lazy"
               />
             ) : (
-              <SkeletonCircle w={30} />
+              <Chakra.SkeletonCircle w={30} />
             )}
-          </Circle>
+          </Chakra.Circle>
 
-          <Text mr="10px">
+          <Chakra.Text mr="10px">
             {item.name} - {item.sex} - من {item.country}
-          </Text>
-        </Box>
-        <Box marginRight="auto" >
-          <Center w="100%" h="100%" >
-          <Rating rating={3} />
-          </Center>
-        </Box>
-      </Box>
-    </ListItem>
+          </Chakra.Text>
+        </Chakra.Box>
+        <Chakra.Box marginRight="auto">
+          <Chakra.Center w="100%" h="100%">
+            <Rating rating={3} />
+          </Chakra.Center>
+        </Chakra.Box>
+      </Chakra.Box>
+    </Chakra.ListItem>
   );
 };
 
@@ -171,11 +171,11 @@ const Sound = ({
   open: boolean;
   isActive: boolean;
 }) => {
-  const audiRef = useRef<HTMLAudioElement>();
-  const [isPlaying, setIsPlaying] = useState(false);
+  const audiRef = React.useRef<HTMLAudioElement>();
+  const [isPlaying, setIsPlaying] = React.useState(false);
 
   // Start [+++] Only runs when isActive params commin from the parent changes
-  const activeFromPared = useMemo(() => isActive, [isActive]);
+  const activeFromPared = React.useMemo(() => isActive, [isActive]);
   React.useEffect(() => {
     if (activeFromPared) play();
     else if (!activeFromPared) stop();
@@ -197,7 +197,7 @@ const Sound = ({
   };
 
   return (
-    <Circle onClick={toogle}>
+    <Chakra.Circle onClick={toogle}>
       <audio ref={audiRef} src={url} onEnded={stop} onPause={stop} />
 
       {!isPlaying ? (
@@ -205,7 +205,7 @@ const Sound = ({
       ) : (
         <NextImage width={40} height={40} src={Pause} />
       )}
-    </Circle>
+    </Chakra.Circle>
   );
 };
 

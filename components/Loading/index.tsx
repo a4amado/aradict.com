@@ -1,4 +1,4 @@
-import { Box, Spinner } from "@chakra-ui/react";
+import * as Chakra from "@chakra-ui/react";
 
 import {
   motion,
@@ -50,13 +50,13 @@ const Loading = () => {
 
   return (
     <>
-      <Box
+      <Chakra.Box
         as={motion.div}
         variants={variants}
         animate={controle}
         initial="active"
       >
-        <Box
+        <Chakra.Box
           display="flex"
           w="100vw"
           h="100vh"
@@ -65,10 +65,10 @@ const Loading = () => {
           flexDir="column"
         >
           <img alt="s" src="/abadis.svg" width={400} height={150} />
-          <Spinner size="lg" m={10} />
-        </Box>
-        <Spinner />
-      </Box>
+          <Chakra.Spinner size="lg" m={10} />
+        </Chakra.Box>
+        <Chakra.Spinner />
+      </Chakra.Box>
     </>
   );
 };

@@ -1,34 +1,44 @@
-import { useHotkeys } from "react-hotkeys-hook";
+const PageUserRank = layers.VR.rank;
 
+import { useHotkeys } from "react-hotkeys-hook";
 import Head from "next/head";
 import React from "react";
-import { SecondLayer } from "../../utils/AuthLayers";
 import Header from "../../components/Header";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 import Redirect from "../../utils/redirect";
-import {
-  Box,
-  Button,
-  Center,
-  Circle,
-  Grid,
-  GridItem,
-  Heading,
-  Kbd,
-  Spinner,
-  Text,
-  Toast,
-  ToastId,
-  ToastProvider,
-  useToast,
-} from "@chakra-ui/react";
-import { jwtVerify } from "../../utils/jwt";
+import * as Chakra from "@chakra-ui/react";
+
 import ConShow from "../../components/Show";
 import Footer from "../../components/Footer";
 import useAxios from "../../hooks/useAxios";
-import axios, { Axios } from "axios";
+
+import layers from "../../utils/AuthLayers";
+import * as JWT from "jsonwebtoken";
+export const getServerSideProps = async ({ req, locale }) => {
+  const translation = await serverSideTranslations(locale, ["common"]);
+  let user;
+
+  try {
+    user = JWT.verify(req.cookies["token"], process.env.JWT_SECRET);
+    if (!user || user.rank > PageUserRank) return Redirect("/", false);
+  } catch (error) {
+    return Redirect("/", false);
+  }
+
+  
+
+  const userType = user?.role;
+
+  return {
+    props: {
+      ...translation,
+      userType,
+    },
+  };
+};
+
 
 const VoiceReviewer = () => {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -37,7 +47,7 @@ const VoiceReviewer = () => {
   // const disableShortcuts = isLoading || isSubmitting || data.length === 0;
 
   const net = useAxios();
-  const toast = useToast();
+  const toast = Chakra.useToast();
 
   let soundRef = React.useRef(null);
 
@@ -50,20 +60,19 @@ const VoiceReviewer = () => {
 
   async function fetcher() {
     return new Promise((res, rej) => {
-    const Sound = {
-      ar: "أنا",
-      en: "I",
-      file_name: "fb3da276-6b3f-4f2b-a467-fc363675a490.mp3",
-      sound_id: "7a16995e-b721-4fb5-ab3e-14ec479923fe",
-      word_id: "1379fef1-34eb-47e4-88d9-c5ac519afcce",
-    };
-    
+      const Sound = {
+        ar: "أنا",
+        en: "I",
+        file_name: "fb3da276-6b3f-4f2b-a467-fc363675a490.mp3",
+        sound_id: "7a16995e-b721-4fb5-ab3e-14ec479923fe",
+        word_id: "1379fef1-34eb-47e4-88d9-c5ac519afcce",
+      };
 
-    return setTimeout(() => {
-      res(Sound)
-    }, 3000);
-  })
-  };
+      return setTimeout(() => {
+        res(Sound);
+      }, 3000);
+    });
+  }
 
   React.useEffect(() => {
     fetcher();
@@ -109,8 +118,8 @@ const VoiceReviewer = () => {
       <Head>
         <title>{}</title>
       </Head>
-      <Box display="flex" flexDir="column" flex={1}>
-        <Center
+      <Chakra.Box display="flex" flexDir="column" flex={1}>
+        <Chakra.Center
           w="100%"
           m="10px auto"
           overflow="hidden"
@@ -119,7 +128,7 @@ const VoiceReviewer = () => {
           height={200}
         >
           <ConShow condetion={data.length === 0}>
-            <Center
+            <Chakra.Center
               w="100%"
               h="100%"
               position="absolute"
@@ -127,12 +136,12 @@ const VoiceReviewer = () => {
               left={0}
               backgroundColor="white"
             >
-              <Spinner />
-            </Center>
+              <Chakra.Spinner />
+            </Chakra.Center>
           </ConShow>
 
           <ConShow condetion={data.length > 0}>
-            <Center
+            <Chakra.Center
               display="flex"
               flexDir="column"
               fontSize={20}
@@ -141,58 +150,60 @@ const VoiceReviewer = () => {
               h={200}
               bg="#fff"
             >
-              <Kbd m={3} p={3} display="block" size="xl">
+              <Chakra.Kbd m={3} p={3} display="block" size="xl">
                 {data[0]?.ar}
-              </Kbd>
+              </Chakra.Kbd>
               <audio
                 ref={soundRef}
                 controls
                 src={`/sound/${data[0]?.file_name}`}
               />
-            </Center>
+            </Chakra.Center>
           </ConShow>
-        </Center>
+        </Chakra.Center>
 
-        <Box
+        <Chakra.Box
           maxWidth="calc(800px + (10px * 3))"
           width="100%"
           m="10px auto"
           bg="#fff"
           borderRadius={10}
         >
-          <Center paddingTop={10}>
-            <Heading as="h5">Controllers</Heading>
-          </Center>
-          <Grid
+          <Chakra.Center paddingTop={10}>
+            <Chakra.Heading as="h5">Controllers</Chakra.Heading>
+          </Chakra.Center>
+          <Chakra.Grid
             templateColumns="repeat(auto-fit, minmax(200px, 1fr))"
             width="100%"
             gap="10px"
             p={10}
           >
-            <GridItem textAlign="center">
-              <Button
+            <Chakra.GridItem textAlign="center">
+              <Chakra.Button
                 disabled={data.length < 1}
                 onClick={reject}
                 colorScheme="teal"
                 w="100%"
                 size="lg"
               >
-                <Kbd color="#000">P</Kbd> <Text m="0 10px">{t("PLAY")}</Text>
-              </Button>
-            </GridItem>
-            <GridItem textAlign="center">
-              <Button
+                <Chakra.Kbd color="#000">P</Chakra.Kbd>
+                <Chakra.Text m="0 10px">{t("PLAY")}</Chakra.Text>
+              </Chakra.Button>
+            </Chakra.GridItem>
+            <Chakra.GridItem textAlign="center">
+              <Chakra.Button
                 disabled={data.length < 1}
                 onClick={reject}
                 colorScheme="teal"
                 w="100%"
                 size="lg"
               >
-                <Kbd color="#000">R</Kbd> <Text m="0 10px">{t("REJECT")}</Text>
-              </Button>
-            </GridItem>
-            <GridItem textAlign="center">
-              <Button
+                <Chakra.Kbd color="#000">R</Chakra.Kbd>
+                <Chakra.Text m="0 10px">{t("REJECT")}</Chakra.Text>
+              </Chakra.Button>
+            </Chakra.GridItem>
+            <Chakra.GridItem textAlign="center">
+              <Chakra.Button
                 aria-keyshortcuts="W"
                 disabled={data.length < 1}
                 onClick={pause}
@@ -200,35 +211,37 @@ const VoiceReviewer = () => {
                 w="100%"
                 size="lg"
               >
-                <Kbd color="#000">\W\</Kbd> <Text m="0 10px"> Pause </Text>
-              </Button>
-            </GridItem>
-            <GridItem textAlign="center">
-              <Button
+                <Chakra.Kbd color="#000">\W\</Chakra.Kbd>{" "}
+                <Chakra.Text m="0 10px"> Pause </Chakra.Text>
+              </Chakra.Button>
+            </Chakra.GridItem>
+            <Chakra.GridItem textAlign="center">
+              <Chakra.Button
                 disabled={data.length < 1}
                 onClick={fetcher}
                 colorScheme="teal"
                 w="100%"
                 size="lg"
               >
-                <Kbd color="#000">F</Kbd> <Text m="0 10px">{t("Fetch")} </Text>
-              </Button>
-            </GridItem>
-            <GridItem textAlign="center">
-              <Button
+                <Chakra.Kbd color="#000">F</Chakra.Kbd>{" "}
+                <Chakra.Text m="0 10px">{t("Fetch")} </Chakra.Text>
+              </Chakra.Button>
+            </Chakra.GridItem>
+            <Chakra.GridItem textAlign="center">
+              <Chakra.Button
                 disabled={data.length < 1}
                 colorScheme="teal"
                 w="100%"
                 size="lg"
                 onClick={approve}
               >
-                <Kbd color="#000">A</Kbd>{" "}
-                <Text m="0 10px"> {t("APPROVE")} </Text>
-              </Button>
-            </GridItem>
-          </Grid>
-        </Box>
-      </Box>
+                <Chakra.Kbd color="#000">A</Chakra.Kbd>
+                <Chakra.Text m="0 10px"> {t("APPROVE")} </Chakra.Text>
+              </Chakra.Button>
+            </Chakra.GridItem>
+          </Chakra.Grid>
+        </Chakra.Box>
+      </Chakra.Box>
       <Footer />
     </>
   );
@@ -236,24 +249,23 @@ const VoiceReviewer = () => {
   async function approve() {
     const ff = new Promise((res, rej) => {
       setTimeout(() => {
-        res("HI")
-      }, 5000)
+        res("HI");
+      }, 5000);
     });
-
 
     toast.promise(ff, {
       loading: {
-        title: "loading"
+        title: "loading",
       },
       error: {
-        title: "error"
+        title: "error",
       },
       success: {
-        title: "Success"
-      }
-    })
+        title: "Success",
+      },
+    });
     // setTimeout(function () {
-      
+
     //   // setTimeout(function () {
     //   //   // fetcher();
     //   // }, 500);
@@ -266,8 +278,6 @@ const VoiceReviewer = () => {
     setIsLoading(true);
     try {
       setTimeout(() => {
-        
-
         setTimeout(() => {
           fetcher();
         }, 500);
@@ -291,26 +301,3 @@ const VoiceReviewer = () => {
 
 export default VoiceReviewer;
 
-export const getServerSideProps = async ({ req, locale }) => {
-  const TOKEN = req.cookies.token;
-  const JWT_SECRET = process.env.JWT_SECRET;
-  let data: any;
-
-  try {
-    data = await jwtVerify(TOKEN, JWT_SECRET);
-  } catch (error) {
-    return Redirect("/", false);
-  }
-  if (!data || !SecondLayer.includes(data.role)) {
-    return Redirect("/", false);
-  }
-
-  const userType = data?.role || "";
-  const translation = await serverSideTranslations(locale, ["common"]);
-  return {
-    props: {
-      ...translation,
-      userType,
-    },
-  };
-};

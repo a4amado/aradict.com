@@ -1,33 +1,35 @@
-import Axios from "axios";
-import { useRouter } from "next/router";
 import React from "react";
-import {
-  Box,
-  Button,
-  Center,
-  FormControl,
-  FormErrorIcon,
-  FormErrorMessage,
-  FormHelperText,
-  FormLabel,
-  Input,
-  InputGroup,
-  InputRightElement,
-  Spinner,
-  useCounter,
-  useToast,
-} from "@chakra-ui/react";
-import { useForm, SubmitHandler, UseFormHandleSubmit } from "react-hook-form";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import Redirect from "../utils/redirect";
+import Head from "next/head";
+import Footer from "../components/Footer";
+import useAxios from "../hooks/useAxios";
+import * as Chakra from "@chakra-ui/react";
+import { useForm } from "react-hook-form";
 import Header from "../components/Header";
 import { useTranslation } from "react-i18next";
+import JWT from "jsonwebtoken";
+import Router from "next/router";
 
-interface FormData {
-  username: string;
-  password: string;
-}
+export const getServerSideProps = async ({ req, locale }) => {
+  console.log(req.cookies);
+
+  let user;
+  try {
+    user = JWT.verify(req.cookies["token"], process.env.JWT_SECRET);
+    if (user) return Redirect("/", false);
+  } catch (error) {}
+
+  const transition = await serverSideTranslations(locale, ["common"]);
+
+  return {
+    props: {
+      ...transition,
+    },
+  };
+};
 
 const Login = () => {
-  const router = useRouter();
   const { t } = useTranslation("common");
   const {
     register,
@@ -45,35 +47,42 @@ const Login = () => {
     delayError: 150,
   });
 
-
   const log = useAxios();
-  const toast = useToast()
+  const toast = Chakra.useToast();
   const onSubmit = async (data) => {
-    toast.promise(log.call({
-      method: "POST",
-      data,
-      url: "/api/login",
-      responseType: "json",
-    }).then((va) => {
-      toast({
-        status: "loading",
-        title: <CountDown value={3} end={0} step={1} period={1000} action={toast.closeAll} />
-      })
-    })
-    ,
-    {
-      loading: {
-        title: "Loging in"
-      },
-      success: {
-        title: "Done"
-      },
-      error: {
-        title: "Failed",
-        
+    toast.promise(
+      log.call({
+        method: "POST",
+        data,
+        url: "/api/login",
+      }),
+
+      {
+        loading: {
+          title: "Loging in",
+        },
+        success: {
+          title: "Redirecting",
+          description: (
+            <CountDown
+              value={3}
+              end={0}
+              step={1}
+              period={1000}
+              action={() => {
+                toast.closeAll();
+                Router.replace({ pathname: "/" }, Router.asPath, {
+                  locale: Router.locale,
+                });
+              }}
+            />
+          ),
+        },
+        error: {
+          title: "Failed",
+        },
       }
-    })
-    ;
+    );
   };
 
   return (
@@ -81,8 +90,8 @@ const Login = () => {
       <Header />
       <Head>Login to Aradict.com</Head>
 
-      <Center width="100%" flex={1} display="flex" flexDir="column">
-        <Box
+      <Chakra.Center width="100%" flex={1} display="flex" flexDir="column">
+        <Chakra.Box
           borderRadius={10}
           bg="white"
           maxWidth="600px"
@@ -91,13 +100,13 @@ const Login = () => {
           py="10px"
           px="20px"
         >
-          <Center>
+          <Chakra.Center>
             <h1>Login</h1>
-          </Center>
+          </Chakra.Center>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <FormControl isInvalid={!!errors.username}>
-              <FormLabel>{t("USERNAME")}</FormLabel>
-              <Input
+            <Chakra.FormControl isInvalid={!!errors.username}>
+              <Chakra.FormLabel>{t("USERNAME")}</Chakra.FormLabel>
+              <Chakra.Input
                 aria-errormessage="#username-error-msg"
                 defaultValue=""
                 {...register("username", {
@@ -105,18 +114,20 @@ const Login = () => {
                 })}
               />
 
-              <FormHelperText>Username is not case-sensitive</FormHelperText>
-              <FormErrorMessage id="username-error-msg">
+              <Chakra.FormHelperText>
+                Username is not case-sensitive
+              </Chakra.FormHelperText>
+              <Chakra.FormErrorMessage id="username-error-msg">
                 <>
-                  <FormErrorIcon /> {errors.username?.message}
+                  <Chakra.FormErrorIcon /> {errors.username?.message}
                 </>
-              </FormErrorMessage>
-            </FormControl>
+              </Chakra.FormErrorMessage>
+            </Chakra.FormControl>
 
-            <FormControl isInvalid={!!errors.password}>
-              <FormLabel>{t("PASSWORD")}</FormLabel>
-              <InputGroup>
-                <Input
+            <Chakra.FormControl isInvalid={!!errors.password}>
+              <Chakra.FormLabel>{t("PASSWORD")}</Chakra.FormLabel>
+              <Chakra.InputGroup>
+                <Chakra.Input
                   aria-errormessage="#password_error_msg"
                   pr="4.5rem"
                   defaultValue=""
@@ -130,103 +141,74 @@ const Login = () => {
                     },
                   })}
                 />
-                <InputRightElement width="4.5rem">
-                  <Center>
-                    <Button
-                      colorScheme="teal"
-                      h="1.5rem"
-                      size="sm"
-                    >
+                <Chakra.InputRightElement width="4.5rem">
+                  <Chakra.Center>
+                    <Chakra.Button colorScheme="teal" h="1.5rem" size="sm">
                       show
-                    </Button>
-                  </Center>
-                </InputRightElement>
-              </InputGroup>
-              <FormErrorMessage id="password_error_msg">
+                    </Chakra.Button>
+                  </Chakra.Center>
+                </Chakra.InputRightElement>
+              </Chakra.InputGroup>
+              <Chakra.FormErrorMessage id="password_error_msg">
                 <>
-                  <FormErrorIcon />
+                  <Chakra.FormErrorIcon />
                   {errors.password?.message}
                 </>
-              </FormErrorMessage>
-              <FormHelperText>Username is not case-sensitive</FormHelperText>
-            </FormControl>
-            <FormControl>
-              <Center>
-                <Button
+              </Chakra.FormErrorMessage>
+              <Chakra.FormHelperText>
+                Username is not case-sensitive
+              </Chakra.FormHelperText>
+            </Chakra.FormControl>
+            <Chakra.FormControl>
+              <Chakra.Center>
+                <Chakra.Button
                   type="submit"
                   size="lg"
                   colorScheme="teal"
                   disabled={log.isLoading}
                 >
-                  {log.isLoading ? <Spinner /> : "Submit"}
-                </Button>
-              </Center>
-            </FormControl>
+                  {log.isLoading ? <Chakra.Spinner /> : "Submit"}
+                </Chakra.Button>
+              </Chakra.Center>
+            </Chakra.FormControl>
           </form>
-        </Box>
-      </Center>
+        </Chakra.Box>
+      </Chakra.Center>
       <Footer />
     </>
   );
-
-  
 };
 
 export default Login;
 
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import Redirect from "../utils/redirect";
-import { jwtVerify } from "../utils/jwt";
-import Head from "next/head";
-import Footer from "../components/Footer";
-import useAxios from "../hooks/useAxios";
-import * as dynamic from "next/dynamic";
+interface CountDownProps {
+  value: number;
+  end: number;
+  step: number;
+  period: number;
+  action: Function;
+}
 
-export const getServerSideProps = async ({ req, locale }) => {
-  const TOEKN = req.cookies.token || "";
-  const JWT_SECRET = process.env?.JWT_SECRET;
-  
-  try {
-    let data = await jwtVerify(TOEKN, JWT_SECRET);
-    if (data) return Redirect("/", false);
-  } catch (error) {}
-
-  const transition = await serverSideTranslations(locale, ["common"]);
-
-  return {
-    props: {
-      ...transition,
-    },
-  };
-};
-
-
-
-
-const CountDown = ({ value, end, step, period, action }: {
-  value: number, end: number, step: number, period: number, action: Function
-}) => {
-  const [v, setV] = React.useState(value);
-  const g = useCounter({
-    defaultValue: value,
-    step: step,
-    min: end,
+const CountDown = (data: CountDownProps) => {
+  const [v, setV] = React.useState(data.value);
+  const g = Chakra.useCounter({
+    defaultValue: data.value,
+    step: data.step,
+    min: data.end,
     onChange: (_, valueAsNumber) => {
-      setV(valueAsNumber)
-    }
-
+      setV(valueAsNumber);
+    },
   });
 
   React.useEffect(() => {
-    if (g.valueAsNumber === end) {
-      action();
+    if (g.valueAsNumber === data.end) {
+      data.action();
     }
-    
-    setTimeout(() => {
-      g.decrement()
-    }, period)
-  }, [period, g, end, action, v]);
-  
-  return <p>{v}</p>
-}
 
+    setTimeout(() => {
+      g.decrement();
+    }, data.period);
+  }, [g, v, data]);
+
+  return <p>{v}</p>;
+};

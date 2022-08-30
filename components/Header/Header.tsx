@@ -1,27 +1,19 @@
 import Image from "next/image";
-import NextLink from "next/link";
-import { useRouter } from "next/router";
+import NextLink, { LinkProps } from "next/link";
+import Router from "next/router";
 import { useTranslation } from "react-i18next";
-import {
-  Box,
-  Button,
-  Link,
-  Stack,
-  useImage,
-  Skeleton,
-  AspectRatio,
-} from "@chakra-ui/react";
+import * as Chakra from "@chakra-ui/react";
 import Locales from "../Locales";
 import { usePageProps } from "../../utils/PagePropsInComponents";
 import Logo from "../../public/abadis.svg";
 import DrawerC from "../Drawer";
 import React from "react";
+import AuthLayers from "../../utils/AuthLayers";
+
 
 const Header = () => {
-  const logostate = useImage({ src: "/abadis.svg", loading: "lazy" });
-
   return (
-    <Box
+    <Chakra.Box
       height={65}
       display="flex"
       width="100%"
@@ -31,7 +23,7 @@ const Header = () => {
     >
       <Locales />
       <NextLink href="/" passHref={true}>
-        <Link>
+        <Chakra.Link>
           <Image
             src={Logo}
             loading="lazy"
@@ -42,115 +34,180 @@ const Header = () => {
             height={40}
             alt="dd"
           />
-        </Link>
+        </Chakra.Link>
       </NextLink>
 
       <DrawerC>
-        <Stack>
-          <HomeBtn />
+        <Chakra.Stack>
           <HeaderList />
-        </Stack>
+        </Chakra.Stack>
       </DrawerC>
-    </Box>
+    </Chakra.Box>
   );
 };
 
-export default Header;
-
-function HomeBtn() {
-  const { t } = useTranslation("common");
-  const { pathname } = useRouter();
-  // Only show this btn if pathname was not "/"
-  if (pathname != "/")
-    return (
-      <NextLink href="/" passHref>
-        <Link as={Button}>
-          <a>{t("HOME")}</a>
-        </Link>
-      </NextLink>
-    );
-}
+export default React.memo(Header);
 
 function HeaderList() {
-  const { userType } = usePageProps();
-  const { t } = useTranslation("common");
-  // if usernot auth show login btn
-  if (!userType) {
-    return <LoginBtn />;
-  }
-
-  if (userType === "admin") {
-    return (
-      <>
-        <NextLink href="/sound-reviewer" passHref>
-          <Link as={Button}>
-            <a>{t("REVIEW_SOUND")}</a>
-          </Link>
-        </NextLink>
-        <NextLink href="/sound-contributer" passHref>
-          <Link as={Button}>
-            <a>{t("CONTRIBUTE_WITH_YOUR_VOICE")}</a>
-          </Link>
-        </NextLink>
-      </>
-    );
-  }
-
-  if (userType === "sound-contributer") {
-    return (
-      <NextLink href="/sound-contributer" passHref>
-        <Link as={Button}>
-          <a>{t("CONTRIBUTE_WITH_YOUR_VOICE")}</a>
-        </Link>
-      </NextLink>
-    );
-  }
-
-  if (userType === "sound-reviewer") {
-    return (
-      <>
-        <NextLink href="/sound-reviewer" passHref>
-          <Link as={Button}>
-            <a>{t("REVIEW_SOUND")}</a>
-          </Link>
-        </NextLink>
-        <NextLink href="/sound-contributer" passHref>
-          <Link as={Button}>
-            <a>{t("CONTRIBUTE_WITH_YOUR_VOICE")}</a>
-          </Link>
-        </NextLink>
-      </>
-    );
-  }
-}
-
-function LoginBtn() {
-  const { userType } = usePageProps();
-
-  const { t } = useTranslation();
-
-  if (userType) return <></>;
-
+  const { list } = useMenuList();
+  
   return (
-    <NextLink href="/login" passHref shallow={true}>
-      <Link as={Button}>
-        <a>{t("LOGIN")}</a>
-      </Link>
-    </NextLink>
+    <React.Fragment>
+      {list.map((item) => (
+        <MenuBtn text={item.text} options={item} key={item.text} />
+      ))}
+    </React.Fragment>
   );
 }
 
-function Logout() {
-  const { userType } = usePageProps();
+const usePathMatch = (path: any) => {
+  return Router.pathname === path;
+};
 
+const MenuBtn = ({ text, options }: { text: string; options: MenuList }) => {
+  const PathMatch = usePathMatch(options.href);
   const { t } = useTranslation();
-
-  if (userType) return <></>;
-  return (
-    <NextLink href="/api/logout" passHref>
-      <Link as={Button}>
-        <a>{t("LOGOUT")}</a>
-      </Link>
+  const Btn = (style: any) => (
+    <NextLink {...options}>
+      <Chakra.Link as={Chakra.Button} {...style}>
+        <a>{t(text)}</a>
+      </Chakra.Link>
     </NextLink>
   );
+
+  if (options.disable.pathMatch && PathMatch) {
+    return <Btn display="none" />;
+  }
+  return <Btn />;
+};
+
+interface MenuObject {
+  user: string;
+  list: Array<MenuList>;
 }
+
+interface MenuList extends LinkProps {
+  text: string;
+  disable?: {
+    pathMatch?: boolean;
+  };
+}
+
+
+
+const LOGOUT_BTN = {
+  href: "/api/logout",
+  text: "LOGOUT",
+  passHref: true,
+  disable: {
+    pathMatch: true,
+  },
+};
+
+const AdminMenu: MenuObject = {
+  user: AuthLayers.Admin.code,
+  list: [
+    {
+      href: "/",
+      text: "HOME",
+      passHref: true,
+      disable: {
+        pathMatch: true,
+      },
+    },
+    {
+      text: "REVIEW_SOUND",
+      href: "/sound-reviewer",
+      passHref: true,
+      disable: {
+        pathMatch: true,
+      },
+    },
+    {
+      text: "CONTRIBUTE_WITH_YOUR_VOICE",
+      href: "/sound-contributer",
+      passHref: true,
+      disable: {
+        pathMatch: true,
+      },
+    },
+    LOGOUT_BTN
+  ],
+};
+
+const SoundContributer: MenuObject = {
+  user: AuthLayers.VC.code,
+  list: [
+    {
+      href: "/",
+      text: "HOME",
+      passHref: true,
+      disable: {
+        pathMatch: true,
+      },
+    },
+    {
+      text: "CONTRIBUTE_WITH_YOUR_VOICE",
+      href: "/sound-contributer",
+      passHref: true,
+      disable: {
+        pathMatch: true,
+      },
+    },
+    LOGOUT_BTN
+  ],
+};
+
+const SoundReviwer: MenuObject = {
+  user: AuthLayers.VR.code,
+  list: [
+    {
+      href: "/",
+      text: "HOME",
+      passHref: true,
+      disable: {
+        pathMatch: true,
+      },
+    },
+    {
+      text: "REVIEW_SOUND",
+      href: "/sound-reviewer",
+      passHref: true,
+      disable: {
+        pathMatch: true,
+      },
+    },
+  ],
+};
+
+const UnAuth: MenuObject = {
+  user: null,
+  list: [
+    {
+      href: "/",
+      text: "HOME",
+      passHref: true,
+      disable: {
+        pathMatch: true,
+      },
+    },
+    {
+      text: "LOGIN",
+      href: "/login",
+      passHref: true,
+      disable: {
+        pathMatch: true,
+      },
+    }
+  ],
+};
+
+const Menus = [AdminMenu, SoundContributer, SoundReviwer];
+
+const useMenuList = (): MenuObject => {
+  const { userType } = usePageProps();
+  if (!userType) return UnAuth;
+  const btns  = Menus.find((menu) => menu.user === userType)
+  
+  return btns;
+};

@@ -1,56 +1,44 @@
-import {
-  Button,
-  Center,
-  chakra,
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  Input,
-  Portal,
-  useDisclosure,
-} from "@chakra-ui/react";
+import * as Chakra from "@chakra-ui/react";
+import Router from "next/router";
 import React, { memo } from "react";
 import { usePageProps } from "../../utils/PagePropsInComponents";
 
-
-
-function DrawerExample({ children }) {
-  const { userType } = usePageProps()
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
+function Drawer({ children }) {
+  
+  const { isOpen, onOpen, onClose } = Chakra.useDisclosure();
+  Router.events.on("routeChangeStart", onClose);
+  const { userType } = usePageProps();
   const btnRef = React.useRef();
+  
+  
+  
 
   return (
     <>
-      <Button ref={btnRef} colorScheme="teal" onClick={onOpen}>
+      <Chakra.Button ref={btnRef} colorScheme="teal" onClick={onOpen}>
         Menu
-      </Button>
-      <Portal>
-      <Drawer
-        
-        isOpen={isOpen}
-        placement="right"
-        onClose={onClose}
-        closeOnEsc={true}
-        closeOnOverlayClick={true}
-        blockScrollOnMount={true}
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>
-            <Center>Side Menu {userType} </Center>
-          </DrawerHeader>
-          <DrawerBody>{children}</DrawerBody>
-        </DrawerContent>
-      </Drawer>
-      </Portal>
+      </Chakra.Button>
+      <Chakra.Portal>
+        <Chakra.Drawer
+          isOpen={isOpen}
+          placement="right"
+          onClose={onClose}
+          closeOnEsc={true}
+          closeOnOverlayClick={true}
+          blockScrollOnMount={true}
+        >
+          <Chakra.DrawerOverlay />
+          <Chakra.DrawerContent>
+            <Chakra.DrawerCloseButton />
+            <Chakra.DrawerHeader>
+              <Chakra.Center>Side Menu {userType} </Chakra.Center>
+            </Chakra.DrawerHeader>
+            <Chakra.DrawerBody>{children}</Chakra.DrawerBody>
+          </Chakra.DrawerContent>
+        </Chakra.Drawer>
+      </Chakra.Portal>
     </>
   );
 }
 
-export default memo(DrawerExample)
+export default memo(Drawer);
