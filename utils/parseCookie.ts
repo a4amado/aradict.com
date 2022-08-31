@@ -1,5 +1,6 @@
-import { NextApiRequest } from "next";
-import { jwtVerify } from "./jwt";
+import { NextApiRequest } from 'next';
+
+import { jwtVerify } from './jwt';
 
 const parseCookie = (req: NextApiRequest, cookieName: string = "token") => {
   try {

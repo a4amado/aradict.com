@@ -1,16 +1,19 @@
-import "../styles/globals.css";
+import "../scripts/wdyr";
+import '../styles/globals.css';
 
+import i18next from 'i18next';
+import { appWithTranslation, i18n } from 'next-i18next';
+import Router from 'next/router';
+import React, { Suspense } from 'react';
 
+import { ChakraProvider, Portal, PortalManager, ToastProvider } from '@chakra-ui/react';
 
+import Loading from '../components/Loading';
+import AxiosProvider from '../utils/AxiosConfig';
+import theme from '../utils/Chakra/Config';
+import PagePropsProvider from '../utils/PagePropsInComponents';
 
-import { appWithTranslation, i18n } from "next-i18next";
-import i18next from "i18next";
 i18next.init();
-
-import React, { Suspense } from "react";
-
-import AxiosProvider from "../utils/AxiosConfig";
-import { ChakraProvider, Portal, PortalManager } from "@chakra-ui/react";
 
 i18next.on("languageChanged", (lng) => {
   document.documentElement.setAttribute("dir", i18n!.dir(lng));
@@ -19,22 +22,6 @@ i18next.on("languageChanged", (lng) => {
 
 
 import type { AppProps } from "next/app";
-import Loading from "../components/Loading";
-import PagePropsProvider from "../utils/PagePropsInComponents";
-import theme from "../utils/Chakra/Config";
-
-
-
-
-
-
-
-import { ToastProvider,  } from "@chakra-ui/react";
-
-
-import Router from "next/router";
-
-
 const gg = {
   hidden: { opacity: 1, scale: 0 },
   visible: {

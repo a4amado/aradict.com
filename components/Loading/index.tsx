@@ -1,14 +1,9 @@
-import * as Chakra from "@chakra-ui/react";
+import { AnimationControls, motion, useAnimationControls, Variants } from 'framer-motion';
+import Router from 'next/router';
+import React, { memo } from 'react';
+import { useFirstMountState } from 'react-use';
 
-import {
-  motion,
-  useAnimationControls,
-  Variants,
-  AnimationControls,
-} from "framer-motion";
-import Router from "next/router";
-import React, { memo } from "react";
-import { useFirstMountState } from "react-use";
+import * as Chakra from '@chakra-ui/react';
 
 const variants: Variants = {
   active: {

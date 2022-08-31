@@ -1,4 +1,4 @@
-import { sign, verify, JwtPayload } from "jsonwebtoken";
+import { JwtPayload, sign, verify } from 'jsonwebtoken';
 
 export function jwtVerify(token: string, secret: string): JwtPayload {
   try {

@@ -1,21 +1,22 @@
 const PageUserRank = layers.VR.rank;
 
-import { useHotkeys } from "react-hotkeys-hook";
-import Head from "next/head";
-import React from "react";
-import Header from "../../components/Header";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useTranslation } from "react-i18next";
-import { useRouter } from "next/router";
-import Redirect from "../../utils/redirect";
-import * as Chakra from "@chakra-ui/react";
+import * as JWT from 'jsonwebtoken';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import React from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
+import { useTranslation } from 'react-i18next';
 
-import ConShow from "../../components/Show";
-import Footer from "../../components/Footer";
-import useAxios from "../../hooks/useAxios";
+import * as Chakra from '@chakra-ui/react';
 
-import layers from "../../utils/AuthLayers";
-import * as JWT from "jsonwebtoken";
+import Footer from '../../components/Footer';
+import Header from '../../components/Header';
+import ConShow from '../../components/Show';
+import useAxios from '../../hooks/useAxios';
+import layers from '../../utils/AuthLayers';
+import Redirect from '../../utils/redirect';
+
 export const getServerSideProps = async ({ req, locale }) => {
   const translation = await serverSideTranslations(locale, ["common"]);
   let user;
@@ -27,8 +28,6 @@ export const getServerSideProps = async ({ req, locale }) => {
     return Redirect("/", false);
   }
 
-  
-
   const userType = user?.role;
 
   return {
@@ -39,14 +38,10 @@ export const getServerSideProps = async ({ req, locale }) => {
   };
 };
 
-
 const VoiceReviewer = () => {
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const [data, setData] = React.useState([]);
-  // const disableShortcuts = isLoading || isSubmitting || data.length === 0;
-
-  const net = useAxios();
+  const f_request = useAxios();
   const toast = Chakra.useToast();
 
   let soundRef = React.useRef(null);
@@ -81,12 +76,12 @@ const VoiceReviewer = () => {
   const sound = React.useRef(null);
 
   function play() {
-    if (!data) return false;
+    if (!f_request.data) return false;
     soundRef.current.play();
   }
 
   function pause() {
-    if (!data) return false;
+    if (!f_request.data) return false;
     soundRef.current.pause();
   }
   useHotkeys("W", () => {
@@ -127,7 +122,7 @@ const VoiceReviewer = () => {
           maxW={600}
           height={200}
         >
-          <ConShow condetion={data.length === 0}>
+          <ConShow condetion={!f_request.data}>
             <Chakra.Center
               w="100%"
               h="100%"
@@ -140,7 +135,7 @@ const VoiceReviewer = () => {
             </Chakra.Center>
           </ConShow>
 
-          <ConShow condetion={data.length > 0}>
+          <ConShow condetion={!!f_request.data}>
             <Chakra.Center
               display="flex"
               flexDir="column"
@@ -151,12 +146,12 @@ const VoiceReviewer = () => {
               bg="#fff"
             >
               <Chakra.Kbd m={3} p={3} display="block" size="xl">
-                {data[0]?.ar}
+                {f_request.data.ar}
               </Chakra.Kbd>
               <audio
                 ref={soundRef}
                 controls
-                src={`/sound/${data[0]?.file_name}`}
+                src={`/sound/${f_request.data?.file_name}`}
               />
             </Chakra.Center>
           </ConShow>
@@ -180,7 +175,7 @@ const VoiceReviewer = () => {
           >
             <Chakra.GridItem textAlign="center">
               <Chakra.Button
-                disabled={data.length < 1}
+                disabled={!f_request.data}
                 onClick={reject}
                 colorScheme="teal"
                 w="100%"
@@ -192,7 +187,7 @@ const VoiceReviewer = () => {
             </Chakra.GridItem>
             <Chakra.GridItem textAlign="center">
               <Chakra.Button
-                disabled={data.length < 1}
+                disabled={!!f_request.data}
                 onClick={reject}
                 colorScheme="teal"
                 w="100%"
@@ -205,7 +200,7 @@ const VoiceReviewer = () => {
             <Chakra.GridItem textAlign="center">
               <Chakra.Button
                 aria-keyshortcuts="W"
-                disabled={data.length < 1}
+                disabled={!f_request.data}
                 onClick={pause}
                 colorScheme="teal"
                 w="100%"
@@ -217,7 +212,7 @@ const VoiceReviewer = () => {
             </Chakra.GridItem>
             <Chakra.GridItem textAlign="center">
               <Chakra.Button
-                disabled={data.length < 1}
+                
                 onClick={fetcher}
                 colorScheme="teal"
                 w="100%"
@@ -229,7 +224,7 @@ const VoiceReviewer = () => {
             </Chakra.GridItem>
             <Chakra.GridItem textAlign="center">
               <Chakra.Button
-                disabled={data.length < 1}
+                disabled={!!f_request.data}
                 colorScheme="teal"
                 w="100%"
                 size="lg"
@@ -273,7 +268,7 @@ const VoiceReviewer = () => {
   }
 
   async function reject() {
-    if (!data) return false;
+    if (!f_request.data) return false;
 
     setIsLoading(true);
     try {
@@ -300,4 +295,3 @@ const VoiceReviewer = () => {
 };
 
 export default VoiceReviewer;
-

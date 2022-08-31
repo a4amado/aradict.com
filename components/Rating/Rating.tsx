@@ -1,7 +1,9 @@
-import { StarIcon } from "@chakra-ui/icons";
-import * as Chakra from "@chakra-ui/react";
-import React from "react";
-import ConShow from "../Show";
+import React from 'react';
+
+import { StarIcon } from '@chakra-ui/icons';
+import * as Chakra from '@chakra-ui/react';
+
+import ConShow from '../Show';
 
 const Rating = ({ rating = 0 }: { rating: number }) => {
   const [Rateing, setRating] = React.useState(rating);

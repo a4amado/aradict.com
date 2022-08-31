@@ -1,6 +1,6 @@
-import i18next from "i18next";
-import { Html, Head, Main, NextScript, DocumentContext } from "next/document";
-import React from "react";
+import i18next from 'i18next';
+import { DocumentContext, Head, Html, Main, NextScript } from 'next/document';
+import React from 'react';
 
 export default function Document(ctx: DocumentContext) {
    return (

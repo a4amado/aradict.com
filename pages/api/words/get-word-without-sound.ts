@@ -1,16 +1,14 @@
 const PageUserRank = layers.VC.rank;
 
 
-import { NextApiResponse } from "next";
-import { NextApiRequest } from "next";
-import nextConnect, { NextHandler } from "next-connect";
-import prisma from "../../../DB";
-import { ReasonPhrases, StatusCodes } from "http-status-codes";
-import HTTPError from "http-errors";
-import layers from "../../../utils/AuthLayers";
-import parseCookie from "../../../utils/parseCookie";
+import HTTPError from 'http-errors';
+import { ReasonPhrases, StatusCodes } from 'http-status-codes';
+import { NextApiRequest, NextApiResponse } from 'next';
+import nextConnect, { NextHandler } from 'next-connect';
 
-
+import prisma from '../../../DB';
+import layers from '../../../utils/AuthLayers';
+import parseCookie from '../../../utils/parseCookie';
 
 interface ThrownError {
     name: string,

@@ -1,12 +1,7 @@
-import axios, { AxiosError } from "axios"
-import { StatusCodes } from "http-status-codes";
-import { useRouter } from "next/router"
-import React, { lazy } from "react";
-
-
-
- 
-
+import axios, { AxiosError } from 'axios';
+import { StatusCodes } from 'http-status-codes';
+import { useRouter } from 'next/router';
+import React, { lazy } from 'react';
 
 function AxiosProvider({ children }) {
     const { locale, replace } = useRouter();

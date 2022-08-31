@@ -1,13 +1,13 @@
-import { StatusCodes, ReasonPhrases } from "http-status-codes";
-import { NextApiRequest, NextApiResponse } from "next";
-import { serialize } from "cookie";
+import { serialize } from 'cookie';
+import { ReasonPhrases, StatusCodes } from 'http-status-codes';
+import * as JWT from 'jsonwebtoken';
+import { NextApiRequest, NextApiResponse } from 'next';
+import nextConnect, { NextHandler } from 'next-connect';
+import * as Yup from 'yup';
 
-import * as Yup from "yup";
-
-import prisma from "../../DB";
-
-import nextConnect, { NextHandler } from "next-connect";
-import { jwtSign } from "../../utils/jwt";
+import prisma from '../../DB';
+import { jwtSign } from '../../utils/jwt';
+import Redirect from '../../utils/redirect';
 
 const Route = nextConnect<NextApiRequest, NextApiResponse>({
   onNoMatch: (req, res) => {
@@ -40,9 +40,6 @@ Route.use<NextApiRequest, NextApiRequest>(
     }
   }
 );
-
-import * as JWT from "jsonwebtoken";
-import Redirect from "../../utils/redirect";
 
 Route.post<NextApiRequest, NextApiResponse>(async (req, res) => {
   const user = {

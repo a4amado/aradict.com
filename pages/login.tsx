@@ -1,15 +1,17 @@
-import React from "react";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import Redirect from "../utils/redirect";
-import Head from "next/head";
-import Footer from "../components/Footer";
-import useAxios from "../hooks/useAxios";
-import * as Chakra from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
-import Header from "../components/Header";
-import { useTranslation } from "react-i18next";
-import JWT from "jsonwebtoken";
-import Router from "next/router";
+import JWT from 'jsonwebtoken';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import Head from 'next/head';
+import Router from 'next/router';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import * as Chakra from '@chakra-ui/react';
+
+import Footer from '../components/Footer';
+import Header from '../components/Header';
+import useAxios from '../hooks/useAxios';
+import Redirect from '../utils/redirect';
 
 export const getServerSideProps = async ({ req, locale }) => {
   console.log(req.cookies);

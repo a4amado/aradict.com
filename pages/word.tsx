@@ -1,20 +1,23 @@
-import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
-import React from "react";
-import Header from "../components/Header";
-import { faker } from "@faker-js/faker";
+import { Circular, Node } from 'doublie';
+import { GetServerSideProps } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import NextImage from 'next/image';
+import { useRouter } from 'next/router';
+import React from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
+
+import * as Chakra from '@chakra-ui/react';
+import { faker } from '@faker-js/faker';
+
+import Footer from '../components/Footer';
+import Header from '../components/Header';
+import Rating from '../components/Rating';
+import ConShow from '../components/Show';
+import Pause from '../public/pause.svg';
+import Play from '../public/play.svg';
+import { jwtVerify } from '../utils/jwt';
+
 faker.setLocale("ar");
-import Footer from "../components/Footer";
-
-import * as Chakra from "@chakra-ui/react";
-import { useHotkeys } from "react-hotkeys-hook";
-import ConShow from "../components/Show";
-
-import Play from "../public/play.svg";
-import Pause from "../public/pause.svg";
-
-import NextImage from "next/image";
-
 export default function AddSound({ data }) {
   const {
     query: { q },
@@ -42,8 +45,6 @@ export default function AddSound({ data }) {
     </>
   );
 }
-
-import { Circular, Node } from "doublie";
 
 const ListC = ({ list }: any) => {
   const items = React.useMemo(() => {
@@ -209,9 +210,6 @@ const Sound = ({
   );
 };
 
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { jwtVerify } from "../utils/jwt";
-import Rating from "../components/Rating";
 export const getServerSideProps: GetServerSideProps = async ({
   req,
   locale,

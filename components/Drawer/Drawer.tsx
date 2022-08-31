@@ -1,7 +1,9 @@
-import * as Chakra from "@chakra-ui/react";
-import Router from "next/router";
-import React, { memo } from "react";
-import { usePageProps } from "../../utils/PagePropsInComponents";
+import Router from 'next/router';
+import React, { memo } from 'react';
+
+import * as Chakra from '@chakra-ui/react';
+
+import { usePageProps } from '../../utils/PagePropsInComponents';
 
 function Drawer({ children }) {
   

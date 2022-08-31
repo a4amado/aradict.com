@@ -1,12 +1,12 @@
-import { StatusCodes } from "http-status-codes";
-import React from "react";
-import Axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { StatusCodes } from 'http-status-codes';
+import React from 'react';
 
 function useAxios() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isError, setIsError] = React.useState<boolean>(false);
   const [errorData, setErrorData] = React.useState<boolean>(false);
-  const [data, setData] = React.useState<boolean>(false);
+  const [data, setData] = React.useState<any>(false);
   const [status, setStatus] = React.useState<StatusCodes>();
 
   async function call(config: AxiosRequestConfig) {

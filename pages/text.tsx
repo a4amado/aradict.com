@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-import "draft-js/dist/Draft.css";
-import { Editor, EditorState } from "draft-js";
- import { Box } from "@chakra-ui/react";
+import 'draft-js/dist/Draft.css';
+
+import { Editor, EditorState } from 'draft-js';
+import React, { useState } from 'react';
+
+import { Box } from '@chakra-ui/react';
 
 export default function Text() {
   const [State, setState] = useState(EditorState.createEmpty());

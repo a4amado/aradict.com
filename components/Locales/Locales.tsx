@@ -1,12 +1,17 @@
-import i18next from "i18next";
-import { useRouter } from "next/router";
-import React, { FC, useRef } from "react";
-import * as Chakra from "@chakra-ui/react";
-import US from "../../public/USA.svg";
-import SAUDI from "../../public/SAUDI.svg";
-import NL from "../../public/NL.svg";
-import ID from "../../public/IN.svg";
-import ES from "../../public/ES.svg";
+import { setCookie } from 'cookies-next';
+import FuzzySearch from 'fuzzy-search';
+import i18next from 'i18next';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import React, { FC, useRef } from 'react';
+
+import * as Chakra from '@chakra-ui/react';
+
+import ES from '../../public/ES.svg';
+import ID from '../../public/IN.svg';
+import NL from '../../public/NL.svg';
+import SAUDI from '../../public/SAUDI.svg';
+import US from '../../public/USA.svg';
 
 const langs = [
   { name: "English", Flag: US, code: "en" },
@@ -15,10 +20,6 @@ const langs = [
   { name: "Dutch", Flag: NL, code: "nl" },
   { name: "Indonesia", Flag: ID, code: "id" },
 ];
-import FuzzySearch from "fuzzy-search";
-import Image from "next/image";
-import { setCookie } from "cookies-next";
-
 const Locales: FC = () => {
   let { asPath, locale, pathname, query, push, locales } = useRouter();
   const { isOpen, onClose, onOpen, onToggle } = Chakra.useDisclosure();

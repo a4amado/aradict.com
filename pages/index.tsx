@@ -1,20 +1,26 @@
 const PageUserRank = layers.Public;
-import * as JWT from "jsonwebtoken";
+import { Circular, Node } from 'doublie';
+import * as JWT from 'jsonwebtoken';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 /* eslint-disable @next/next/no-img-element */
-import Head from "next/head";
-import React, { Dispatch, useState } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import { useTranslation } from "next-i18next";
+import Head from 'next/head';
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import React, { Dispatch, useState } from 'react';
 
-import isArabic from "../utils/isArabic";
 // import NextLink from "next/link";
-import { Image } from "@chakra-ui/react";
-import { NextApiResponse, NextApiRequest } from "next";
-import NextLink from "next/link";
+import * as Chakra from '@chakra-ui/react';
+import { css } from '@emotion/react';
 
-import { css } from "@emotion/react";
-import * as Chakra from "@chakra-ui/react";
+import Footer from '../components/Footer';
+import Header from '../components/Header';
+import ConShow from '../components/Show';
+import layers from '../utils/AuthLayers';
+import isArabic from '../utils/isArabic';
+import { jwtVerify } from '../utils/jwt';
+import parseCookie from '../utils/parseCookie';
 
 const getServerSideProps = async ({
   req,
@@ -158,9 +164,6 @@ export default function Home() {
   function Submit() {}
 }
 
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { jwtVerify } from "../utils/jwt";
-
 export { getServerSideProps };
 
 const ListStyle = css`
@@ -173,12 +176,6 @@ const ListStyle = css`
     }
   }
 `;
-
-import { Circular, Node } from "doublie";
-import ConShow from "../components/Show";
-import { useRouter } from "next/router";
-import parseCookie from "../utils/parseCookie";
-import layers from "../utils/AuthLayers";
 
 const AutoComplete = () => {
   const toast = Chakra.useToast();

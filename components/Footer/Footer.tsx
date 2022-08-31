@@ -1,7 +1,8 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import * as Chakra from "@chakra-ui/react";
-import NextLink from "next/link";
-import React from "react";
+import NextLink from 'next/link';
+import React from 'react';
+
+import { ExternalLinkIcon } from '@chakra-ui/icons';
+import * as Chakra from '@chakra-ui/react';
 
 const Footer = () => {
   return (

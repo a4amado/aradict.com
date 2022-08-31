@@ -1,39 +1,65 @@
 const PageUserRank = layers.VC.rank;
 
-
-import React from "react";
-import Head from "next/head";
 import { motion } from "framer-motion";
-import Header from "../../components/Header";
+import * as JWT from "jsonwebtoken";
 import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import Head from "next/head";
+import React, { MouseEventHandler } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+
 import * as Chakra from "@chakra-ui/react";
+
+import Header from "../../components/Header";
 import ConShow from "../../components/Show";
+import useAxios from "../../hooks/useAxios";
 import useRecorder from "../../hooks/useRecorder";
+import layers from "../../utils/AuthLayers";
+import Redirect from "../../utils/redirect";
 
+export const getServerSideProps = async ({ req, locale }) => {
+  const translation = await serverSideTranslations(locale, ["common"]);
+  let user;
+  try {
+    user = JWT.verify(req.cookies["token"], process.env.JWT_SECRET);
+    if (!user || user.rank > PageUserRank) return Redirect("/", false);
+  } catch (error) {
+    return Redirect("/", false);
+  }
 
+  const userType = user?.role;
+  console.log(user?.role);
+
+  return {
+    props: {
+      ...translation,
+      userType,
+    },
+  };
+};
 
 export default function AddSound() {
-  React.useEffect(() => { fetch() }, []);
+  React.useEffect(() => {
+    fetch();
+  }, []);
 
-  const [data, setData] = React.useState<any>();  
   const toast = Chakra.useToast();
   const { t } = useTranslation();
-  
+
   const f_request = useAxios(); // handle Fetching
   const s_request = useAxios(); // Handle submitting
-
-
   const r = useRecorder({ audio: true, video: false });
-  
-  
 
   useHotkeys("F", () => {
     fetch();
   });
-  useHotkeys("R", () => {
-    record();
-  });
+  useHotkeys(
+    "R",
+    () => {
+      record();
+    },
+    [r.isRecording]
+  );
 
   useHotkeys(
     "W",
@@ -79,7 +105,7 @@ export default function AddSound() {
         maxW={600}
         h={200}
       >
-        <ConShow condetion={f_request.isLoading}>
+        <ConShow condetion={!f_request.data}>
           <Chakra.Center
             w="100%"
             h="100%"
@@ -91,10 +117,30 @@ export default function AddSound() {
             <Chakra.Spinner />
           </Chakra.Center>
         </ConShow>
-        <ConShow condetion={!f_request.isLoading || !f_request.isError || f_request.data}>
+        <ConShow condetion={!!f_request.data}>
           <Chakra.Center fontSize={20} height="100%" w="100%" h={200} bg="#fff">
-            {data?.ar}
-            {JSON.stringify(r.url)}
+            <React.Fragment>
+            <ConShow condetion={r.isRecording}>
+              <motion.div
+                animate={{
+                  opacity: [0.3, 0.9, 0.3],
+                }}
+                transition={{
+                  yoyo: Infinity,
+                }}
+              >
+                <Chakra.Circle
+                  position="absolute"
+                  top="10px"
+                  right="10px"
+                  bg="red"
+                  zIndex={2}
+                  size={4}
+                />
+              </motion.div>
+            </ConShow>
+            {f_request.data?.ar}
+            </React.Fragment>
           </Chakra.Center>
         </ConShow>
       </Chakra.Center>
@@ -115,88 +161,24 @@ export default function AddSound() {
           gap="10px"
           p={10}
         >
-          <Chakra.GridItem textAlign="center">
-            <Chakra.Button
-              disabled={r.isEmpty}
-              onClick={play}
-              colorScheme="teal"
-              w="100%"
-              size="lg"
-            >
-              <Chakra.Kbd color="#000">P</Chakra.Kbd>{" "}
-              <Chakra.Text m="0 10px">{t("PLAY")}</Chakra.Text>
-            </Chakra.Button>
-          </Chakra.GridItem>
-          <Chakra.GridItem textAlign="center" position="relative">
-            <ConShow condetion={r.isRecording}>
-              <Chakra.Circle
-                position="absolute"
-                top="10px"
-                right="10px"
-                bg="red"
-                zIndex={2}
-                size={4}
-                as={motion.div}
-              />
-            </ConShow>
-            <Chakra.Button
-              disabled={r.isRecording}
-              onClick={record}
-              colorScheme="teal"
-              w="100%"
-              size="lg"
-            >
-              <Chakra.Kbd color="#000">R</Chakra.Kbd>{" "}
-              <Chakra.Text m="0 10px">{t("RECORD")}</Chakra.Text>
-            </Chakra.Button>
-          </Chakra.GridItem>
-          <Chakra.GridItem textAlign="center">
-            <Chakra.Button
-              disabled={!r.isRecording}
-              onClick={stop}
-              colorScheme="teal"
-              w="100%"
-              size="lg"
-            >
-              <Chakra.Kbd color="#000">W</Chakra.Kbd>{" "}
-              <Chakra.Text m="0 10px"> {t("STOP_RECORDING")} </Chakra.Text>
-            </Chakra.Button>
-          </Chakra.GridItem>
-          <Chakra.GridItem textAlign="center">
-            <Chakra.Button
-              disabled={!data}
-              onClick={fetch}
-              colorScheme="teal"
-              w="100%"
-              size="lg"
-            >
-              <Chakra.Kbd color="#000">F</Chakra.Kbd>{" "}
-              <Chakra.Text m="0 10px">{t("Fetch")} </Chakra.Text>
-            </Chakra.Button>
-          </Chakra.GridItem>
-          <Chakra.GridItem textAlign="center">
-            <Chakra.Button
-              disabled={r.isEmpty}
-              colorScheme="teal"
-              w="100%"
-              size="lg"
-              onClick={resetRecorded}
-            >
-              <Chakra.Kbd color="#000">Q</Chakra.Kbd>{" "}
-              <Chakra.Text m="0 10px"> {t("RESET")} </Chakra.Text>
-            </Chakra.Button>
-          </Chakra.GridItem>
-          <Chakra.GridItem textAlign="center">
-            <Chakra.Button
-              disabled={r.isEmpty}
-              colorScheme="teal"
-              w="100%"
-              size="lg"
-            >
-              <Chakra.Kbd color="#000">S</Chakra.Kbd>{" "}
-              <Chakra.Text m="0 10px"> {t("SUBMIT")} </Chakra.Text>
-            </Chakra.Button>
-          </Chakra.GridItem>
+          <C_Button SC="P" disabled={r.isEmpty} action={play}>
+            PLAY
+          </C_Button>
+          <C_Button SC="R" disabled={r.isRecording} action={record}>
+            RECORD
+          </C_Button>
+          <C_Button SC="W" disabled={!r.isRecording} action={stop}>
+            STOP_RECORDING
+          </C_Button>
+          <C_Button SC="F" disabled={r.isEmpty} action={fetch}>
+            Fetch
+          </C_Button>
+          <C_Button SC="Q" disabled={r.isEmpty} action={resetRecorded}>
+            RESET
+          </C_Button>
+          <C_Button SC="S" disabled={r.isEmpty} action={console.log}>
+            SUBMIT
+          </C_Button>
         </Chakra.Grid>
       </Chakra.Box>
     </>
@@ -219,10 +201,10 @@ export default function AddSound() {
         title: "Error",
         description: t("NOT_RECORDING_YET"),
         status: "error",
+        id: "1",
       });
     }
     r.StopRecording();
-    console.log(r.url);
 
     toast({
       title: "Message",
@@ -247,19 +229,23 @@ export default function AddSound() {
   async function fetch() {
     const newWord = f_request.call({
       url: "/api/words/get-word-without-sound",
-      method: "GET"
+      method: "GET",
     });
   }
 
   function submit() {
-    if (s_request.isLoading || f_request.isLoading) {
-        return toast({ title: t("NO_THING"), isClosable: true, status: "error", containerStyle: { direction: "initial" }, })
+    if (s_request.isLoading || f_request.isLoading || r.isEmpty) {
+      return toast({
+        title: t("NO_THING"),
+        isClosable: true,
+        status: "error",
+        containerStyle: { direction: "initial" },
+      });
     }
 
+    // toast(s_request.call({
 
-
-
-
+    // }))
   }
 
   function resetRecorded() {
@@ -268,27 +254,42 @@ export default function AddSound() {
   }
 }
 
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import Redirect from "../../utils/redirect";
-import useAxios from "../../hooks/useAxios";
-import parseCookie from "../../utils/parseCookie";
-import layers from "../../utils/AuthLayers";
+{
+  /* <Chakra.GridItem textAlign="center">
+            <Chakra.Button
+              disabled={r.isEmpty}
+              colorScheme="teal"
+              w="100%"
+              size="lg"
+            >
+              <Chakra.Kbd color="#000">S</Chakra.Kbd>{" "}
+              <Chakra.Text m="0 10px"> {t("SUBMIT")} </Chakra.Text>
+            </Chakra.Button>
+          </Chakra.GridItem> */
+}
 
-export const getServerSideProps = async ({ req, locale }) => {
-  const translation = await serverSideTranslations(locale, ["common"]);
-  const user = await parseCookie(req);
-  if (!user || user.rank > PageUserRank) return Redirect("/", false);
-
-  const userType = user?.role;
-  console.log(user?.role);
-  
-  return {
-    props: {
-      ...translation,
-      userType,
-    },
-  };
+interface CONTROLBTN {
+  disabled: boolean;
+  SC: string;
+  action: MouseEventHandler;
+  children: string;
+}
+const C_Button = (props: CONTROLBTN) => {
+  const { t } = useTranslation();
+  return (
+    <>
+      <Chakra.GridItem textAlign="center">
+        <Chakra.Button
+          disabled={props.disabled}
+          colorScheme="teal"
+          w="100%"
+          size="lg"
+          onClick={props.action}
+        >
+          <Chakra.Kbd color="#000">{props.SC}</Chakra.Kbd>
+          <Chakra.Text m="0 10px"> {t(props.children)}</Chakra.Text>
+        </Chakra.Button>
+      </Chakra.GridItem>
+    </>
+  );
 };
-
-
-

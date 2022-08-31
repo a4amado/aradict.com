@@ -1,15 +1,16 @@
-import Image from "next/image";
-import NextLink, { LinkProps } from "next/link";
-import Router from "next/router";
-import { useTranslation } from "react-i18next";
-import * as Chakra from "@chakra-ui/react";
-import Locales from "../Locales";
-import { usePageProps } from "../../utils/PagePropsInComponents";
-import Logo from "../../public/abadis.svg";
-import DrawerC from "../Drawer";
-import React from "react";
-import AuthLayers from "../../utils/AuthLayers";
+import Image from 'next/image';
+import NextLink, { LinkProps } from 'next/link';
+import Router from 'next/router';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import * as Chakra from '@chakra-ui/react';
+
+import Logo from '../../public/abadis.svg';
+import AuthLayers from '../../utils/AuthLayers';
+import { usePageProps } from '../../utils/PagePropsInComponents';
+import DrawerC from '../Drawer';
+import Locales from '../Locales';
 
 const Header = () => {
   return (
