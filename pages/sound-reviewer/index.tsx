@@ -7,8 +7,12 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useTranslation } from 'react-i18next';
-
 import * as Chakra from '@chakra-ui/react';
+
+import {usePageProps} from "../../utils/PagePropsInComponents";
+
+
+
 
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
@@ -16,14 +20,20 @@ import ConShow from '../../components/Show';
 import useAxios from '../../hooks/useAxios';
 import layers from '../../utils/AuthLayers';
 import Redirect from '../../utils/redirect';
+import { unstable_getServerSession } from 'next-auth';
+import { authOptions } from '../api/auth/[...nextauth]';
+import { table } from 'console';
 
-export const getServerSideProps = async ({ req, locale }) => {
+export const getServerSideProps = async ({ req, locale, res }) => {
   const translation = await serverSideTranslations(locale, ["common"]);
   let user;
-
+  table(authOptions.providers)
   try {
-    user = JWT.verify(req.cookies["token"], process.env.JWT_SECRET);
-    if (!user || user.rank > PageUserRank) return Redirect("/", false);
+    user = await unstable_getServerSession(req, res, authOptions);
+    console.log(user);
+    
+    // user = JWT.verify(req.cookies["token"], process.env.JWT_SECRET);
+    if (!user || user?.rank > PageUserRank) return Redirect("/", false);
   } catch (error) {
     return Redirect("/", false);
   }
@@ -34,6 +44,7 @@ export const getServerSideProps = async ({ req, locale }) => {
     props: {
       ...translation,
       userType,
+      user
     },
   };
 };
@@ -107,6 +118,7 @@ const VoiceReviewer = () => {
     console.log("Approve");
   });
 
+  const gg = usePageProps()
   return (
     <>
       <Header />
@@ -156,7 +168,9 @@ const VoiceReviewer = () => {
             </Chakra.Center>
           </ConShow>
         </Chakra.Center>
-
+          {
+            JSON.stringify(gg)
+          }
         <Chakra.Box
           maxWidth="calc(800px + (10px * 3))"
           width="100%"
