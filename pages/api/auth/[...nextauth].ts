@@ -12,7 +12,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: "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",
     }),
   ],
-  adapter: PrismaAdapter(prisma),
+  // adapter: PrismaAdapter(prisma),
   callbacks: {
     async jwt({ token }) {
       token.rank = 0;
