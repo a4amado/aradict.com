@@ -15,14 +15,14 @@ export const authOptions: NextAuthOptions = {
   // adapter: PrismaAdapter(prisma),
   callbacks: {
     async jwt({ token }) {
-      const user = await prisma.user.findUnique({
-        select: {
-          role: true
-        }, where: {
-          email: token.email
-        }
-      });
-      console.log(user);
+      // const user = await prisma.user.findUnique({
+      //   select: {
+      //     role: true
+      //   }, where: {
+      //     email: token.email
+      //   }
+      // });
+      // console.log(user);
       
       token.rank = 0;
       token.role = "admin";
