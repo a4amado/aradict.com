@@ -12,7 +12,6 @@ export const authOptions: NextAuthOptions = {
       clientSecret: "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",
     }),
   ],
-  useSecureCookies: false,
   adapter: PrismaAdapter(prisma),
   callbacks: {
     async jwt({ token }) {
