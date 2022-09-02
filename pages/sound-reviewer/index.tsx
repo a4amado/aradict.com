@@ -1,28 +1,25 @@
 const PageUserRank = layers.VR.rank;
 
+import { table } from 'console';
 import * as JWT from 'jsonwebtoken';
+import { unstable_getServerSession } from 'next-auth';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useTranslation } from 'react-i18next';
+
 import * as Chakra from '@chakra-ui/react';
-
-import {usePageProps} from "../../utils/PagePropsInComponents";
-
-
-
 
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
 import ConShow from '../../components/Show';
 import useAxios from '../../hooks/useAxios';
 import layers from '../../utils/AuthLayers';
+import { usePageProps } from '../../utils/PagePropsInComponents';
 import Redirect from '../../utils/redirect';
-import { unstable_getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
-import { table } from 'console';
 
 export const getServerSideProps = async ({ req, locale, res }) => {
   const translation = await serverSideTranslations(locale, ["common"]);
