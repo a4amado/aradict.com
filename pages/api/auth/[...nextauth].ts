@@ -15,23 +15,18 @@ export const authOptions: NextAuthOptions = {
   // adapter: PrismaAdapter(prisma),
   callbacks: {
     async jwt({ token }) {
-      // const user = await prisma.user.findUnique({
-      //   select: {
-      //     role: true
-      //   }, where: {
-      //     email: token.email
-      //   }
-      // });
-      // console.log(user);
-      
       token.rank = 0;
       token.role = "admin";
 
       return token;
     },
+    async session({ session, token }) {
+      session.rank = token.rank;
+      session.role = token.role;
+      return session;
+    },
   },
-  useSecureCookies: process.env.NODE_ENV === "production", 
-  
+  useSecureCookies: process.env.NODE_ENV === "production",
 };
 
 export default NextAuth(authOptions);
