@@ -8,8 +8,6 @@ import prisma from "../../../DB";
 
 import type { NextAuthOptions } from "next-auth";
 
-function getUser() {}
-
 const pA = PrismaAdapter(prisma);
 
 const CP = CredentialsProvider({
@@ -42,9 +40,9 @@ const CP = CredentialsProvider({
       select: {
         email: true,
         hash: true,
-        image: true, 
-        name: true
-      }
+        image: true,
+        name: true,
+      },
     });
     console.log(User);
     return User;
@@ -56,9 +54,8 @@ export const authOptions: NextAuthOptions = {
   providers: [
     CP,
     GoogleProvider({
-      clientId:
-        "314617600738-hatbt1hg1d3t4cgr2dfb0qhdjrovql5v.apps.googleusercontent.com",
-      clientSecret: "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",
+      clientId: process.env.GOOGLE_CLINT_ID,
+      clientSecret: process.env.GOOGLE_CLINT_SECRET,
     }),
   ],
   adapter: pA,

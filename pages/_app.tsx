@@ -35,11 +35,10 @@ const gg = {
 }
 
 
-
 function MyApp({ Component, pageProps }: AppProps) {
 
   return (
-    
+  <Suspense fallback="Loading">
     <PagePropsProvider value={pageProps}>
       <AxiosProvider>
         <ChakraProvider theme={theme}>
@@ -53,6 +52,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         </ChakraProvider>
       </AxiosProvider>
     </PagePropsProvider>
+    </Suspense>    
   );
 }
 
