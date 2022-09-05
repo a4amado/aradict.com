@@ -24,7 +24,6 @@ import { authOptions } from '../api/auth/[...nextauth]';
 export const getServerSideProps = async ({ req, locale, res }) => {
   const translation = await serverSideTranslations(locale, ["common"]);
   let user;
-  table(authOptions.providers)
   try {
     user = await unstable_getServerSession(req, res, authOptions);
     console.log(user);
@@ -36,12 +35,12 @@ export const getServerSideProps = async ({ req, locale, res }) => {
   }
 
   const userType = user?.role;
-
+  
+  
   return {
     props: {
       ...translation,
-      userType,
-      user
+      userType, user
     },
   };
 };

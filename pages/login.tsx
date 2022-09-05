@@ -1,37 +1,40 @@
-import JWT from 'jsonwebtoken';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import Head from 'next/head';
-import Router from 'next/router';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import JWT from "jsonwebtoken";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import Head from "next/head";
+import Router from "next/router";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { signIn } from "next-auth/react";
 
-import * as Chakra from '@chakra-ui/react';
+import * as Chakra from "@chakra-ui/react";
 
-import Footer from '../components/Footer';
-import Header from '../components/Header';
-import useAxios from '../hooks/useAxios';
-import Redirect from '../utils/redirect';
+import Footer from "../components/Footer";
+import Header from "../components/Header";
+import useAxios from "../hooks/useAxios";
+import Redirect from "../utils/redirect";
 
-export const getServerSideProps = async ({ req, locale }) => {
-  console.log(req.cookies);
+import { getProviders, getCsrfToken } from "next-auth/react";
 
+export const getServerSideProps = async (ctx) => {
   let user;
   try {
-    user = JWT.verify(req.cookies["token"], process.env.JWT_SECRET);
+    user = JWT.verify(ctx.req.cookies["token"], process.env.JWT_SECRET);
     if (user) return Redirect("/", false);
   } catch (error) {}
 
-  const transition = await serverSideTranslations(locale, ["common"]);
+  const transition = await serverSideTranslations(ctx.locale, ["common"]);
 
   return {
     props: {
       ...transition,
+      getProviders: await getProviders(),
+      getCsrfToken: await getCsrfToken(ctx),
     },
   };
 };
 
-const Login = () => {
+const Login = (props) => {
   const { t } = useTranslation("common");
   const {
     register,
@@ -52,39 +55,28 @@ const Login = () => {
   const log = useAxios();
   const toast = Chakra.useToast();
   const onSubmit = async (data) => {
-    toast.promise(
-      log.call({
-        method: "POST",
-        data,
-        url: "/api/login",
-      }),
-
-      {
-        loading: {
-          title: "Loging in",
-        },
-        success: {
-          title: "Redirecting",
-          description: (
-            <CountDown
-              value={3}
-              end={0}
-              step={1}
-              period={1000}
-              action={() => {
-                toast.closeAll();
-                Router.replace({ pathname: "/" }, Router.asPath, {
-                  locale: Router.locale,
-                });
-              }}
-            />
-          ),
-        },
-        error: {
-          title: "Failed",
-        },
-      }
-    );
+    const submitting = signIn("credentials", {
+      redirect: false,
+      username: data.username,
+      password: data.password,
+      callbackUrl: "/",
+    }).then((e) => {
+      toast({
+        title: "Redirecting",
+        description: (
+          <CountDown
+            value={3}
+            end={0}
+            step={1}
+            period={1000}
+            action={() => {
+              toast.closeAll();
+              window.location.replace("/")
+            }}
+          />
+        ),
+      });
+    });
   };
 
   return (

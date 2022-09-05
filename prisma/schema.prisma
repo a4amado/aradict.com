@@ -8,12 +8,13 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("DATABASE_URL")
 }
 
 
 model Account {
-  id                 String @id @db.Uuid @default(cuid())
-  userId             String @db.Uuid
+  id                 String @id @db.Text @default(cuid())
+  userId             String @db.Text
   type               String
   provider           String
   providerAccountId  String
@@ -31,22 +32,23 @@ model Account {
 }
 
 model Session {
-  id           String  @id @db.Uuid @default(cuid())
+  id           String  @id @db.Text @default(cuid())
   sessionToken String   @unique
-  userId       String @db.Uuid
+  userId       String @db.Text
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-  id            String  @id @default(cuid()) @db.Uuid
+  id            String  @id @default(cuid()) @db.Text
   name          String?
   email         String   @unique
   emailVerified DateTime?
   image         String?
-  username String @db.VarChar(20)
-  hash String
+  username String @db.VarChar(30) @unique
+  hash String?
   role Role 
+  locale String?
   joiningDate DateTime @default(dbgenerated("now()"))
   words Words[]
   sounds Sounds[]
@@ -64,8 +66,8 @@ model VerificationToken {
 
 
 model Words {
-  id String @id @db.Uuid @default(cuid())
-  autherId String @db.Uuid
+  id String @id @db.Text @default(cuid())
+  autherId String @db.Text
 
   ar String @unique
   en String
@@ -75,9 +77,9 @@ model Words {
 }
 
 model Sounds {
-  soundId String @id @default(cuid()) @db.Uuid 
-  wordId String @db.Uuid
-  autherId String @db.Uuid
+  soundId String @id @default(cuid()) @db.Text 
+  wordId String @db.Text
+  autherId String @db.Text
 
   fileName String
   
