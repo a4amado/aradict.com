@@ -200,7 +200,7 @@ const AutoComplete = () => {
   const [searching, setSearching] = useState<boolean>();
   const [items, setItems] = useState<Circular>();
 
-  const [activeItem, setActiveItem] = useStateDep(items?.head, [items]);
+  const [activeItem, setActiveItem] = React.useState(items?.head);
   const { t } = useTranslation("common");
 
   function search(e) {
@@ -329,13 +329,4 @@ const ListOfSuggestions = ({ items, activeItem }) => {
       })}
     </Chakra.Box>
   );
-};
-
-const useStateDep = (state: any, dep: any[]): [any, Dispatch<Node>] => {
-  const [value, setValue] = useState<Node>();
-
-  React.useEffect(() => {
-    setValue(state);
-  }, [...dep]);
-  return [value, setValue];
 };
