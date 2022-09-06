@@ -25,9 +25,6 @@
     "cookies-next": "^2.1.1",
     "country-flag-icons": "^1.5.5",
     "doublie": "^1.1.0",
-
-
-
     "form-data": "^4.0.0",
     "framer-motion": "^7.1.0",
     "fuzzy-search": "^3.2.1",
@@ -41,14 +38,13 @@
     "next-auth": "^4.10.3",
     "next-connect": "^0.13.0",
     "next-i18next": "^11.3.0",
-
+    "next-route-resolver": "^0.0.7",
     "pg": "^8.7.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.34.1",
     "react-hotkeys-hook": "^3.4.7",
     "react-i18next": "^11.18.3",
-
     "react-player": "^2.10.1",
     "react-use": "^17.4.0",
     "sqlite3": "^5.0.11",

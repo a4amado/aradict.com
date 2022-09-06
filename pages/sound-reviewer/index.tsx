@@ -1,11 +1,11 @@
-const PageUserRank = layers.VR.rank;
+const pageRank = 0;
 
-import { table } from 'console';
-import * as JWT from 'jsonwebtoken';
-import { unstable_getServerSession } from 'next-auth';
+
+
+
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
+import Router, { useRouter } from 'next/router';
 import React from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useTranslation } from 'react-i18next';
@@ -16,23 +16,25 @@ import Footer from '../../components/Footer';
 import Header from '../../components/Header';
 import ConShow from '../../components/Show';
 import useAxios from '../../hooks/useAxios';
-import layers from '../../utils/AuthLayers';
+
 import { usePageProps } from '../../utils/PagePropsInComponents';
 import Redirect from '../../utils/redirect';
-import { authOptions } from '../api/auth/[...nextauth]';
 
-export const getServerSideProps = async ({ req, locale, res }) => {
-  const translation = await serverSideTranslations(locale, ["common"]);
-  let user;
-  try {
-    user = await unstable_getServerSession(req, res, authOptions);
-    console.log(user);
-    
-    // user = JWT.verify(req.cookies["token"], process.env.JWT_SECRET);
-    if (!user || user?.rank > PageUserRank) return Redirect("/", false);
-  } catch (error) {
-    return Redirect("/", false);
-  }
+import { unstable_getServerSession } from 'next-auth';
+import { authOptions } from '../api/auth/[...nextauth]';
+import { GetServerSidePropsContext } from 'next';
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  
+
+  
+let user;
+try {
+  user = await unstable_getServerSession(ctx.req, ctx.res, authOptions);
+  if (page)
+} catch (error) {}
+
+const translation = await serverSideTranslations(locale, ["common"]);
 
   const userType = user?.role;
   

@@ -26,24 +26,7 @@ const CP = CredentialsProvider({
     },
   },
   authorize: async (credentials, req) => {
-    const User = await prisma.user.findFirst({
-      where: {
-        OR: [
-          {
-            email: credentials.email,
-          },
-          {
-            username: credentials.email,
-          },
-        ],
-      },
-      select: {
-        email: true,
-        hash: true,
-        image: true,
-        name: true,
-      },
-    });
+    const User = await pA.getUserByEmail(credentials.email)
     console.log(User);
     return User;
   },
@@ -72,29 +55,27 @@ export const authOptions: NextAuthOptions = {
           role: "soundContributer",
           locale: "en-US",
         });
-
         account.userId = nAg.id;
         await pA.linkAccount(account);
         return true;
       } catch (error) {
-        console.log(error);
-
         return false;
       }
     },
     async jwt({ token, user }) {
-      token.rank = user?.rank || 0;
-      token.role = user?.role || "admin";
+      token.role = user?.role;
       return token;
     },
     async session({ token, user, session }) {
-      session.rank = token?.rank || 0;
-      session.role = token?.role || "admin";
+      session.role = token?.role;
       return session;
     },
   },
   session: {
-    strategy: "database",
+    strategy: "jwt",
+  },
+  pages: {
+    signIn: "/login",
   },
 };
 

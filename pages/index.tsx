@@ -1,51 +1,41 @@
-const PageUserRank = layers.Public;
-import { Circular, Node } from 'doublie';
-import * as JWT from 'jsonwebtoken';
-import { NextApiRequest, NextApiResponse } from 'next';
-import { useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 /* eslint-disable @next/next/no-img-element */
-import Head from 'next/head';
-import NextLink from 'next/link';
-import { useRouter } from 'next/router';
-import React, { Dispatch, useState } from 'react';
+import { Circular, Node } from "doublie";
 
-// import NextLink from "next/link";
-import * as Chakra from '@chakra-ui/react';
-import { css } from '@emotion/react';
+import { GetServerSidePropsContext } from "next";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
-import Footer from '../components/Footer';
-import Header from '../components/Header';
-import ConShow from '../components/Show';
-import layers from '../utils/AuthLayers';
-import isArabic from '../utils/isArabic';
-import { jwtVerify } from '../utils/jwt';
-import parseCookie from '../utils/parseCookie';
+import Head from "next/head";
+import NextLink from "next/link";
+import { useRouter } from "next/router";
+import React, { Dispatch, useState } from "react";
 
-const getServerSideProps = async ({
-  req,
-  locale,
-  res,
-}: {
-  req: NextApiRequest;
-  locale: string;
-  res: NextApiResponse;
-}) => {
-  let user;
-  try {
-    user = JWT.verify(req.cookies["token"], process.env.JWT_SECRET);
-  } catch (error) {}
+import * as Chakra from "@chakra-ui/react";
+import { css } from "@emotion/react";
 
-  const userType = user?.role || "";
+import Footer from "../components/Footer";
+import Header from "../components/Header";
+import ConShow from "../components/Show";
+import isArabic from "../utils/isArabic";
+import isAuth from "../utils/isAuthrized";
+import { usePageProps } from "../utils/PagePropsInComponents";
 
-  const translation = await serverSideTranslations(locale, ["common"]);
-  console.log(user);
-  return { props: { userType, ...translation } };
+const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const user = await isAuth(ctx, Infinity);
+
+  const translation = await serverSideTranslations(ctx.locale, ["common"]);
+
+  console.log(user.role);
+  
+
+  const props = { props: { userType: "admin", ...translation } };
+
+  return props;
 };
 
 export default function Home() {
   const { t } = useTranslation("common");
-
+  const p = usePageProps();
   return (
     <>
       <Header />
@@ -71,7 +61,9 @@ export default function Home() {
             {t("WHAT_IS_ARADICT")}
           </Chakra.Tag>
           <Chakra.Text>{t("TO_USE_ARADICT")}</Chakra.Text>
-
+      {
+        p?.userType
+      }
           <br />
           <img
             alt="s"

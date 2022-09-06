@@ -3,8 +3,8 @@ CREATE TYPE "Role" AS ENUM ('admin', 'soundContributer', 'soundReviewer');
 
 -- CreateTable
 CREATE TABLE "Account" (
-    "id" UUID NOT NULL,
-    "userId" UUID NOT NULL,
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "type" TEXT NOT NULL,
     "provider" TEXT NOT NULL,
     "providerAccountId" TEXT NOT NULL,
@@ -21,9 +21,9 @@ CREATE TABLE "Account" (
 
 -- CreateTable
 CREATE TABLE "Session" (
-    "id" UUID NOT NULL,
+    "id" TEXT NOT NULL,
     "sessionToken" TEXT NOT NULL,
-    "userId" UUID NOT NULL,
+    "userId" TEXT NOT NULL,
     "expires" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
@@ -31,14 +31,16 @@ CREATE TABLE "Session" (
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" UUID NOT NULL,
+    "id" TEXT NOT NULL,
     "name" TEXT,
     "email" TEXT NOT NULL,
     "emailVerified" TIMESTAMP(3),
     "image" TEXT,
-    "username" VARCHAR(20) NOT NULL,
-    "hash" TEXT NOT NULL,
+    "username" VARCHAR(30) NOT NULL,
+    "hash" TEXT,
     "role" "Role" NOT NULL,
+    "locale" TEXT,
+    "rank" INTEGER NOT NULL DEFAULT 3,
     "joiningDate" TIMESTAMP(3) NOT NULL DEFAULT now(),
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -53,8 +55,8 @@ CREATE TABLE "VerificationToken" (
 
 -- CreateTable
 CREATE TABLE "Words" (
-    "id" UUID NOT NULL,
-    "autherId" UUID NOT NULL,
+    "id" TEXT NOT NULL,
+    "autherId" TEXT NOT NULL,
     "ar" TEXT NOT NULL,
     "en" TEXT NOT NULL,
 
@@ -63,9 +65,9 @@ CREATE TABLE "Words" (
 
 -- CreateTable
 CREATE TABLE "Sounds" (
-    "soundId" UUID NOT NULL,
-    "wordId" UUID NOT NULL,
-    "autherId" UUID NOT NULL,
+    "soundId" TEXT NOT NULL,
+    "wordId" TEXT NOT NULL,
+    "autherId" TEXT NOT NULL,
     "fileName" TEXT NOT NULL,
 
     CONSTRAINT "Sounds_pkey" PRIMARY KEY ("soundId")
@@ -79,6 +81,9 @@ CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token");

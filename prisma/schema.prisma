@@ -49,6 +49,7 @@ model User {
   hash String?
   role Role 
   locale String?
+  rank Int @default(3)
   joiningDate DateTime @default(dbgenerated("now()"))
   words Words[]
   sounds Sounds[]
@@ -98,3 +99,4 @@ enum Role {
   soundContributer
   soundReviewer
 }
+
