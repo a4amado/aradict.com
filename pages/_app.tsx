@@ -1,9 +1,6 @@
-import "../scripts/wdyr";
-import '../styles/globals.css';
 
 import i18next from 'i18next';
 import { appWithTranslation, i18n } from 'next-i18next';
-import Router from 'next/router';
 import React, { Suspense } from 'react';
 
 import { ChakraProvider, Portal, PortalManager, ToastProvider } from '@chakra-ui/react';

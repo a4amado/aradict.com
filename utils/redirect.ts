@@ -9,7 +9,8 @@ function Redirect(dest, premenant) {
       redirect : {
         destination: dest,
         permenant: premenant
-      }
+      },
+      props: {}
     }
   }
 

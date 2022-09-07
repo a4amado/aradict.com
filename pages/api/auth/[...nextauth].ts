@@ -25,7 +25,7 @@ const CP = CredentialsProvider({
       placeholder: "password",
     },
   },
-  authorize: async (credentials, req) => {
+  authorize: async (credentials, req) => {    
     const User = await pA.getUserByEmail(credentials.email)
     console.log(User);
     return User;
@@ -45,6 +45,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ account, email, user, profile, credentials }) {
       try {
+
         const isExist = await pA.getUserByEmail(user.email);
         if (isExist) return true;
         const nAg = await pA.createUser({
@@ -64,19 +65,22 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user }) {
       token.role = user?.role;
+      token.rank = user?.rank;
       return token;
     },
     async session({ token, user, session }) {
-      session.role = token?.role;
+      session.role = user?.role;
+      session.rank = user?.rank;
       return session;
-    },
-  },
-  session: {
-    strategy: "jwt",
+    }
   },
   pages: {
     signIn: "/login",
   },
+  secret: process.env.JWT_SECRET,
+  session: {
+    strategy: "jwt"
+  }
 };
 
 export default NextAuth(authOptions);

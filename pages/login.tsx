@@ -1,31 +1,39 @@
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import Head from "next/head";
-import Router from "next/router";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { signIn } from "next-auth/react";
+import { GetServerSidePropsContext } from 'next';
+import { getCsrfToken, getProviders, signIn } from 'next-auth/react';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import Head from 'next/head';
+import Router from 'next/router';
+import React, { HTMLInputTypeAttribute } from 'react';
+import { useForm, UseFormReturn } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import Image from "next/image";
+import * as Chakra from '@chakra-ui/react';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-import * as Chakra from "@chakra-ui/react";
+import Footer from '../components/Footer';
+import Header from '../components/Header';
+import useAxios from '../hooks/useAxios';
+import Redirect from '../utils/redirect';
+import isAuth from "../utils/isAuthrized";
 
-import Footer from "../components/Footer";
-import Header from "../components/Header";
-import useAxios from "../hooks/useAxios";
-import Redirect from "../utils/redirect";
 
-import { getProviders, getCsrfToken } from "next-auth/react";
-import { unstable_getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]";
-import { GetServerSidePropsContext } from "next";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  let user;
-  try {
-    user = await unstable_getServerSession(ctx.req, ctx.res, authOptions);
-    if (user) return Redirect("/", false);
-  } catch (error) {}
-
+  let user = await isAuth(ctx);
+  
   const transition = await serverSideTranslations(ctx.locale, ["common"]);
+
+  console.log(!!user);
+  
+  if (user) {
+    return  {
+      "redirect": {
+        "permanent": false,
+        "destination": "/",
+      }
+    }
+  }
 
   return {
     props: {
@@ -38,11 +46,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
 const Login = (props) => {
   const { t } = useTranslation("common");
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  const { register, handleSubmit, formState: { errors }} = useForm({
     reValidateMode: "onChange",
     criteriaMode: "all",
     mode: "onBlur",
@@ -65,23 +69,8 @@ const Login = (props) => {
       callbackUrl: "/",
     }).then((e) => {
       if (e.ok) {
-        toast({
-          title: "Redirecting",
-          description: (
-            <CountDown
-              value={3}
-              end={0}
-              step={1}
-              period={1000}
-              action={() => {
-                toast.closeAll();
-                window.location.replace("/");
-              }}
-            />
-          ),
-        });
+        
       } else {
-        toast();
       }
     });
   };
@@ -89,7 +78,9 @@ const Login = (props) => {
   return (
     <>
       <Header />
-      <Head>Login to Aradict.com</Head>
+      <Head>
+        <title>Login to Aradict.com</title>
+      </Head>
 
       <Chakra.Container width="100%" flex={1} display="flex" flexDir="column">
         <Chakra.Box
@@ -115,16 +106,22 @@ const Login = (props) => {
               </Chakra.Tab>
             </Chakra.TabList>
             <Chakra.TabPanels>
+
               <Chakra.TabPanel>
                 <LoginForm />
               </Chakra.TabPanel>
+
               <Chakra.TabPanel>
                 <RegisterForm />
               </Chakra.TabPanel>
             </Chakra.TabPanels>
           </Chakra.Tabs>
 
-          <Chakra.Button onClick={() => signIn("google")}>Google</Chakra.Button>
+          
+          
+          <Chakra.Button w="100%" onClick={() => signIn("google")}>
+          <Image src="/btn_google_dark_focus_ios.svg" width={35} height={35} /> Google
+          </Chakra.Button>
         </Chakra.Box>
       </Chakra.Container>
       <Footer />
@@ -166,25 +163,25 @@ const CountDown = (data: CountDownProps) => {
   return <p>{v}</p>;
 };
 
+const RegisterFormScheme = yup.object().shape({
+  firstname: yup.string().required(),
+  lastname: yup.string().required(),
+  email: yup.string().email().required(),
+  password: yup.string().required(),
+  verify_password: yup.string().oneOf([yup.ref("password"), null], "passwords don't match")
+});
 function RegisterForm() {
   const { t } = useTranslation("common");
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  
+  const form = useForm({
     reValidateMode: "onChange",
     criteriaMode: "all",
     mode: "onBlur",
-    defaultValues: {
-      firstname: "",
-      lastname: "",
-      email: "",
-      password: "",
-    },
     shouldFocusError: true,
     delayError: 150,
+    resolver: yupResolver(RegisterFormScheme) 
   });
+  
   const log = useAxios();
 
   const onSubmit = async (data) => {
@@ -197,195 +194,70 @@ function RegisterForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Chakra.Flex flexDir="row">
-        <Chakra.FormControl isInvalid={!!errors.firstname}>
-          <Chakra.FormLabel>{t("USERNAME")}</Chakra.FormLabel>
-          <Chakra.Input
-            aria-errormessage="#firstname-error-msg"
-            defaultValue=""
-            {...register("firstname", {
-              required: "firstname is required",
-            })}
-          />
-          <Chakra.FormErrorMessage id="firstname-error-msg">
-            <>
-              <Chakra.FormErrorIcon /> {errors.firstname?.message}
-            </>
-          </Chakra.FormErrorMessage>
-        </Chakra.FormControl>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <Chakra.Flex flexDir="column">  
+      <CustomFormControle form={form} label="USERNAME" fieldname='username' isSecure={false} type="text" />
+      <CustomFormControle form={form} label="LASTNAME" fieldname='lastname' isSecure={false}  type="text" />
+      <CustomFormControle form={form} label="EMAIL" fieldname='email' isSecure={false}  type="email" />
+      <CustomFormControle form={form} label="PASSWORD" fieldname='password' isSecure={true} type="password" />
+ 
 
-        <Chakra.FormControl isInvalid={!!errors.lastname}>
-          <Chakra.FormLabel>{t("USERNAME")}</Chakra.FormLabel>
-          <Chakra.Input
-            aria-errormessage="#lastname-error-msg"
-            defaultValue=""
-            {...register("lastname", {
-              required: "lastname is required",
-            })}
-          />
-          <Chakra.FormErrorMessage id="lastname-error-msg">
-            <>
-              <Chakra.FormErrorIcon /> {errors.lastname?.message}
-            </>
-          </Chakra.FormErrorMessage>
-        </Chakra.FormControl>
-      </Chakra.Flex>
+      
 
-      <Chakra.FormControl isInvalid={!!errors.email}>
-        <Chakra.FormLabel>{t("USERNAME")}</Chakra.FormLabel>
-        <Chakra.Input
-          aria-errormessage="#email-error-msg"
-          defaultValue=""
-          {...register("email", {
-            required: "email is required",
-          })}
-        />
-        <Chakra.FormErrorMessage id="email-error-msg">
-          <>
-            <Chakra.FormErrorIcon /> {errors.email?.message}
-          </>
-        </Chakra.FormErrorMessage>
-      </Chakra.FormControl>
-
-      <Chakra.FormControl isInvalid={!!errors.password}>
-        <Chakra.FormLabel>{t("PASSWORD")}</Chakra.FormLabel>
-        <Chakra.InputGroup>
-          <Chakra.Input
-            aria-errormessage="#password_error_msg"
-            pr="4.5rem"
-            defaultValue=""
-            type="password"
-            security="true"
-            {...register("password", {
-              required: "Password is required",
-              minLength: {
-                value: 4,
-                message: "Minimum length should be 8",
-              },
-            })}
-          />
-          <Chakra.InputRightElement width="4.5rem">
-            <Chakra.Center>
-              <Chakra.Button colorScheme="teal" h="1.5rem" size="sm">
-                show
-              </Chakra.Button>
-            </Chakra.Center>
-          </Chakra.InputRightElement>
-        </Chakra.InputGroup>
-        <Chakra.FormErrorMessage id="password_error_msg">
-          <>
-            <Chakra.FormErrorIcon />
-            {errors.password?.message}
-          </>
-        </Chakra.FormErrorMessage>
-        <Chakra.FormHelperText>
-          Username is not case-sensitive
-        </Chakra.FormHelperText>
-      </Chakra.FormControl>
-      <Chakra.FormControl>
-        <Chakra.Center>
+        
           <Chakra.Button
             type="submit"
             size="lg"
             colorScheme="teal"
             disabled={log.isLoading}
+            m="15px 0"
           >
-            {log.isLoading ? <Chakra.Spinner /> : "Submit"}
+            {log.isLoading ? <Chakra.Spinner /> : "Submit"} 
           </Chakra.Button>
-        </Chakra.Center>
-      </Chakra.FormControl>
+        
+      
+      </Chakra.Flex>
     </form>
+    
   );
 }
+
+const LoginFormScheme = yup.object().shape({
+  
+  email: yup.string().email().required(),
+  password: yup.string().required()
+}) 
+
 
 function LoginForm() {
   const { t } = useTranslation("common");
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  const form = useForm({
     reValidateMode: "onChange",
     criteriaMode: "all",
     mode: "onBlur",
-    defaultValues: {
-      username: "",
-      password: "",
-    },
     shouldFocusError: true,
     delayError: 150,
+    resolver: yupResolver(LoginFormScheme) 
   });
   const log = useAxios();
 
   const onSubmit = async (data) => {
     signIn("credentials", {
       redirect: false,
-      email: data.username,
+      email: data.email,
       password: data.password,
       callbackUrl: "/",
-    });
+    }).then(() => {
+      window.location.replace("/");
+    })
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Chakra.FormControl isInvalid={!!errors.username}>
-        <Chakra.FormLabel>{t("USERNAME")}</Chakra.FormLabel>
-        <Chakra.Input
-          aria-errormessage="#username-error-msg"
-          defaultValue=""
-          {...register("username", {
-            required: "Username is required",
-          })}
-        />
-
-        <Chakra.FormHelperText>
-          Username is not case-sensitive
-        </Chakra.FormHelperText>
-        <Chakra.FormErrorMessage id="username-error-msg">
-          <>
-            <Chakra.FormErrorIcon /> {errors.username?.message}
-          </>
-        </Chakra.FormErrorMessage>
-      </Chakra.FormControl>
-
-      <Chakra.FormControl isInvalid={!!errors.password}>
-        <Chakra.FormLabel>{t("PASSWORD")}</Chakra.FormLabel>
-        <Chakra.InputGroup>
-          <Chakra.Input
-            aria-errormessage="#password_error_msg"
-            pr="4.5rem"
-            defaultValue=""
-            type="password"
-            security="true"
-            {...register("password", {
-              required: "Password is required",
-              minLength: {
-                value: 4,
-                message: "Minimum length should be 8",
-              },
-            })}
-          />
-          <Chakra.InputRightElement width="4.5rem">
-            <Chakra.Center>
-              <Chakra.Button colorScheme="teal" h="1.5rem" size="sm">
-                show
-              </Chakra.Button>
-            </Chakra.Center>
-          </Chakra.InputRightElement>
-        </Chakra.InputGroup>
-        <Chakra.FormErrorMessage id="password_error_msg">
-          <>
-            <Chakra.FormErrorIcon />
-            {errors.password?.message}
-          </>
-        </Chakra.FormErrorMessage>
-        <Chakra.FormHelperText>
-          Username is not case-sensitive
-        </Chakra.FormHelperText>
-      </Chakra.FormControl>
-      <Chakra.FormControl>
-        <Chakra.Center>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <CustomFormControle form={form} label="EMAIL" fieldname='email' isSecure={false}  type="email" />
+      <CustomFormControle form={form} label="PASSWORD" fieldname='password' isSecure={true} type="password" />
+      
+        
           <Chakra.Button
             type="submit"
             size="lg"
@@ -394,8 +266,70 @@ function LoginForm() {
           >
             {log.isLoading ? <Chakra.Spinner /> : "Submit"}
           </Chakra.Button>
-        </Chakra.Center>
-      </Chakra.FormControl>
+        
+      
     </form>
   );
 }
+
+
+interface CustomFormControleProps  {
+  form: UseFormReturn,
+  fieldname: string,
+  label: string,
+  isSecure: boolean,
+  type: HTMLInputTypeAttribute
+}
+
+const CustomFormControle = ({ form, fieldname, label, isSecure, type }: CustomFormControleProps & { isSecure}) => {
+  const { t } = useTranslation();
+  const [show, { toggle }] = Chakra.useBoolean(isSecure);
+  
+
+  const NormalFeild =  <Chakra.FormControl isInvalid={!!form.formState.errors[fieldname]?.message}>
+  <Chakra.FormLabel>{t(label)}</Chakra.FormLabel>
+  <Chakra.Input
+    aria-errormessage={`#${fieldname}-error-msg`}
+    defaultValue=""
+    type={type}
+    {...form.register(fieldname)}
+  />
+  <Chakra.FormErrorMessage id={`${fieldname}-error-msg`}>
+    <>
+      <Chakra.FormErrorIcon /> {form.formState.errors[fieldname]?.message}
+    </>
+  </Chakra.FormErrorMessage>
+</Chakra.FormControl>
+
+
+const password = <Chakra.FormControl isInvalid={!!form.formState.errors.password}>
+        <Chakra.FormLabel>{t(label)}</Chakra.FormLabel>
+        <Chakra.InputGroup>
+          <Chakra.Input
+            aria-errormessage="#"
+            pr="4.5rem"
+            defaultValue=""
+            type={show ? type : "text"}
+            
+            {...form.register(fieldname)}
+          />
+          <Chakra.InputRightElement width="4.5rem">
+            <Chakra.Center>
+              <Chakra.Button onClick={toggle} colorScheme="teal" h="1.5rem" size="sm">
+                show
+              </Chakra.Button>
+            </Chakra.Center>
+          </Chakra.InputRightElement>
+        </Chakra.InputGroup>
+        <Chakra.FormErrorMessage id={`${fieldname}_error_msg`}>
+          <>
+            <Chakra.FormErrorIcon />
+            {form.formState.errors.password?.message}
+          </>
+        </Chakra.FormErrorMessage>
+        </Chakra.FormControl>
+
+return isSecure  ? password : NormalFeild
+
+}
+

@@ -1,8 +1,4 @@
-const pageRank = 0;
-
-
-
-
+import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Head from 'next/head';
 import Router, { useRouter } from 'next/router';
@@ -16,33 +12,24 @@ import Footer from '../../components/Footer';
 import Header from '../../components/Header';
 import ConShow from '../../components/Show';
 import useAxios from '../../hooks/useAxios';
-
+import isAuth from '../../utils/isAuthrized';
 import { usePageProps } from '../../utils/PagePropsInComponents';
 import Redirect from '../../utils/redirect';
 
-import { unstable_getServerSession } from 'next-auth';
-import { authOptions } from '../api/auth/[...nextauth]';
-import { GetServerSidePropsContext } from 'next';
-
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const translation = await serverSideTranslations(ctx.locale, ["common"]);
   
+  let user: any = await isAuth(ctx, 1);
+  if (!user || user.rank > 1) return Redirect("/", 1);
 
   
-let user;
-try {
-  user = await unstable_getServerSession(ctx.req, ctx.res, authOptions);
-  if (page)
-} catch (error) {}
-
-const translation = await serverSideTranslations(locale, ["common"]);
-
-  const userType = user?.role;
+  const userType = user?.role || "";
   
   
   return {
     props: {
       ...translation,
-      userType, user
+      userType
     },
   };
 };

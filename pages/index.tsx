@@ -8,7 +8,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Head from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import React, { Dispatch, useState } from "react";
+import React, { useState } from "react";
 
 import * as Chakra from "@chakra-ui/react";
 import { css } from "@emotion/react";
@@ -20,17 +20,22 @@ import isArabic from "../utils/isArabic";
 import isAuth from "../utils/isAuthrized";
 import { usePageProps } from "../utils/PagePropsInComponents";
 
+
 const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const user = await isAuth(ctx, Infinity);
+  const user:any = await isAuth(ctx, Infinity);
 
   const translation = await serverSideTranslations(ctx.locale, ["common"]);
-
-  console.log(user.role);
+  const userType = user?.role || "";
+  
   
 
-  const props = { props: { userType: "admin", ...translation } };
-
-  return props;
+  if (!user) {
+    return { props: {  ...translation } };
+  } else {
+    return { props: { userType: userType, ...translation } };
+  }
+  
+  
 };
 
 export default function Home() {
@@ -175,24 +180,18 @@ const AutoComplete = () => {
   const [q, setQ] = React.useState("");
   const router = useRouter();
 
-  const onChange = (e) => {
-    const key = e.key;
-    if (key === "ArrowUp" || e.key === "ArrowDown") e.preventDefault();
+  const onChange = (e) => {    
     const Coee = isArabic.validate({ word: e.target.value });
-    if (!Coee)
-      return toast({
-        title: t("ONLY_AR_LETTERS"),
-        status: "error",
-        isClosable: true,
-      });
+    if (!Coee) return toast({ title: t("ONLY_AR_LETTERS"), status: "error", isClosable: true });
     setQ(e.target.value);
     search(e.target.value);
   };
+  
   const inputRefContainer = React.useRef<HTMLDivElement>();
   const [searching, setSearching] = useState<boolean>();
   const [items, setItems] = useState<Circular>();
 
-  const [activeItem, setActiveItem] = React.useState(items?.head);
+  const [activeItem, setActiveItem] = React.useState<Node>(items?.head);
   const { t } = useTranslation("common");
 
   function search(e) {
@@ -209,17 +208,29 @@ const AutoComplete = () => {
   }
 
   function SwitchNode(e) {
-    const key = e.key;
-    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-      e.preventDefault();
-      if (!items) return false;
-      if (key === "ArrowDown") return setActiveItem(activeItem.next);
-      if (key === "ArrowUp") return setActiveItem(activeItem.prev);
+  
+    const keys = ["ArrowDown", "ArrowUp", "Enter"];
+    if (!keys.includes(e.key)) return false;
+
+    if (!items) return false;
+    
+    if (e.key === "ArrowDown") {
+      if (!activeItem) return setActiveItem(items.head);
+      return setActiveItem(activeItem.next);
     }
-    if (key === "Enter")
-      return router.push({ pathname: "/word", query: { q: "wwwww" } });
-    return true;
+
+    if (e.key === "ArrowUp") {
+      if (!activeItem) return setActiveItem(items.last);
+      return setActiveItem(activeItem.prev);
+    }
+    console.log(router.asPath);
+    
+    if (e.key === "Enter") router.push(`/word?q=${q}`);
+
+   
   }
+
+  
 
   return (
     <>

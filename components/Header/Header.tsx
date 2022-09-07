@@ -97,7 +97,7 @@ interface MenuList extends LinkProps {
 
 
 const LOGOUT_BTN = {
-  href: "/api/logout",
+  href: "/api/auth/signout",
   text: "LOGOUT",
   passHref: true,
   disable: {
@@ -106,7 +106,7 @@ const LOGOUT_BTN = {
 };
 
 const AdminMenu: MenuObject = {
-  user: AuthLayers.Admin.code,
+  user: "admin",
   list: [
     {
       href: "/",
@@ -137,7 +137,7 @@ const AdminMenu: MenuObject = {
 };
 
 const SoundContributer: MenuObject = {
-  user: AuthLayers.VC.code,
+  user:"soundContributer",
   list: [
     {
       href: "/",
@@ -160,7 +160,7 @@ const SoundContributer: MenuObject = {
 };
 
 const SoundReviwer: MenuObject = {
-  user: AuthLayers.VR.code,
+  user: "soundReviwer",
   list: [
     {
       href: "/",

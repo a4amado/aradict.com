@@ -1,34 +1,27 @@
-const PageUserRank = layers.VC.rank;
+import { motion } from 'framer-motion';
+import { GetServerSidePropsContext } from 'next';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import Head from 'next/head';
+import React, { MouseEventHandler } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 
-import { motion } from "framer-motion";
-import * as JWT from "jsonwebtoken";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import Head from "next/head";
-import React, { MouseEventHandler } from "react";
-import { useHotkeys } from "react-hotkeys-hook";
+import * as Chakra from '@chakra-ui/react';
 
-import * as Chakra from "@chakra-ui/react";
+import Header from '../../components/Header';
+import ConShow from '../../components/Show';
+import useAxios from '../../hooks/useAxios';
+import useRecorder from '../../hooks/useRecorder';
+import isAuth from '../../utils/isAuthrized';
+import Redirect from '../../utils/redirect';
 
-import Header from "../../components/Header";
-import ConShow from "../../components/Show";
-import useAxios from "../../hooks/useAxios";
-import useRecorder from "../../hooks/useRecorder";
-import layers from "../../utils/AuthLayers";
-import Redirect from "../../utils/redirect";
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const translation = await serverSideTranslations(ctx.locale, ["common"]);
+  let user: any = await isAuth(ctx);
+  if (!user || user.rank > 2) return Redirect("/", true);
 
-export const getServerSideProps = async ({ req, locale }) => {
-  const translation = await serverSideTranslations(locale, ["common"]);
-  let user;
-  try {
-    user = JWT.verify(req.cookies["token"], process.env.JWT_SECRET);
-    if (!user || user.rank > PageUserRank) return Redirect("/", false);
-  } catch (error) {
-    return Redirect("/", false);
-  }
-
-  const userType = user?.role;
-  console.log(user?.role);
+  const userType = user?.role || "";
+  
 
   return {
     props: {
