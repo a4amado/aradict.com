@@ -46,7 +46,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ account, email, user, profile, credentials }) {
       try {
 
-        const isExist = await pA.getUserByEmail(user.email);
+        const isExist = await pA.getUserByEmail(profile.email);
         if (isExist) return true;
         const nAg = await pA.createUser({
           email: profile.email,
