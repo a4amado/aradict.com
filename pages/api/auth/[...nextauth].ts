@@ -69,8 +69,8 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ token, user, session }) {
-      session.role = user?.role;
-      session.rank = user?.rank;
+      session.role = token?.role;
+      session.rank = token?.rank;
       return session;
     }
   },
