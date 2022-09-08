@@ -23,8 +23,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   let user = await isAuth(ctx);
   
   const transition = await serverSideTranslations(ctx.locale, ["common"]);
-
-  console.log(!!user);
   
   if (user) {
     return  {
@@ -61,6 +59,16 @@ const Login = (props) => {
   const log = useAxios();
   const toast = Chakra.useToast();
 
+  React.useEffect(() => {
+    if (Router.query.error) {
+      toast({
+        status: "error",
+        title: Router.query.error,
+        isClosable: true, position:"top-right"
+      })
+    }
+  },[])
+
   const onSubmit = async (data) => {
     const submitting = signIn("credentials", {
       redirect: false,
@@ -82,7 +90,7 @@ const Login = (props) => {
         <title>Login to Aradict.com</title>
       </Head>
 
-      <Chakra.Container width="100%" flex={1} display="flex" flexDir="column">
+      
         <Chakra.Box
           borderRadius={10}
           bg="white"
@@ -91,9 +99,14 @@ const Login = (props) => {
           width="100%"
           py="10px"
           px="20px"
+          flex={1}
+          m={15}
+          marginRight="auto"
+          
+          
         >
-          <Chakra.Tabs>
-            <Chakra.TabList display="flex" flexDir="row">
+          <Chakra.Tabs h="100%" display="flex" flexDir="column" justifyContent="stretch" flex={1}>
+            <Chakra.TabList display="flex" flexDir="row" >
               <Chakra.Tab flex={1}>
                 <Chakra.Center>
                   <h1>SignIn</h1>
@@ -105,7 +118,8 @@ const Login = (props) => {
                 </Chakra.Center>
               </Chakra.Tab>
             </Chakra.TabList>
-            <Chakra.TabPanels>
+
+            <Chakra.TabPanels flex={1}>
 
               <Chakra.TabPanel>
                 <LoginForm />
@@ -115,15 +129,15 @@ const Login = (props) => {
                 <RegisterForm />
               </Chakra.TabPanel>
             </Chakra.TabPanels>
+            <Chakra.Button w="100%" onClick={() => signIn("google")}>
+          <Image src="/btn_google_dark_focus_ios.svg" width={35} height={35} /> Google
+          </Chakra.Button>
           </Chakra.Tabs>
 
           
           
-          <Chakra.Button w="100%" onClick={() => signIn("google")}>
-          <Image src="/btn_google_dark_focus_ios.svg" width={35} height={35} /> Google
-          </Chakra.Button>
         </Chakra.Box>
-      </Chakra.Container>
+      
       <Footer />
     </>
   );
@@ -207,7 +221,7 @@ function RegisterForm() {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
-      <Chakra.Flex flexDir="column">  
+      <Chakra.Container flexDir="column">  
       <CustomFormControle form={form} label="USERNAME" fieldname='username' isSecure={false} type="text" />
       {/* <CustomFormControle form={form} label="LASTNAME" fieldname='lastname' isSecure={false}  type="text" /> */}
       <CustomFormControle form={form} label="EMAIL" fieldname='email' isSecure={false}  type="email" />
@@ -215,20 +229,22 @@ function RegisterForm() {
  
 
       
-
-        
-          <Chakra.Button
+      
+      <Chakra.Button
+            marginTop="auto"
             type="submit"
             size="lg"
             colorScheme="teal"
-            disabled={log.isLoading}
+            disabled={form.formState.isSubmitting}
             m="15px 0"
           >
-            {log.isLoading ? <Chakra.Spinner /> : "Submit"} 
+            {form.formState.isSubmitting ? <Chakra.Spinner /> : "Submit"} 
           </Chakra.Button>
+
+        
         
       
-      </Chakra.Flex>
+      </Chakra.Container>
     </form>
     
   );
@@ -254,13 +270,20 @@ function LoginForm() {
   const log = useAxios();
 
   const onSubmit = async (data) => {
-    signIn("credentials", {
+    
+    return signIn("credentials", {
       redirect: false,
       email: data.email,
       password: data.password,
       callbackUrl: "/",
-    }).then(() => {
-      window.location.replace("/");
+    }).then((e) => {
+      if (e.ok) {
+        window.location.replace("/");
+      } else {
+        
+        
+
+      }
     })
   };
 
@@ -270,13 +293,18 @@ function LoginForm() {
       <CustomFormControle form={form} label="PASSWORD" fieldname='password' isSecure={true} type="password" />
       
         
+      
+
           <Chakra.Button
             type="submit"
             size="lg"
             colorScheme="teal"
-            disabled={log.isLoading}
+            disabled={form.formState.isSubmitting}
+            m="10px"
+            w="100%"
           >
-            {log.isLoading ? <Chakra.Spinner /> : "Submit"}
+
+            {form.formState.isSubmitting ? <Chakra.Spinner /> : t("LOGIN")}
           </Chakra.Button>
         
       
