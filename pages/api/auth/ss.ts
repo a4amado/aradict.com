@@ -35,7 +35,6 @@ router.post( async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(201).end();        
         
     } catch (error) {
-        console.log(error);
         
         res.send("Error")
     }

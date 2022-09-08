@@ -223,7 +223,6 @@ const AutoComplete = () => {
       if (!activeItem) return setActiveItem(items.last);
       return setActiveItem(activeItem.prev);
     }
-    console.log(router.asPath);
     
     if (e.key === "Enter") router.push(`/word?q=${q}`);
 

@@ -82,26 +82,25 @@ const VoiceReviewer = () => {
   }
   useHotkeys("W", () => {
     pause();
-    console.log("Pause");
+
   });
 
   useHotkeys(
     "P",
     () => {
       play();
-      console.log("play");
+
     },
     [isLoading]
   );
   useHotkeys("A", () => {
     approve();
-    console.log("Approve");
+
   });
 
   useHotkeys("R", () => {
     reject();
-    console.log("Approve");
-  });
+   });
 
   const gg = usePageProps()
   return (

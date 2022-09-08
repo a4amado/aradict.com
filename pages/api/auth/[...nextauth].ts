@@ -28,10 +28,8 @@ const CredentialsProviderProps:CredentialsConfig  = {
     },
   },
   authorize: async (credentials, req) =>  {
-    console.log(Object.keys(credentials));
-    
     const User = await pA.getUserByEmail(credentials["email"]);
-    console.log(User);
+
     return User;
   },
   type: "credentials",
@@ -50,17 +48,34 @@ export const authOptions: NextAuthOptions = {
   
   callbacks: {
     async signIn({ credentials, account, email, profile, user }) {
+      try {
+      
+        
+
+      
       const s = await pA.getUserByEmail(user.email);
       if(s) return true;
       
-      const newUser = await pA.createUser({
+      const newUSer = await pA.createUser({
         email: profile.email,
-        username: profile.email,
-        role: "soundContributer"
+          username: profile.email,
+          role: "soundContributer"
       });
-      account.userId = newUser.id;
-      await pA.linkAccount(account)
+         
+      await pA.linkAccount({...account, userId: newUSer.id })
+      
+      
+      
       return true;
+        
+      } catch (error) {
+        console.log(error);
+        
+        return false;
+      }
+      
+      
+
     },
     async jwt({ token, user }) {
       token.role = user?.role;

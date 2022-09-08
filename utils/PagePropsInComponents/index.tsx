@@ -28,7 +28,6 @@ const usePageProps = (): any => {
   const PageContext = useContext<any>(PagePropsContext);
 
   const [pageProps] = useState<any>(PageContext);
-  console.log(pageProps);
   
   return pageProps;
 };

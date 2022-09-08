@@ -29,7 +29,6 @@ const LoginSchema = Yup.object().shape({
 
 Route.use<NextApiRequest, NextApiRequest>(
   async (req, res, next: NextHandler) => {
-    console.log("Sss");
     try {
       await LoginSchema.validate(req.body);
       next();
