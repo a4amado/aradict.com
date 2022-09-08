@@ -164,8 +164,9 @@ const CountDown = (data: CountDownProps) => {
 };
 
 const RegisterFormScheme = yup.object().shape({
-  firstname: yup.string().required(),
-  lastname: yup.string().required(),
+  // firstname: yup.string().required(),
+  // lastname: yup.string().required(),
+  username: yup.string().required(),
   email: yup.string().email().required(),
   password: yup.string().required(),
   verify_password: yup.string().oneOf([yup.ref("password"), null], "passwords don't match")
@@ -185,19 +186,30 @@ function RegisterForm() {
   const log = useAxios();
 
   const onSubmit = async (data) => {
-    signIn("credentials", {
-      redirect: false,
+    log.call({
+    data: {
       email: data.username,
       password: data.password,
-      callbackUrl: "/",
-    });
+      username: data.username,
+    }, 
+    method: "POST",
+    url: "/api/auth/ss"
+    }).then(() => {
+        signIn("credentials", {
+          email: data.username,
+          password: data.password,
+          callbackUrl:"/"+Router.locale
+        })
+          
+    })
+
   };
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <Chakra.Flex flexDir="column">  
       <CustomFormControle form={form} label="USERNAME" fieldname='username' isSecure={false} type="text" />
-      <CustomFormControle form={form} label="LASTNAME" fieldname='lastname' isSecure={false}  type="text" />
+      {/* <CustomFormControle form={form} label="LASTNAME" fieldname='lastname' isSecure={false}  type="text" /> */}
       <CustomFormControle form={form} label="EMAIL" fieldname='email' isSecure={false}  type="email" />
       <CustomFormControle form={form} label="PASSWORD" fieldname='password' isSecure={true} type="password" />
  
