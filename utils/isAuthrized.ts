@@ -1,12 +1,14 @@
 
 import { GetServerSidePropsContext } from 'next';
-import { getSession } from 'next-auth/react';
+import { unstable_getServerSession } from "next-auth/next"
+import { authOptions } from '../pages/api/auth/[...nextauth]';
 
 
 
-export async function isAuth(ctx: GetServerSidePropsContext, rank?: number): Promise<object | false> {
+export async function isAuth(ctx: GetServerSidePropsContext): Promise<object | false> {
   try {
-    let user = await getSession(ctx);    
+
+    let user = await unstable_getServerSession(ctx.req, ctx.res, authOptions);
     return user;
   } catch (error) {
     return false;
