@@ -9,6 +9,8 @@ export async function isAuth(ctx: GetServerSidePropsContext): Promise<object | f
   try {
 
     let user = await unstable_getServerSession(ctx.req, ctx.res, authOptions);
+    console.log(user);
+    
     return user;
   } catch (error) {
     return false;
