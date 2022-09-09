@@ -38,9 +38,9 @@ CREATE TABLE "User" (
     "image" TEXT,
     "username" VARCHAR(50) NOT NULL,
     "hash" TEXT,
-    "role" "Role" DEFAULT 'user',
+    "role" "Role" DEFAULT 'admin',
     "locale" TEXT,
-    "rank" INTEGER DEFAULT 999,
+    "rank" INTEGER DEFAULT 0,
     "joiningDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
