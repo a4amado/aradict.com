@@ -9,6 +9,7 @@ const nextConfig = {
       "www.svgrepo.com",
       "img.icons8.com",
       "cloudflare-ipfs.com",
+      "lh3.googleusercontent.com"
     ],
   },
   i18n

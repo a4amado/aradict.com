@@ -8,9 +8,10 @@ import * as Chakra from '@chakra-ui/react';
 
 import Logo from '../../public/abadis.svg';
 import AuthLayers from '../../utils/AuthLayers';
-import { usePageProps } from '../../utils/PagePropsInComponents';
+
 import DrawerC from '../Drawer';
 import Locales from '../Locales';
+import { useSession } from 'next-auth/react';
 
 const Header = () => {
   return (
@@ -50,14 +51,13 @@ const Header = () => {
 export default React.memo(Header);
 
 function HeaderList() {
-  const { list } = useMenuList();
-  
+  const list = useMenuList();
   return (
-    <React.Fragment>
+    <Chakra.Box display="flex" justifyContent="stretch" flexDir="column" gap="10px">
       {list.map((item) => (
         <MenuBtn text={item.text} options={item} key={item.text} />
       ))}
-    </React.Fragment>
+    </Chakra.Box>
   );
 }
 
@@ -82,10 +82,7 @@ const MenuBtn = ({ text, options }: { text: string; options: MenuList }) => {
   return <Btn />;
 };
 
-interface MenuObject {
-  user: string;
-  list: Array<MenuList>;
-}
+
 
 interface MenuList extends LinkProps {
   text: string;
@@ -105,110 +102,50 @@ const LOGOUT_BTN = {
   },
 };
 
-const AdminMenu: MenuObject = {
-  user: "admin",
-  list: [
-    {
-      href: "/",
-      text: "HOME",
-      passHref: true,
-      disable: {
-        pathMatch: true,
-      },
-    },
-    {
-      text: "REVIEW_SOUND",
-      href: "/sound-reviewer",
-      passHref: true,
-      disable: {
-        pathMatch: true,
-      },
-    },
-    {
-      text: "CONTRIBUTE_WITH_YOUR_VOICE",
-      href: "/sound-contributer",
-      passHref: true,
-      disable: {
-        pathMatch: true,
-      },
-    },
-    LOGOUT_BTN
-  ],
-};
 
-const SoundContributer: MenuObject = {
-  user:"soundContributer",
-  list: [
-    {
-      href: "/",
-      text: "HOME",
-      passHref: true,
-      disable: {
-        pathMatch: true,
-      },
-    },
-    {
-      text: "CONTRIBUTE_WITH_YOUR_VOICE",
-      href: "/sound-contributer",
-      passHref: true,
-      disable: {
-        pathMatch: true,
-      },
-    },
-    LOGOUT_BTN
-  ],
-};
 
-const SoundReviwer: MenuObject = {
-  user: "soundReviwer",
-  list: [
-    {
-      href: "/",
-      text: "HOME",
-      passHref: true,
-      disable: {
-        pathMatch: true,
-      },
-    },
-    {
-      text: "REVIEW_SOUND",
-      href: "/sound-reviewer",
-      passHref: true,
-      disable: {
-        pathMatch: true,
-      },
-    },
-  ],
-};
 
-const UnAuth: MenuObject = {
-  user: null,
-  list: [
-    {
-      href: "/",
-      text: "HOME",
-      passHref: true,
-      disable: {
-        pathMatch: true,
-      },
-    },
-    {
-      text: "LOGIN",
-      href: "/login",
-      passHref: true,
-      disable: {
-        pathMatch: true,
-      },
-    }
-  ],
-};
-
-const Menus = [AdminMenu, SoundContributer, SoundReviwer];
-
-const useMenuList = (): MenuObject => {
-  const { userType } = usePageProps();
-  if (!userType) return UnAuth;
-  const btns  = Menus.find((menu) => menu.user === userType)
+const useMenuList = (): MenuList[] => {
+  const user = useSession();
+  console.log(user);
   
-  return btns;
+  return buttons;
 };
+
+
+const buttons : MenuList[] = [
+  {
+    text: "LOGIN",
+    href: "/login",
+    passHref: true,
+    disable: {
+      pathMatch: true,
+    },
+  },
+  {
+    href: "/",
+    text: "HOME",
+    passHref: true,
+    disable: {
+      pathMatch: true,
+    },
+  },
+  {
+    text: "CONTRIBUTE_WITH_YOUR_VOICE",
+    href: "/sound-contributer",
+    passHref: true,
+    disable: {
+      pathMatch: true,
+    },
+  },
+  LOGOUT_BTN,
+  {
+
+    text: "REVIEW_SOUND",
+    href: "/sound-reviewer",
+    passHref: true,
+    disable: {
+      pathMatch: true,
+    },
+  },
+]

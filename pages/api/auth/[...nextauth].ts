@@ -8,6 +8,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "../../../DB";
 
 import type { NextAuthOptions } from "next-auth";
+import { userAgent } from 'next/server';
 
 const pA = PrismaAdapter(prisma);
 
@@ -42,49 +43,15 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLINT_ID,
       clientSecret: process.env.GOOGLE_CLINT_SECRET,
+      
     }),
   ],
   adapter: pA,
   
   callbacks: {
-    async signIn({ credentials, account, email, profile, user }) {
-      try {
-      
-        
-
-      
-      const s = await pA.getUserByEmail(user.email);
-      if(s) return true;
-      
-      const newUSer = await pA.createUser({
-        email: profile.email,
-          username: profile.email,
-          role: "soundContributer"
-      });
-         
-      await pA.linkAccount({...account, userId: newUSer.id })
-      
-      
-      
-      return true;
-        
-      } catch (error) {
-        console.log(error);
-        
-        return false;
-      }
-      
-      
-
-    },
-    async jwt({ token, user }) {
-      token.role = user?.role;
-      token.rank = user?.rank;
-      return token;
-    },
-    async session({ token, user, session }) {
-      session.role = token?.role;
-      session.rank = token?.rank;
+    async session({ user, session }) {
+      session.role = user?.role;
+      session.rank = user?.rank;
       return session;
     }
   },
@@ -93,8 +60,12 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.JWT_SECRET,
   session: {
-    strategy: "jwt"
-  }
+    strategy: "database",
+    updateAge: 60 * 60 * 24,
+    maxAge: (60 * 60 * 24) * 2
+  },
+  debug: true
 };
 
 export default NextAuth(authOptions);
+

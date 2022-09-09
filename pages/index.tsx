@@ -17,30 +17,20 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import ConShow from "../components/Show";
 import isArabic from "../utils/isArabic";
-import isAuth from "../utils/isAuthrized";
-import { usePageProps } from "../utils/PagePropsInComponents";
+
 
 
 const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const user:any = await isAuth(ctx, Infinity);
-
   const translation = await serverSideTranslations(ctx.locale, ["common"]);
-  const userType = user?.role || "";
-  
-  
-
-  if (!user) {
-    return { props: {  ...translation } };
-  } else {
-    return { props: { userType: userType, ...translation } };
-  }
+  return { props: {  ...translation } };
   
   
 };
 
 export default function Home() {
   const { t } = useTranslation("common");
-  const p = usePageProps();
+
+  
   return (
     <>
       <Header />
@@ -66,9 +56,7 @@ export default function Home() {
             {t("WHAT_IS_ARADICT")}
           </Chakra.Tag>
           <Chakra.Text>{t("TO_USE_ARADICT")}</Chakra.Text>
-      {
-        p?.userType
-      }
+
           <br />
           <img
             alt="s"

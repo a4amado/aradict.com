@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('admin', 'soundContributer', 'soundReviewer');
+CREATE TYPE "Role" AS ENUM ('admin', 'soundContributer', 'soundReviewer', 'user');
 
 -- CreateTable
 CREATE TABLE "Account" (
@@ -36,12 +36,12 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "emailVerified" TIMESTAMP(3),
     "image" TEXT,
-    "username" VARCHAR(30) NOT NULL,
+    "username" VARCHAR(50) NOT NULL,
     "hash" TEXT,
-    "role" "Role" NOT NULL,
+    "role" "Role" DEFAULT 'user',
     "locale" TEXT,
-    "rank" INTEGER NOT NULL DEFAULT 3,
-    "joiningDate" TIMESTAMP(3) NOT NULL DEFAULT now(),
+    "rank" INTEGER DEFAULT 999,
+    "joiningDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

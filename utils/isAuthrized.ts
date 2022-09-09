@@ -1,12 +1,12 @@
-import { getToken, decode } from 'next-auth/jwt';
+
 import { GetServerSidePropsContext } from 'next';
-import { authOptions } from "../pages/api/auth/[...nextauth]";
+import { getSession } from 'next-auth/react';
+
 
 
 export async function isAuth(ctx: GetServerSidePropsContext, rank?: number): Promise<object | false> {
   try {
-    let user = await getToken({ req: ctx.req, secret: process.env.JWT_SECRET });
-    
+    let user = await getSession(ctx);    
     return user;
   } catch (error) {
     return false;

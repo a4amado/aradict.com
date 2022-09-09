@@ -1,60 +1,55 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("DATABASE_URL")
 }
 
-
 model Account {
-  id                 String @id @db.Text @default(cuid())
-  userId             String @db.Text
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
 model Session {
-  id           String  @id @db.Text @default(cuid())
+  id           String   @id @default(cuid())
   sessionToken String   @unique
-  userId       String @db.Text
+  userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-  id            String  @id @default(cuid()) @db.Text
+  id            String    @id @default(cuid())
   name          String?
-  email         String   @unique
+  email         String    @unique
   emailVerified DateTime?
   image         String?
-  username String @db.VarChar(30) @unique
-  hash String?
-  role Role 
-  locale String?
-  rank Int @default(3)
-  joiningDate DateTime @default(dbgenerated("now()"))
-  words Words[]
-  sounds Sounds[]
-  accounts Account[]
-  sessions Session[]
+  username      String    @unique @db.VarChar(50) @default(cuid())
+  hash          String?
+  role          Role? @default(user)
+  locale        String?
+  rank          Int?       @default(999)
+  joiningDate   DateTime  @default(now())
+  accounts      Account[]
+  sessions      Session[]
+  sounds        Sounds[]
+  words         Words[]
 }
 
 model VerificationToken {
@@ -65,38 +60,27 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-
 model Words {
-  id String @id @db.Text @default(cuid())
-  autherId String @db.Text
-
-  ar String @unique
-  en String
-
-  auther User @relation(fields: [autherId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  sounds Sounds[]
+  id       String   @id @default(cuid())
+  autherId String
+  ar       String   @unique
+  en       String
+  auther   User     @relation(fields: [autherId], references: [id], onDelete: SetNull)
+  sounds   Sounds[]
 }
 
 model Sounds {
-  soundId String @id @default(cuid()) @db.Text 
-  wordId String @db.Text
-  autherId String @db.Text
-
+  soundId  String @id @default(cuid())
+  wordId   String
+  autherId String
   fileName String
-  
-
-
-
-  auther User @relation(fields: [autherId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  word Words @relation(fields: [wordId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  
-
+  auther   User   @relation(fields: [autherId], references: [id], onDelete: SetNull)
+  word     Words  @relation(fields: [wordId], references: [id], onDelete: SetNull)
 }
-
 
 enum Role {
   admin
   soundContributer
   soundReviewer
+  user
 }
-

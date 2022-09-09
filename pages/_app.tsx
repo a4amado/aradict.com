@@ -8,7 +8,6 @@ import { ChakraProvider, Portal, PortalManager, ToastProvider } from '@chakra-ui
 import Loading from '../components/Loading';
 import AxiosProvider from '../utils/AxiosConfig';
 import theme from '../utils/Chakra/Config';
-import PagePropsProvider from '../utils/PagePropsInComponents';
 
 i18next.init();
 
@@ -19,6 +18,7 @@ i18next.on("languageChanged", (lng) => {
 
 
 import type { AppProps } from "next/app";
+import { SessionProvider } from 'next-auth/react';
 const gg = {
   hidden: { opacity: 1, scale: 0 },
   visible: {
@@ -32,11 +32,14 @@ const gg = {
 }
 
 
+
+
 function MyApp({ Component, pageProps }: AppProps) {
 
   return (
+    <SessionProvider session={pageProps.session}>
   <Suspense fallback="Loading">
-    <PagePropsProvider value={pageProps}>
+
       <AxiosProvider>
         <ChakraProvider theme={theme}>
           <PortalManager>
@@ -48,8 +51,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           </PortalManager>
         </ChakraProvider>
       </AxiosProvider>
-    </PagePropsProvider>
+    
     </Suspense>    
+    </SessionProvider>
   );
 }
 

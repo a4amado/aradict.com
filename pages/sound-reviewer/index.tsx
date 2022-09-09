@@ -13,7 +13,6 @@ import Header from '../../components/Header';
 import ConShow from '../../components/Show';
 import useAxios from '../../hooks/useAxios';
 import isAuth from '../../utils/isAuthrized';
-import { usePageProps } from '../../utils/PagePropsInComponents';
 import Redirect from '../../utils/redirect';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
@@ -102,7 +101,6 @@ const VoiceReviewer = () => {
     reject();
    });
 
-  const gg = usePageProps()
   return (
     <>
       <Header />
@@ -152,9 +150,6 @@ const VoiceReviewer = () => {
             </Chakra.Center>
           </ConShow>
         </Chakra.Center>
-          {
-            JSON.stringify(gg)
-          }
         <Chakra.Box
           maxWidth="calc(800px + (10px * 3))"
           width="100%"
