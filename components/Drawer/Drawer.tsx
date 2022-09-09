@@ -85,9 +85,9 @@ export default memo(Drawer);
 
 
 const SessionDuration = ({ end }: any ) => {
-  
-  if (!end) return <></>;
   let [date2, setDate2] = React.useState(luxon.DateTime.fromISO(end));
+  if (!end) return <></>;
+  
 
   const diff = date2.diffNow(["days", "hours", "minutes", "second"]).toHuman({
     listStyle: "short",
