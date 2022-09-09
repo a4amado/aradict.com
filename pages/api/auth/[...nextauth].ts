@@ -63,8 +63,7 @@ export const authOptions: NextAuthOptions = {
     strategy: "database",
     updateAge: 60 * 60 * 24,
     maxAge: (60 * 60 * 24) * 2
-  },
-  debug: true
+  }
 };
 
 export default NextAuth(authOptions);
