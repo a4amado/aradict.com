@@ -50,6 +50,8 @@ export const authOptions: NextAuthOptions = {
   
   callbacks: {
     async session({ user, session }) {
+      console.log(user);
+      
       session.role = user?.role;
       session.rank = user?.rank;
       return session;
