@@ -86,6 +86,14 @@ export default memo(Drawer);
 
 const SessionDuration = ({ end }: any ) => {
   let [date2, setDate2] = React.useState(luxon.DateTime.fromISO(end));
+  
+  React.useEffect(() => {
+    const gg = setInterval(() => {
+      setDate2(luxon.DateTime.fromISO(end))
+    }, 1000)
+    return () => clearInterval(gg)
+  }, [])
+  
   if (!end) return <></>;
   
 
@@ -94,12 +102,6 @@ const SessionDuration = ({ end }: any ) => {
     maximumFractionDigits: 0
   });
 
-  React.useEffect(() => {
-    const gg = setInterval(() => {
-      setDate2(luxon.DateTime.fromISO(end))
-    }, 1000)
-    return () => clearInterval(gg)
-  }, [])
   
   return <Chakra.Text fontSize="xs" dir="ltr">
     Sisson ends in
