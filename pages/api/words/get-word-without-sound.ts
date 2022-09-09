@@ -1,14 +1,9 @@
-const PageUserRank = layers.VC.rank;
-
 
 import HTTPError from 'http-errors';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { NextApiRequest, NextApiResponse } from 'next';
 import nextConnect, { NextHandler } from 'next-connect';
 
-import prisma from '../../../DB';
-import layers from '../../../utils/AuthLayers';
-import parseCookie from '../../../utils/parseCookie';
 
 interface ThrownError {
     name: string,
@@ -27,14 +22,6 @@ const route = nextConnect({
   },
 });
 
-route.use(async (req, res, next) => {
-  const user = await parseCookie(req);
-  if (!user || user.rank > PageUserRank) {
-    return res.status(StatusCodes.NON_AUTHORITATIVE_INFORMATION).send({ msg: ReasonPhrases.NON_AUTHORITATIVE_INFORMATION })
-  }
-  req.user = user;
-  next()
-})
 
 
 route.get(async (req: NextApiRequest, res: NextApiResponse, next: NextHandler) => {

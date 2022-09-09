@@ -15,7 +15,6 @@ import Rating from '../components/Rating';
 import ConShow from '../components/Show';
 import Pause from '../public/pause.svg';
 import Play from '../public/play.svg';
-import { jwtVerify } from '../utils/jwt';
 
 faker.setLocale("ar");
 export default function AddSound({ data }) {
@@ -214,20 +213,12 @@ export const getServerSideProps: GetServerSideProps = async ({
   req,
   locale,
 }) => {
-  const TOKEN = req.cookies.token || "";
-  const JWT_SECRET = process.env.JWT_SECRET;
-
-  let data;
-  try {
-    data = await jwtVerify(TOKEN, JWT_SECRET);
-  } catch (error) {}
-
-  const userType: any = data?.role || "";
+  
+  
   const translation = await serverSideTranslations(locale, ["common"]);
 
   return {
     props: {
-      userType,
       ...translation,
       data: Array.from({ length: 6 }, () => ({
         name: faker.name.firstName("male"),

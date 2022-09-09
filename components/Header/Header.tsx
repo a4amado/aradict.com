@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import * as Chakra from '@chakra-ui/react';
 
 import Logo from '../../public/abadis.svg';
-import AuthLayers from '../../utils/AuthLayers';
 
 import DrawerC from '../Drawer';
 import Locales from '../Locales';

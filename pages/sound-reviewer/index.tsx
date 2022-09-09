@@ -18,7 +18,7 @@ import Redirect from '../../utils/redirect';
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const translation = await serverSideTranslations(ctx.locale, ["common"]);
   
-  let user: any = await isAuth(ctx, 1);
+  let user: any = await isAuth(ctx);
   if (!user || user.rank > 1) return Redirect("/", 1);
 
   
