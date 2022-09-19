@@ -30,7 +30,7 @@ const  getServerSideProps =  async (ctx: GetServerSidePropsContext) => {
                 }
             },
             where: {
-                id: 'cl7vrs1de000809md2oiouotk'
+                id: Array.isArray(ctx.query.id) ? ctx.query.id[0]: ctx.query.id
             }
         });
         console.log(user);
