@@ -10,9 +10,11 @@ import Logo from '../../public/abadis.svg';
 
 import DrawerC from '../Drawer';
 import Locales from '../Locales';
+import ShowC from "../Show"
 import { useSession } from 'next-auth/react';
 
 const Header = () => {
+  const session = useSession()
   return (
     <Chakra.Box
       height={65}
@@ -39,9 +41,33 @@ const Header = () => {
       </NextLink>
 
       <DrawerC>
+        {
+          session.status === "loading" && 
+          <Chakra.Container display="flex" justifyContent="stretch">
+            <Chakra.Center w="100%" flex={1}>
+          <Chakra.Spinner />
+        </Chakra.Center>
+        </Chakra.Container>
+
+          
+        }
+        
         <Chakra.Stack>
-          <HeaderList />
+        {
+         session.status === "authenticated"  && <HeaderList />
+          
+        }
+         {
+          session.status === "unauthenticated" && <MenuBtn text='LOGIN' options={{
+            text: "LOGIN",
+            href: "/login"
+          }} />
+         }
+        
+        
+          
         </Chakra.Stack>
+        
       </DrawerC>
     </Chakra.Box>
   );
@@ -49,10 +75,27 @@ const Header = () => {
 
 export default React.memo(Header);
 
+
+
+            
+              
 function HeaderList() {
   const list = useMenuList();
+  const session = useSession();          
   return (
     <Chakra.Box display="flex" justifyContent="stretch" flexDir="column" gap="10px">
+      <ShowC condetion={session.status === "authenticated"}>
+        <NextLink passHref={true} href={`/user?q=${session.data?.id}`}>
+                <Chakra.Link as={Chakra.Button}>
+                  
+                  <Image style={{
+                    borderRadius: 40,
+                    padding: 10
+                  }} src={session?.data?.user?.image || ""} width={30} height={30} />
+                  <p>{session?.data?.user?.name}</p>
+                </Chakra.Link>
+                </NextLink>
+              </ShowC>
       {list.map((item) => (
         <MenuBtn text={item.text} options={item} key={item.text} />
       ))}
@@ -75,8 +118,8 @@ const MenuBtn = ({ text, options }: { text: string; options: MenuList }) => {
     </NextLink>
   );
 
-  if (options.disable.pathMatch && PathMatch) {
-    return <Btn display="none" />;
+  if (options.disable?.pathMatch && PathMatch) {
+    return <Btn backgroundColor="#080" />;
   }
   return <Btn />;
 };
@@ -113,14 +156,7 @@ const useMenuList = (): MenuList[] => {
 
 
 const buttons : MenuList[] = [
-  {
-    text: "LOGIN",
-    href: "/login",
-    passHref: true,
-    disable: {
-      pathMatch: true,
-    },
-  },
+  
   {
     href: "/",
     text: "HOME",
@@ -148,3 +184,6 @@ const buttons : MenuList[] = [
     },
   },
 ]
+
+
+

@@ -41,6 +41,7 @@
     "next-connect": "^0.13.0",
     "next-i18next": "^11.3.0",
     "next-route-resolver": "^0.0.7",
+    "next-seo": "^5.5.0",
     "pg": "^8.7.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

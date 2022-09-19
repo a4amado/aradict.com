@@ -1,14 +1,12 @@
-import { signIn } from 'next-auth/react';
 import NextAuth, { Account, Profile } from "next-auth";
 import CredentialsProvider, { CredentialsConfig } from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import DiscordProvider from "next-auth/providers/discord";
 
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-
 import prisma from "../../../DB";
-
 import type { NextAuthOptions } from "next-auth";
-import { userAgent } from 'next/server';
+
 
 const pA = PrismaAdapter(prisma);
 
@@ -31,6 +29,8 @@ const CredentialsProviderProps:CredentialsConfig  = {
   authorize: async (credentials, req) =>  {
     const User = await pA.getUserByEmail(credentials["email"]);
 
+    
+
     return User;
   },
   type: "credentials",
@@ -45,15 +45,18 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLINT_SECRET,
       
     }),
+    DiscordProvider({
+      clientId: process.env.DISCORD_CLIENT_ID,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET
+    })
   ],
   adapter: pA,
   
   callbacks: {
-    async session({ user, session }) {
-      console.log(user);
-      
+    async session({ user, session }) {      
       session.role = user?.role;
       session.rank = user?.rank;
+      session.id = user?.id;
       return session;
     }
   },
@@ -65,7 +68,9 @@ export const authOptions: NextAuthOptions = {
     strategy: "database",
     updateAge: 60 * 60 * 24,
     maxAge: (60 * 60 * 24) * 2
-  }
+  },
+
+  debug: true
 };
 
 export default NextAuth(authOptions);

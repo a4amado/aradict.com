@@ -3,6 +3,25 @@ import i18next from 'i18next';
 import { appWithTranslation, i18n } from 'next-i18next';
 import React, { Suspense } from 'react';
 
+import { useEffect } from 'react';
+
+const confirmPageRefresh = e => {
+  e.preventDefault();
+  const shouldReload = confirm("Confirm full refresh?");
+  e.returnValue = shouldReload;
+  return shouldReload;
+}
+
+export const usePreventFastRefreshDev = () => {
+  useEffect(() => {
+
+    if(process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
+      window.addEventListener('beforeunload', confirmPageRefresh);
+      return () => window.removeEventListener('beforeunload', confirmPageRefresh);
+    }
+  }, [])
+}
+
 import { ChakraProvider, Portal, PortalManager, ToastProvider } from '@chakra-ui/react';
 
 import Loading from '../components/Loading';
@@ -35,6 +54,7 @@ const gg = {
 
 
 function MyApp({ Component, pageProps }: AppProps) {
+  
 
   return (
     <SessionProvider session={pageProps.session}>

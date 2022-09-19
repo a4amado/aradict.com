@@ -22,13 +22,10 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   if (!user || user.rank > 1) return Redirect("/", 1);
 
   
-  const userType = user?.role || "";
-  
   
   return {
     props: {
-      ...translation,
-      userType
+      ...translation
     },
   };
 };

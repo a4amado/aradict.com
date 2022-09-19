@@ -19,13 +19,11 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const translation = await serverSideTranslations(ctx.locale, ["common"]);
   let user: any = await isAuth(ctx);
   if (!user || user.rank > 2) return Redirect("/", true);
-  const userType = user?.role || "";
   
 
   return {
     props: {
-      ...translation,
-      userType,
+      ...translation
     },
   };
 };
