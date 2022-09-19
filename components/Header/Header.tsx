@@ -85,7 +85,8 @@ function HeaderList() {
   return (
     <Chakra.Box display="flex" justifyContent="stretch" flexDir="column" gap="10px">
       <ShowC condetion={session.status === "authenticated"}>
-        <NextLink passHref={true} href={`/user?q=${session.data?.id}`}>
+        
+        <NextLink passHref={true} href={`/user?id=${session.data?.id}`}>
                 <Chakra.Link as={Chakra.Button}>
                   
                   <Image style={{

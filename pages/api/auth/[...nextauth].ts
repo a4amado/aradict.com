@@ -57,6 +57,7 @@ export const authOptions: NextAuthOptions = {
       session.role = user?.role;
       session.rank = user?.rank;
       session.id = user?.id;
+      
       return session;
     }
   },
