@@ -130,10 +130,10 @@ const Login = (props) => {
               </Chakra.TabPanel>
             </Chakra.TabPanels>
             <Chakra.Button w="100%" onClick={() => signIn("google")}>
-            Discord
+            Google
           </Chakra.Button>
           <Chakra.Button w="100%" onClick={() => signIn("discord")}>
-            Google
+          Discord
           </Chakra.Button>
           </Chakra.Tabs>
 
