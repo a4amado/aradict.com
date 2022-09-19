@@ -76,7 +76,7 @@ const User = (data) => {
     <Chakra.Flex>
         You are conntected via <>
         {
-            data.user.providers.map((e) => <p>{e}</p>)
+            data.user.providers.map((e, i) => <p key={i}>{e}</p>)
         }
         </>
     </Chakra.Flex>
