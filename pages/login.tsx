@@ -129,9 +129,7 @@ const Login = (props) => {
                 <RegisterForm />
               </Chakra.TabPanel>
             </Chakra.TabPanels>
-            <Chakra.Button w="100%" onClick={() => signIn("google")}>
-            Google
-          </Chakra.Button>
+            
           <Chakra.Button w="100%" onClick={() => signIn("discord")}>
           Discord
           </Chakra.Button>

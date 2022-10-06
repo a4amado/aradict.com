@@ -40,11 +40,7 @@ const CredentialsProviderProps:CredentialsConfig  = {
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider(CredentialsProviderProps),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLINT_ID,
-      clientSecret: process.env.GOOGLE_CLINT_SECRET,
-      
-    }),
+ 
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID,
       clientSecret: process.env.DISCORD_CLIENT_SECRET
