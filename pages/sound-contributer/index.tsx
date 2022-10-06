@@ -163,7 +163,7 @@ export default function AddSound() {
           <C_Button SC="F" disabled={r.isEmpty} action={fetch}>
             Fetch
           </C_Button>
-          <C_Button SC="Q" disabled={r.isEmpty} action={resetRecorded}>
+          <C_Button SC="C" disabled={r.isEmpty} action={resetRecorded}>
             RESET
           </C_Button>
           <C_Button SC="S" disabled={r.isEmpty} action={console.log}>
