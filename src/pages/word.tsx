@@ -13,8 +13,8 @@ import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Rating from '../components/Rating';
 import ConShow from '../components/Show';
-import Pause from '../public/pause.svg';
-import Play from '../public/play.svg';
+import Pause from '../../public/pause.svg';
+import Play from '../../public/play.svg';
 
 faker.setLocale("ar");
 export default function AddSound({ data }) {

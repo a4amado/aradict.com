@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
+  provider          = "sqlite"
   url               = env("DATABASE_URL")
 }
 
@@ -39,11 +39,11 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   image         String?
-  username      String    @unique @db.VarChar(50) @default(cuid())
+  username      String    @unique  @default(cuid())
   hash          String?
-  role          Role? @default(admin)
+  role          String? @default("admin")
   locale        String?
-  rank          Int?       @default(0)
+  rank          Int       @default(0)
   joiningDate   DateTime  @default(now())
   accounts      Account[]
   sessions      Session[]
@@ -61,25 +61,25 @@ model VerificationToken {
 
 model Words {
   id       String   @id @default(cuid())
-  autherId String
+  autherId String?
   ar       String   @unique
   en       String
-  auther   User     @relation(fields: [autherId], references: [id], onDelete: SetNull)
+  auther   User?     @relation(fields: [autherId], references: [id], onDelete: SetNull)
   sounds   Sounds[]
 }
 
 model Sounds {
   soundId  String @id @default(cuid())
   wordId   String
-  autherId String
+  autherId String?
   fileName String
-  auther   User   @relation(fields: [autherId], references: [id], onDelete: SetNull)
-  word     Words  @relation(fields: [wordId], references: [id], onDelete: SetNull)
+  auther   User?   @relation(fields: [autherId], references: [id], onDelete: SetNull)
+  word     Words  @relation(fields: [wordId], references: [id], onDelete: NoAction)
 }
 
-enum Role {
-  admin
-  soundContributer
-  soundReviewer
-  user
-}
+// enum Role {
+//   admin
+//   soundContributer
+//   soundReviewer
+//   user
+// }

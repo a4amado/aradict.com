@@ -1,6 +1,5 @@
-import NextAuth, { Account, Profile } from "next-auth";
-import CredentialsProvider, { CredentialsConfig } from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
+import NextAuth from "next-auth";
+
 import DiscordProvider from "next-auth/providers/discord";
 
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
@@ -10,39 +9,11 @@ import type { NextAuthOptions } from "next-auth";
 
 const pA = PrismaAdapter(prisma);
 
-const CredentialsProviderProps:CredentialsConfig  = {
-  name: "Username and password",
-  credentials: {
-    email: {
-      label: "Username or Email",
-      type: "email",
-      value: "",
-      placeholder: "Username or Email Adress",
-    },
-    password: {
-      label: "Password",
-      type: "password",
-      value: "",
-      placeholder: "password",
-    },
-  },
-  authorize: async (credentials, req) =>  {
-    const User = await pA.getUserByEmail(credentials["email"]);
-
-    
-
-    return User;
-  },
-  type: "credentials",
-  id: "credentials"
-};
-
 export const authOptions: NextAuthOptions = {
   providers: [
-    CredentialsProvider(CredentialsProviderProps),
     DiscordProvider({
-      clientId: process.env.DISCORD_CLIENT_ID,
-      clientSecret: process.env.DISCORD_CLIENT_SECRET
+      clientId: "1021377999695781888",
+      clientSecret: "Gp2aTmnNnB-UM7Be4uTB_5cUksUg3A3x"
     })
   ],
   adapter: pA,

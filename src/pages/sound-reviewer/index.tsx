@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Head from 'next/head';
-import Router, { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import React from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useTranslation } from 'react-i18next';
@@ -16,13 +16,13 @@ import isAuth from '../../utils/isAuthrized';
 import Redirect from '../../utils/redirect';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const translation = await serverSideTranslations(ctx.locale, ["common"]);
-  
+  const translation = await serverSideTranslations(ctx.locale || "ar", ["common"]);
+
   let user: any = await isAuth(ctx);
   if (!user || user.rank > 1) return Redirect("/", 1);
 
-  
-  
+
+
   return {
     props: {
       ...translation
@@ -75,7 +75,8 @@ const VoiceReviewer = () => {
   function pause() {
     if (!f_request.data) return false;
     soundRef.current.pause();
-  }
+  };
+
   useHotkeys("W", () => {
     pause();
 
@@ -96,13 +97,13 @@ const VoiceReviewer = () => {
 
   useHotkeys("R", () => {
     reject();
-   });
+  });
 
   return (
     <>
       <Header />
       <Head>
-        <title>{}</title>
+        <title>{ }</title>
       </Head>
       <Chakra.Box display="flex" flexDir="column" flex={1}>
         <Chakra.Center
@@ -113,8 +114,8 @@ const VoiceReviewer = () => {
           maxW={600}
           height={200}
         >
-          <ConShow condetion={!f_request.data}>
-            <Chakra.Center
+          {
+            !f_request.data && <Chakra.Center
               w="100%"
               h="100%"
               position="absolute"
@@ -124,28 +125,29 @@ const VoiceReviewer = () => {
             >
               <Chakra.Spinner />
             </Chakra.Center>
-          </ConShow>
+          }
 
-          <ConShow condetion={!!f_request.data}>
-            <Chakra.Center
-              display="flex"
-              flexDir="column"
-              fontSize={20}
-              height="100%"
-              w="100%"
-              h={200}
-              bg="#fff"
-            >
-              <Chakra.Kbd m={3} p={3} display="block" size="xl">
-                {f_request.data.ar}
-              </Chakra.Kbd>
-              <audio
-                ref={soundRef}
-                controls
-                src={`/sound/${f_request.data?.file_name}`}
-              />
-            </Chakra.Center>
-          </ConShow>
+
+          {!!f_request.data && <Chakra.Center
+            display="flex"
+            flexDir="column"
+            fontSize={20}
+            height="100%"
+            w="100%"
+            h={200}
+            bg="#fff"
+          >
+            <Chakra.Kbd m={3} p={3} display="block" size="xl">
+              {f_request.data.ar}
+            </Chakra.Kbd>
+            <audio
+              ref={soundRef}
+              controls
+              src={`/sound/${f_request.data?.file_name}`}
+            />
+          </Chakra.Center>}
+
+
         </Chakra.Center>
         <Chakra.Box
           maxWidth="calc(800px + (10px * 3))"
@@ -202,7 +204,7 @@ const VoiceReviewer = () => {
             </Chakra.GridItem>
             <Chakra.GridItem textAlign="center">
               <Chakra.Button
-                
+
                 onClick={fetcher}
                 colorScheme="teal"
                 w="100%"

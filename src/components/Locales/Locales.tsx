@@ -7,11 +7,11 @@ import React, { FC, useRef } from 'react';
 
 import * as Chakra from '@chakra-ui/react';
 
-import ES from '../../public/ES.svg';
-import ID from '../../public/IN.svg';
-import NL from '../../public/NL.svg';
-import SAUDI from '../../public/SAUDI.svg';
-import US from '../../public/USA.svg';
+import ES from '../../../public/ES.svg';
+import ID from '../../../public/IN.svg';
+import NL from '../../../public/NL.svg';
+import SAUDI from '../../../public/SAUDI.svg';
+import US from '../../../public/USA.svg';
 
 const langs = [
   { name: "English", Flag: US, code: "en" },

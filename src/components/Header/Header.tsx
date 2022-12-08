@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import * as Chakra from '@chakra-ui/react';
 
-import Logo from '../../public/abadis.svg';
+
 
 import DrawerC from '../Drawer';
 import Locales from '../Locales';
@@ -28,7 +28,7 @@ const Header = () => {
       <NextLink href="/" passHref={true}>
         <Chakra.Link>
           <Image
-            src={Logo}
+            src="/abadis.svg"
             loading="lazy"
             placeholder="blur"
             title="Logo"
@@ -84,19 +84,7 @@ function HeaderList() {
   const session = useSession();          
   return (
     <Chakra.Box display="flex" justifyContent="stretch" flexDir="column" gap="10px">
-      <ShowC condetion={session.status === "authenticated"}>
-        
-        <NextLink passHref={true} href={`/user?id=${session.data?.id}`}>
-                <Chakra.Link as={Chakra.Button}>
-                  
-                  <Image style={{
-                    borderRadius: 40,
-                    padding: 10
-                  }} src={session?.data?.user?.image || ""} width={30} height={30} />
-                  <p>{session?.data?.user?.name}</p>
-                </Chakra.Link>
-                </NextLink>
-              </ShowC>
+      
       {list.map((item) => (
         <MenuBtn text={item.text} options={item} key={item.text} />
       ))}
